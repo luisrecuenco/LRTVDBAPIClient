@@ -4,3 +4,6 @@
 [submodule "LRTVDBApi/TBXML"]
 	path = LRTVDBApi/TBXML
 	url = git://github.com/71squared/TBXML.git
+[submodule "LRTVDBApi/zipzap"]
+	path = LRTVDBApi/zipzap
+	url = git://github.com/pixelglow/zipzap.git
