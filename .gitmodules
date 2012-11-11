@@ -1,3 +1,6 @@
 [submodule "LRTVDBApi/AFNetworking"]
 	path = LRTVDBApi/AFNetworking
 	url = git://github.com/AFNetworking/AFNetworking.git
+[submodule "LRTVDBApi/TBXML"]
+	path = LRTVDBApi/TBXML
+	url = git://github.com/71squared/TBXML.git
