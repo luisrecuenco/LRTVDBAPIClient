@@ -61,7 +61,7 @@ static NSComparisonResult (^episodesComparisonBlock)(LRTVDBEpisode *, LRTVDBEpis
 /**
  Artwork comparison block.
  */
-NSComparisonResult (^artworkComparisonBlock)(LRTVDBArtwork *, LRTVDBArtwork *) = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
+static NSComparisonResult (^artworkComparisonBlock)(LRTVDBArtwork *, LRTVDBArtwork *) = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
 {
     NSComparisonResult typeComparison = [@(firstArtwork.artworkType) compare:@(secondArtwork.artworkType)];
     NSComparisonResult ratingComparison = [secondArtwork.rating compare:firstArtwork.rating];
@@ -84,7 +84,7 @@ NSComparisonResult (^artworkComparisonBlock)(LRTVDBArtwork *, LRTVDBArtwork *) =
 /**
  Actors comparison block.
  */
-NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
+static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {
     return [firstActor.sortOrder compare:secondActor.sortOrder];
 };
