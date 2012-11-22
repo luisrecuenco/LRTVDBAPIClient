@@ -64,7 +64,7 @@
                 NSMutableArray *elements = [@[] mutableCopy];
                 [elements addObject:dictionary[[TBXML elementName:element]]];
                 [elements addObject:[self dictionaryWithTBXMLElement:element->firstChild]];
-                dictionary[[TBXML elementName:element]] = [elements copy];
+                dictionary[[TBXML elementName:element]] = elements;
             }
         }
         else

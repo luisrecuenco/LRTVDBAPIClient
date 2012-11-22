@@ -27,16 +27,19 @@
 - (NSDate *)dateByIgnoringTime
 {
     static NSCalendar *calendar = nil;
+    static NSInteger secondsFromGMT = 0;
+    static NSCalendarUnit flags = 0;
+    
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         calendar = [NSCalendar currentCalendar];
+        secondsFromGMT = [[NSTimeZone localTimeZone] secondsFromGMT];
+        flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
     });
     
-    static NSUInteger flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
+    NSDateComponents *components = [calendar components:flags fromDate:self];
     
-    NSDateComponents *components = [calendar components:flags
-                                               fromDate:self];
-    return [[calendar dateFromComponents:components] dateByAddingTimeInterval:[[NSTimeZone localTimeZone] secondsFromGMT]];
+    return [[calendar dateFromComponents:components] dateByAddingTimeInterval:secondsFromGMT];
 }
 
 @end
