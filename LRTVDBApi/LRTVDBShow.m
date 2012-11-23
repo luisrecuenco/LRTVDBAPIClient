@@ -217,14 +217,9 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 {
     if (episodes.count == 0) return;
     
-    if (self.mutableEpisodes == nil)
-    {
-        self.mutableEpisodes = [NSMutableOrderedSet orderedSet];
-    }
-    
     // Assumption: episodes are newer than the ones we may already have.
     NSMutableOrderedSet *updatedEpisodes = [episodes mutableCopy];
-    [updatedEpisodes unionOrderedSet:self.mutableEpisodes];
+    [updatedEpisodes unionOrderedSet:self.episodes];
     [updatedEpisodes sortUsingComparator:episodesComparisonBlock];
     
     self.mutableEpisodes = updatedEpisodes;
@@ -241,7 +236,7 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
     // Last episode
     if (self.showBasicStatus == LRTVDBShowBasicStatusEnded)
     {
-        self.lastEpisode = self.mutableEpisodes.lastObject;
+        self.lastEpisode = self.episodes.lastObject;
         lastEpisodeSet = YES;
     }
     else
@@ -260,26 +255,25 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
             }
         };
         
-        [self.mutableEpisodes enumerateObjectsWithOptions:NSEnumerationReverse
-                                               usingBlock:block];
+        [self.episodes enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:block];
         
         if (!lastEpisodeSet)
         {
-            self.lastEpisode = self.mutableEpisodes.lastObject;
+            self.lastEpisode = self.episodes.lastObject;
         }
     }
     
     // Next episode
-    NSUInteger nextEpisodeIndex = [self.mutableEpisodes indexOfObject:self.lastEpisode] + 1;
-    BOOL notValidNextEpisode = nextEpisodeIndex >= self.mutableEpisodes.count ||
-                               [(self.mutableEpisodes)[nextEpisodeIndex] airedDate] == nil;
-    self.nextEpisode = notValidNextEpisode ? nil : (self.mutableEpisodes)[nextEpisodeIndex];
+    NSUInteger nextEpisodeIndex = [self.episodes indexOfObject:self.lastEpisode] + 1;
+    BOOL notValidNextEpisode = nextEpisodeIndex >= self.episodes.count ||
+                               [(self.episodes)[nextEpisodeIndex] airedDate] == nil;
+    self.nextEpisode = notValidNextEpisode ? nil : (self.episodes)[nextEpisodeIndex];
     
     // Days to next episode
     self.daysToNextEpisode = [self daysToEpisode:self.nextEpisode];
     
     // Number of seasons
-    self.numberOfSeasons = [self.mutableEpisodes.lastObject seasonNumber];
+    self.numberOfSeasons = [self.episodes.lastObject seasonNumber];
     
     // Show status
     if (self.showBasicStatus == LRTVDBShowStatusEnded)
@@ -331,12 +325,12 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
     
     if (!episodes)
     {
-        NSIndexSet *indexSet = [self.mutableEpisodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop)
+        NSIndexSet *indexSet = [self.episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop)
         {
             return [episode.seasonNumber isEqualToNumber:seasonNumber];
         }];
         
-        episodes = [self.mutableEpisodes objectsAtIndexes:indexSet];
+        episodes = [self.episodes objectsAtIndexes:indexSet];
         
         (self.seasonToEpisodesDictionary)[seasonNumber] = episodes;
     }
@@ -349,15 +343,10 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 - (void)addArtworks:(NSOrderedSet *)artworks
 {
     if (artworks.count == 0) return;
-
-    if (self.mutableArtworks == nil)
-    {
-        self.mutableArtworks = [NSMutableOrderedSet orderedSet];
-    }
     
     // Assumption: artworks are newer than the ones we may already have.
     NSMutableOrderedSet *updatedArtworks = [artworks mutableCopy];
-    [updatedArtworks unionOrderedSet:self.mutableArtworks];
+    [updatedArtworks unionOrderedSet:self.artworks];
     [updatedArtworks sortUsingComparator:artworkComparisonBlock];
     
     self.mutableArtworks = updatedArtworks;
@@ -373,7 +362,7 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
     NSMutableArray *seasonArray = [@[] mutableCopy];
     NSMutableArray *bannerArray = [@[] mutableCopy];
     
-    for (LRTVDBArtwork *artwork in self.mutableArtworks)
+    for (LRTVDBArtwork *artwork in self.artworks)
     {
         switch (artwork.artworkType)
         {
@@ -405,15 +394,10 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 - (void)addActors:(NSOrderedSet *)actors
 {
     if (actors.count == 0) return;
-    
-    if (self.mutableActors == nil)
-    {
-        self.mutableActors = [NSMutableOrderedSet orderedSet];
-    }
         
     // Assumption: actors are newer than the ones we may already have.
     NSMutableOrderedSet *updatedActors = [actors mutableCopy];
-    [updatedActors unionOrderedSet:self.mutableActors];
+    [updatedActors unionOrderedSet:self.actors];
     [updatedActors sortUsingComparator:actorsComparisonBlock];
     
     self.mutableActors = updatedActors;
