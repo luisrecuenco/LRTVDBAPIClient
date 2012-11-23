@@ -25,7 +25,8 @@
 @protocol LRKVCBaseModelProtocol <NSObject>
 
 /**
- Dictionary with the correct mappings (@{key : propertyName}).
+ Dictionary with the correct mappings (@{ key : propertyName }).
+ @see initWithDictionary: documentation.
  */
 @property (nonatomic, readonly) NSDictionary *mappings;
 
@@ -43,25 +44,26 @@
  'key'. Thus, 'value' will be attached to that property.
  
  @discussion Forcing the object to have the very same property names
- as the keys in the dictionary may not be the best idea.
+ as the keys in the dictionary may not be the best idea. Some/most keys
+ coming from XML/JSON via APIs are not very compliant with cocoa conventions.
  In order to be able to have an object whose property names are different
  from the keys in the dictionary, the 'mappings' property defined in
  LRKVCBaseModelProtocol must be provided.
  
  Example:
  
- dictionary: _KEY_ : value
+ dictionary: @{ uglyKey : value }
  
- object: property 'key'
+ object: property 'awesomeKey'
  
  The object class (sublcass of LRKVCBaseModel) must have:
  
  - (NSDictionary *)mappings
  {
-     return @{ @"_KEY_" : @"key" };
+     return @{ @"uglyKey" : @"awesomeKey" };
  }
  
- Thus, we'll have a property 'key' whose value is 'value'.
+ Thus, we'll have a property 'awesomeKey' whose value is 'value'.
  
  @return A new LRKVCBaseModel object.
  */
