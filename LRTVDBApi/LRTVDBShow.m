@@ -24,8 +24,8 @@
 #import "LRTVDBEpisode.h"
 #import "LRTVDBArtwork.h"
 #import "LRTVDBActor.h"
-#import "NSDate+Additions.h"
-#import "NSString+Additions.h"
+#import "NSDate+LRTVDBAdditions.h"
+#import "NSString+LRTVDBAdditions.h"
 #import "LRTVDBAPIClient.h"
 
 /**

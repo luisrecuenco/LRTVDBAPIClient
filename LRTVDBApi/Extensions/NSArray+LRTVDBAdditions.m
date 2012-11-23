@@ -1,4 +1,4 @@
-//  NSArray+Additions.h
+// NSArray+LRTVDBAdditions.m
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "NSArray+LRTVDBAdditions.h"
 
-@interface NSArray (Additions)
+@implementation NSArray (LRTVDBAdditions)
 
-@property (nonatomic, readonly) id firstObject;
+- (id)firstObject
+{
+    return self.count > 0 ? self[0] : nil;
+}
 
 @end

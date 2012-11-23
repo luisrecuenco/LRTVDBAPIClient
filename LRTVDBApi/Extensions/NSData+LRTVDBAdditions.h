@@ -1,4 +1,4 @@
-//  NSString+Additions.h
+// NSData+LRTVDBAdditions.h
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -22,14 +22,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (Additions)
-
-@property (nonatomic, readonly, getter = isEmpty) BOOL empty;
-@property (nonatomic, readonly) NSDate *dateValue;
+@interface NSData (LRTVDBAdditions)
 
 /**
- Basic HTML unescaping.
+ Converts a XML NSData object to a dictionary.
+ @return A NSDictionary representing the XML NSData.
  */
-- (NSString *)unescapeHTMLEntities;
+- (NSDictionary *)toDictionary;
 
 @end

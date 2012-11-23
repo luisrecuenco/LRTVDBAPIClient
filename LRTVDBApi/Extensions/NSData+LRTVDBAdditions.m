@@ -1,4 +1,4 @@
-//  NSData+Additions.m
+// NSData+LRTVDBAdditions.m
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "NSData+Additions.h"
+#import "NSData+LRTVDBAdditions.h"
 #import "TBXML.h"
 
-@implementation NSData (Additions)
+@implementation NSData (LRTVDBAdditions)
 
 - (NSDictionary *)toDictionary
 {

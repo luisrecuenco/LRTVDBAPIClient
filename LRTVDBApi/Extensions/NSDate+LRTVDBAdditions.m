@@ -1,4 +1,4 @@
-//  NSDate+Additions.h
+// NSDate+LRTVDBAdditions.m
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,14 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "NSDate+LRTVDBAdditions.h"
 
-@interface NSDate (Additions)
+@implementation NSDate (LRTVDBAdditions)
 
-/**
- Removes time information from the NSDate sender.
- @return A new NSDate object removing the time information from the sender.
- */
-- (NSDate *)dateByIgnoringTime;
+- (NSDate *)dateByIgnoringTime
+{
+    static NSCalendar *calendar = nil;
+    static NSInteger secondsFromGMT = 0;
+    static NSCalendarUnit flags = 0;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        calendar = [NSCalendar currentCalendar];
+        secondsFromGMT = [[NSTimeZone localTimeZone] secondsFromGMT];
+        flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
+    });
+    
+    NSDateComponents *components = [calendar components:flags fromDate:self];
+    
+    return [[calendar dateFromComponents:components] dateByAddingTimeInterval:secondsFromGMT];
+}
 
 @end

@@ -1,4 +1,4 @@
-//  NSString+Additions.m
+// NSString+LRTVDBAdditions.m
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,30 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "NSString+Additions.h"
-#import "NSDate+Additions.h"
+#import "NSString+LRTVDBAdditions.h"
 
-@implementation NSString (Additions)
-
-- (BOOL)isEmpty
-{
-    BOOL empty = self.length == 0;
-    
-	if(!empty)
-    {
-		static dispatch_once_t onceToken;
-		static NSCharacterSet *invertedWhitespaceCharacterSet = nil;
-		dispatch_once(&onceToken, ^{
-			invertedWhitespaceCharacterSet = [[NSCharacterSet
-                                               whitespaceAndNewlineCharacterSet]
-                                              invertedSet];
-		});
-        
-		empty = ([self rangeOfCharacterFromSet:invertedWhitespaceCharacterSet].location == NSNotFound);
-	}
-    
-	return empty;
-}
+@implementation NSString (LRTVDBAdditions)
 
 - (NSDate *)dateValue
 {
@@ -54,7 +33,7 @@
         [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     });
     
-    return [[dateFormatter dateFromString:self] dateByIgnoringTime];
+    return [dateFormatter dateFromString:self];
 }
 
 - (NSString *)unescapeHTMLEntities
@@ -66,6 +45,19 @@
     unescapedString = [unescapedString stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
     
     return unescapedString;
+}
+
++ (BOOL)isEmptyString:(NSString *)string
+{
+    BOOL empty = (NSNull *)string == [NSNull null] || string == 0;
+    
+    if (empty == NO)
+    {
+        NSString *trimmedString = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        empty = trimmedString.length == 0;
+    }
+    
+    return empty;
 }
 
 @end

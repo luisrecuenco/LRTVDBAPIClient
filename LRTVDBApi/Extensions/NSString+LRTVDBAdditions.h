@@ -1,4 +1,4 @@
-//  NSDate+Additions.m
+// NSString+LRTVDBAdditions.h
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,26 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "NSDate+Additions.h"
+#import <Foundation/Foundation.h>
 
-@implementation NSDate (Additions)
+@interface NSString (LRTVDBAdditions)
 
-- (NSDate *)dateByIgnoringTime
-{
-    static NSCalendar *calendar = nil;
-    static NSInteger secondsFromGMT = 0;
-    static NSCalendarUnit flags = 0;
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        calendar = [NSCalendar currentCalendar];
-        secondsFromGMT = [[NSTimeZone localTimeZone] secondsFromGMT];
-        flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
-    });
-    
-    NSDateComponents *components = [calendar components:flags fromDate:self];
-    
-    return [[calendar dateFromComponents:components] dateByAddingTimeInterval:secondsFromGMT];
-}
+@property (nonatomic, readonly) NSDate *dateValue;
+
+/**
+ Basic HTML unescaping.
+ */
+- (NSString *)unescapeHTMLEntities;
+
+/**
+ Checks for empty strings.
+ @discussion The reason behind creating a class method with the string
+ to check as an argument instead of a property or an instance method and check
+ for self is that, if self is nil, [string isEmpty] = NO as the method wouldn't
+ be called.
+ */
++ (BOOL)isEmptyString:(NSString *)string;
 
 @end

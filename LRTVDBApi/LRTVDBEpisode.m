@@ -22,7 +22,7 @@
 
 #import "LRTVDBEpisode.h"
 #import "LRTVDBAPIClient.h"
-#import "NSString+Additions.h"
+#import "NSString+LRTVDBAdditions.h"
 
 @interface LRTVDBEpisode ()
 

@@ -1,4 +1,4 @@
-//  NSData+Additions.h
+// NSDate+LRTVDBAdditions.h
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -22,12 +22,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSData (Additions)
+@interface NSDate (LRTVDBAdditions)
 
 /**
- Converts a XML NSData object to a dictionary.
- @return A NSDictionary representing the XML NSData.
+ Removes time information from the NSDate sender.
+ @return A new NSDate object removing the time information from the sender.
  */
-- (NSDictionary *)toDictionary;
+- (NSDate *)dateByIgnoringTime;
 
 @end
