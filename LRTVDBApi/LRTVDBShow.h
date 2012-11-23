@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 /** Relationships */
 
 /** Ordered set of LRTVDBEpisode objects. */
-@property (nonatomic, strong, readonly) NSOrderedSet *episodes;
+@property (nonatomic, copy, readonly) NSOrderedSet *episodes;
 
 @property (nonatomic, strong, readonly) LRTVDBEpisode *lastEpisode;
 @property (nonatomic, strong, readonly) LRTVDBEpisode *nextEpisode;
@@ -101,18 +101,18 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, strong, readonly) NSNumber *numberOfSeasons;
 
 /** Ordered set of LRTVDBArtwork objects. */
-@property (nonatomic, strong, readonly) NSOrderedSet *artworks;
+@property (nonatomic, copy, readonly) NSOrderedSet *artworks;
 
 /**
  @see LRTVDBArtwork class to see an example of the different artwork types.
  */
-@property (nonatomic, strong, readonly) NSArray *fanartArtworks;
-@property (nonatomic, strong, readonly) NSArray *posterArtworks;
-@property (nonatomic, strong, readonly) NSArray *seasonArtworks;
-@property (nonatomic, strong, readonly) NSArray *bannerArtworks;
+@property (nonatomic, copy, readonly) NSOrderedSet *fanartArtworks;
+@property (nonatomic, copy, readonly) NSOrderedSet *posterArtworks;
+@property (nonatomic, copy, readonly) NSOrderedSet *seasonArtworks;
+@property (nonatomic, copy, readonly) NSOrderedSet *bannerArtworks;
 
 /** Ordered set of LRTVDBActor instances. */
-@property (nonatomic, strong, readonly) NSOrderedSet *actors;
+@property (nonatomic, copy, readonly) NSOrderedSet *actors;
 
 /**
  Retrieves the episodes for a specific show season.
@@ -129,9 +129,9 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
  in the corresponding lazy getters without caching anything. Thus,
  [NSDate date] would be different and so would be last and
  next episode. As this values are very common to be shown in tableViews,
- I didn't want to compute them every time while the user is scrolling due to
- performance-wise reasons (even if this time is not that big).
- So, if this values need to be updated/refreshed,  this method clears the cache
+ it's not a good idea to compute them every time while the user is scrolling due 
+ to performance-wise reasons (even if this time is not that big).
+ So, if this values need to be updated/refreshed, this method clears the cache
  and updates them based on the new [NSDate date] value.
  */
 - (void)refreshEpisodesInfomation;
