@@ -250,7 +250,7 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
         
         void (^block)(LRTVDBEpisode *, NSUInteger, BOOL *) = ^(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop)
         {
-            NSDate *toDate = episode.airedDate;
+            NSDate *toDate = [episode.airedDate dateByIgnoringTime];
             
             if ([toDate compare:fromDate] == NSOrderedAscending)
             {
@@ -309,7 +309,7 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
     
     // Timezones are really difficult to deal with. Ignoring time...
     NSDate *fromDate = [[NSDate date] dateByIgnoringTime];
-    NSDate *toDate = episode.airedDate;
+    NSDate *toDate = [episode.airedDate dateByIgnoringTime];
     
     NSDateComponents *components = [calendar components:NSDayCalendarUnit
                                                fromDate:fromDate
