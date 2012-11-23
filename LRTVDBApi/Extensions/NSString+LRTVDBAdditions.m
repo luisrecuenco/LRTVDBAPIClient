@@ -68,7 +68,7 @@
 
 + (BOOL)isEmptyString:(NSString *)string
 {
-    BOOL empty = (NSNull *)string == [NSNull null] || string == 0;
+    BOOL empty = ((NSNull *)string == [NSNull null]) || (string == nil);
     
     if (empty == NO)
     {
