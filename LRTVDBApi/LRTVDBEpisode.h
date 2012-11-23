@@ -46,13 +46,8 @@
 @property (nonatomic, copy, readonly) NSString *language;
 @property (nonatomic, copy, readonly) NSString *showID;
 
-/** Writer 1|Writer 2... */
-@property (nonatomic, copy, readonly) NSString *writers;
-
-/** Director 1|Director 2... */
-@property (nonatomic, copy, readonly) NSString *directors;
-
-/** Guest Star 1|Guest Star 2...| */
-@property (nonatomic, copy, readonly) NSString *guestStars;
+@property (nonatomic, copy, readonly) NSOrderedSet *writers;
+@property (nonatomic, copy, readonly) NSOrderedSet *directors;
+@property (nonatomic, copy, readonly) NSOrderedSet *guestStars;
 
 @end

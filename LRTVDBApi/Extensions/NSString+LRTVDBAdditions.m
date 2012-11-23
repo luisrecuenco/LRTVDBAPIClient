@@ -47,6 +47,25 @@
     return unescapedString;
 }
 
+- (NSArray *)pipedStringToArray
+{
+    static NSString *const kSeparator = @"|";
+    
+    NSString *copiedSelf = [self copy];
+    
+    if ([copiedSelf hasPrefix:kSeparator])
+    {
+        copiedSelf = [copiedSelf substringFromIndex:1];
+    }
+    
+    if ([copiedSelf hasSuffix:kSeparator])
+    {
+        copiedSelf = [copiedSelf substringToIndex:copiedSelf.length - 1];
+    }
+    
+    return [copiedSelf componentsSeparatedByString:kSeparator];
+}
+
 + (BOOL)isEmptyString:(NSString *)string
 {
     BOOL empty = (NSNull *)string == [NSNull null] || string == 0;

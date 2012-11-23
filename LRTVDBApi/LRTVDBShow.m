@@ -99,8 +99,6 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 @property (nonatomic, copy) NSString *airDay;
 @property (nonatomic, copy) NSString *airTime;
 @property (nonatomic, copy) NSString *contentRating;
-@property (nonatomic, copy) NSString *genres;
-@property (nonatomic, copy) NSString *actorsNames;
 @property (nonatomic, copy) NSString *network;
 @property (nonatomic, copy) NSString *runtime;
 @property (nonatomic, strong) NSDate *premiereDate;
@@ -111,6 +109,13 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 @property (nonatomic, strong) NSNumber *ratingCount;
 @property (nonatomic) LRTVDBShowStatus showStatus;
 @property (nonatomic) LRTVDBShowBasicStatus showBasicStatus;
+
+/**
+ Making the following containers NSOrderedSet instead of simple NSArray
+ has the only advantage of removing duplicates TVDB API may send.
+ */
+@property (nonatomic, copy) NSOrderedSet *genres;
+@property (nonatomic, copy) NSOrderedSet *actorsNames;
 
 @property (nonatomic, copy) NSOrderedSet *episodes;
 @property (nonatomic, strong) LRTVDBEpisode *lastEpisode;
@@ -140,6 +145,9 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 @property (nonatomic, strong) NSMutableOrderedSet *mutableActors;
 
 @property (nonatomic, strong) NSMutableDictionary *seasonToEpisodesDictionary;
+
+@property (nonatomic, copy) NSString *genresList; /** |Genre 1|Genre 2|... */
+@property (nonatomic, copy) NSString *actorsNamesList; /** |Actor 1|Actor 2|... */
 
 @end
 
@@ -191,6 +199,18 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 {
     _ratingCountString = ratingCountString;
     self.ratingCount = @(_ratingCountString.integerValue);
+}
+
+- (void)setGenresList:(NSString *)genresList
+{
+    _genresList = genresList;
+    self.genres = [NSOrderedSet orderedSetWithArray:[_genresList pipedStringToArray]];
+}
+
+- (void)setActorsNamesList:(NSString *)actorsNamesList
+{
+    _actorsNamesList = actorsNamesList;
+    self.actorsNames = [NSOrderedSet orderedSetWithArray:[_actorsNamesList pipedStringToArray]];
 }
 
 - (void)setShowStatusString:(NSString *)showStatusString
@@ -418,8 +438,8 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
     self.airDay = updatedShow.airDay;
     self.airTime = updatedShow.airTime;
     self.contentRating = updatedShow.contentRating;
-    self.genres = updatedShow.genres;
-    self.actorsNames = updatedShow.actorsNames;
+    self.genresList = updatedShow.genresList;
+    self.actorsNamesList = updatedShow.actorsNamesList;
     self.network = updatedShow.network;
     self.runtime = updatedShow.runtime;
     self.showStatusString = updatedShow.showStatusString;
@@ -453,8 +473,8 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
               @"Airs_DayOfWeek" : @"airDay",
               @"Airs_Time" : @"airTime",
               @"ContentRating" : @"contentRating",
-              @"Genre" : @"genres",
-              @"Actors" : @"actorsNames",
+              @"Genre" : @"genresList",
+              @"Actors" : @"actorsNamesList",
               @"Network" : @"network",
               @"Runtime" : @"runtime",
               @"Status" : @"showStatusString",
@@ -479,7 +499,7 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"\nID: %@\nName: %@\nOverview: %@\n", self.showID, self.name, self.overview];
+    return [NSString stringWithFormat:@"\nID: %@\nName: %@\nOverview: %@\n", self.showID, self.name, self.overview];
 }
 
 @end

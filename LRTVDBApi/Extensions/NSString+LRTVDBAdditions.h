@@ -32,6 +32,11 @@
 - (NSString *)unescapeHTMLEntities;
 
 /**
+ Turn a NSString similar to |Foo|Bar|...| into @[@"Foo", @"Bar",...].
+ */
+- (NSArray *)pipedStringToArray;
+
+/**
  Checks for empty strings.
  @discussion The reason behind creating a class method with the string
  to check as an argument instead of a property or an instance method and check

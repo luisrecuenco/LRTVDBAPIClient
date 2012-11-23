@@ -68,8 +68,15 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, copy, readonly) NSString *airDay; /** Monday, Tuesday... */
 @property (nonatomic, copy, readonly) NSString *airTime; /** 9:00 PM */
 @property (nonatomic, copy, readonly) NSString *contentRating; /** TV-14 */
-@property (nonatomic, copy, readonly) NSString *genres; /** |Genre 1|Genre 2|... */
-@property (nonatomic, copy, readonly) NSString *actorsNames; /** |Actor 1|Actor 2|... */
+@property (nonatomic, copy, readonly) NSOrderedSet *genres;
+
+/** Ordered set of actors names.
+ @discussion This property only contains the actors names (NSString *).
+ If looking for the same container with LRTVDBActor instances, see
+ actors property below.
+ */
+@property (nonatomic, copy, readonly) NSOrderedSet *actorsNames;
+
 @property (nonatomic, copy, readonly) NSString *network; /** ABC, HBO... */
 @property (nonatomic, strong, readonly) NSNumber *rating;
 @property (nonatomic, strong, readonly) NSNumber *ratingCount;

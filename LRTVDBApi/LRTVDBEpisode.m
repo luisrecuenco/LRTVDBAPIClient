@@ -30,9 +30,14 @@
 @property (nonatomic, copy) NSString *imdbID;
 @property (nonatomic, copy) NSString *language;
 @property (nonatomic, copy) NSString *showID;
-@property (nonatomic, copy) NSString *writers;
-@property (nonatomic, copy) NSString *directors;
-@property (nonatomic, copy) NSString *guestStars;
+
+/**
+ Making the following containers NSOrderedSet instead of simple NSArray
+ has the only advantage of removing duplicates TVDB API may send.
+ */
+@property (nonatomic, copy) NSOrderedSet *writers;
+@property (nonatomic, copy) NSOrderedSet *directors;
+@property (nonatomic, copy) NSOrderedSet *guestStars;
 
 @property (nonatomic, strong) NSNumber *episodeNumber;
 @property (nonatomic, strong) NSNumber *seasonNumber;
@@ -47,6 +52,15 @@
 @property (nonatomic, copy) NSString *ratingCountString;
 @property (nonatomic, copy) NSString *airedDateString;
 @property (nonatomic, copy) NSString *artworkURLString;
+
+/** Writer 1|Writer 2... */
+@property (nonatomic, copy) NSString *writersList;
+
+/** Director 1|Director 2... */
+@property (nonatomic, copy) NSString *directorsList;
+
+/** Guest Star 1|Guest Star 2... */
+@property (nonatomic, copy) NSString *guestStarsList;
 
 @end
 
@@ -100,6 +114,24 @@
     self.artworkURL = LRTVDBArtworkURLForPath(_artworkURLString);
 }
 
+- (void)setWritersList:(NSString *)writersList
+{
+    _writersList = writersList;
+    self.writers = [NSOrderedSet orderedSetWithArray:[_writersList pipedStringToArray]];
+}
+
+- (void)setDirectorsList:(NSString *)directorsList
+{
+    _directorsList = directorsList;
+    self.directors = [NSOrderedSet orderedSetWithArray:[_directorsList pipedStringToArray]];
+}
+
+- (void)setGuestStarsList:(NSString *)guestStarsList
+{
+    _guestStarsList = guestStarsList;
+    self.guestStars = [NSOrderedSet orderedSetWithArray:[_guestStarsList pipedStringToArray]];
+}
+
 #pragma mark - Update episode
 
 - (void)updateWithEpisode:(LRTVDBEpisode *)updatedEpisode;
@@ -118,9 +150,9 @@
     self.imdbID = updatedEpisode.imdbID;
     self.language = updatedEpisode.language;
     self.showID = updatedEpisode.showID;
-    self.writers = updatedEpisode.writers;
-    self.directors = updatedEpisode.directors;
-    self.guestStars = updatedEpisode.guestStars;
+    self.writersList = updatedEpisode.writersList;
+    self.directorsList = updatedEpisode.directorsList;
+    self.guestStarsList = updatedEpisode.guestStarsList;
 }
 
 #pragma mark - LRKVCBaseModelProtocol
@@ -139,9 +171,9 @@
               @"IMDB_ID" : @"imdbID",
               @"Language" : @"language",
               @"seriesid" : @"showID",
-              @"Writer" : @"writers",
-              @"Director" : @"directors",
-              @"GuestStars" : @"guestStars"
+              @"Writer" : @"writersList",
+              @"Director" : @"directorsList",
+              @"GuestStars" : @"guestStarsList"
             };
 }
 
@@ -161,7 +193,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"Title: %@\nSeason number: %@\nEpisode number: %@\nRating: %@\nOverview: %@\n", self.title, self.seasonNumber, self.episodeNumber, self.rating, self.overview];
+    return [NSString stringWithFormat:@"Title: %@\nSeason number: %@\nEpisode number: %@\nRating: %@\nOverview: %@\n", self.title, self.seasonNumber, self.episodeNumber, self.rating, self.overview];
 }
 
 @end
