@@ -320,6 +320,8 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 
 - (NSArray *)episodesForSeason:(NSNumber *)seasonNumber
 {
+    if (seasonNumber < 0) return @[];
+
     if (self.seasonToEpisodesDictionary == nil)
     {
         self.seasonToEpisodesDictionary = [@{} mutableCopy];
