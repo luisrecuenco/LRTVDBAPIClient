@@ -36,7 +36,7 @@
     if (!error && root)
     {
         dictionary = [self dictionaryWithTBXMLElement:tbxml.rootXMLElement];
-    };
+    }
     
     return dictionary;
 }
@@ -45,7 +45,7 @@
 
 - (NSMutableDictionary*)dictionaryWithTBXMLElement:(TBXMLElement *)element
 {
-    NSMutableDictionary* dictionary = [@{} mutableCopy];
+    NSMutableDictionary *dictionary = [@{} mutableCopy];
     
     do
     {
