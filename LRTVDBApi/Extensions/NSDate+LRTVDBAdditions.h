@@ -25,8 +25,8 @@
 @interface NSDate (LRTVDBAdditions)
 
 /**
- Removes time information from the NSDate sender.
- @return A new NSDate object removing the time information from the sender.
+ Removes time information from the NSDate object receiver.
+ @return A new NSDate object removing the time information from the receiver.
  */
 - (NSDate *)dateByIgnoringTime;
 

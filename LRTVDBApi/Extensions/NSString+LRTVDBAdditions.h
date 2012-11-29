@@ -28,20 +28,24 @@
 
 /**
  Basic HTML unescaping.
+ @return A new NSString after unescaping the HTML entities.
  */
 - (NSString *)unescapeHTMLEntities;
 
 /**
- Turn a NSString similar to |Foo|Bar|...| into @[@"Foo", @"Bar",...].
+ Turn a NSString similar to |Foo|Bar|...| into something like @[@"Foo", @"Bar",...].
+ @return A new NSArray with the aforementioned transform.
  */
 - (NSArray *)pipedStringToArray;
 
 /**
- Checks for empty strings.
+ Check for empty string.
+ @param string The NSString to be checked.
  @discussion The reason behind creating a class method with the string
  to check as an argument instead of a property or an instance method and check
  for self is that, if self is nil, [string isEmpty] = NO as the method wouldn't
  be called.
+ @return YES if the receiver is empty, NO otherwise.
  */
 + (BOOL)isEmptyString:(NSString *)string;
 

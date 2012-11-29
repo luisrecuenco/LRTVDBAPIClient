@@ -26,7 +26,7 @@
 
 /**
  Converts a XML NSData object to a dictionary.
- @return A NSDictionary representing the XML NSData.
+ @return A new NSDictionary representing the XML NSData.
  */
 - (NSDictionary *)toDictionary;
 
