@@ -31,20 +31,15 @@
     TBXML *tbxml = [TBXML newTBXMLWithXMLData:self error:&error];
     TBXMLElement *root = tbxml.rootXMLElement;
     
-    NSDictionary *dictionary = nil;
-    
-    if (!error && root)
-    {
-        dictionary = [self dictionaryWithTBXMLElement:tbxml.rootXMLElement];
-    }
-    
-    return dictionary;
+    return error ? nil : [self dictionaryWithTBXMLElement:root];
 }
 
 #pragma mark - Private
 
 - (NSMutableDictionary*)dictionaryWithTBXMLElement:(TBXMLElement *)element
 {
+    if (!element) return nil;
+    
     NSMutableDictionary *dictionary = [@{} mutableCopy];
     
     do
