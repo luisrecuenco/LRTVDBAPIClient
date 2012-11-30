@@ -23,6 +23,14 @@
 #import "LRTVDBActor.h"
 #import "LRTVDBAPIClient.h"
 
+/**
+ Actor comparison block.
+ */
+NSComparisonResult (^LRTVDBActorComparisonBlock)(LRTVDBActor *, LRTVDBActor*) = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
+{
+    return !secondActor.sortOrder ? NSOrderedSame : [firstActor.sortOrder compare:secondActor.sortOrder];
+};
+
 @interface LRTVDBActor ()
 
 @property (nonatomic, strong) NSURL *artworkURL;
@@ -71,6 +79,11 @@
 - (NSUInteger)hash
 {
     return [self.actorID hash];
+}
+
+- (NSComparisonResult)compare:(id)object
+{
+    return LRTVDBActorComparisonBlock(self, object);
 }
 
 #pragma mark - Description

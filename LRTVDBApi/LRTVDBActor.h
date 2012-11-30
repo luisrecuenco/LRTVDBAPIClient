@@ -22,6 +22,8 @@
 
 #import "LRKVCBaseModel.h"
 
+extern NSComparisonResult (^LRTVDBActorComparisonBlock)(id, id);
+
 @interface LRTVDBActor : LRKVCBaseModel
 
 @property (nonatomic, copy, readonly) NSString *actorID;

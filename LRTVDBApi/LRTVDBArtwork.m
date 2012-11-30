@@ -23,6 +23,29 @@
 #import "LRTVDBArtwork.h"
 #import "LRTVDBAPIClient.h"
 
+/**
+ Artwork comparison block.
+ */
+NSComparisonResult (^LRTVDBArtworkComparisonBlock)(LRTVDBArtwork *, LRTVDBArtwork *) = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
+{
+    NSComparisonResult typeComparison = [@(firstArtwork.artworkType) compare:@(secondArtwork.artworkType)];
+    NSComparisonResult ratingComparison = !firstArtwork.rating ? NSOrderedSame : [secondArtwork.rating compare:firstArtwork.rating];
+    NSComparisonResult ratingCountComparison = !firstArtwork.ratingCount ? NSOrderedSame : [secondArtwork.ratingCount compare:firstArtwork.ratingCount];
+    
+    if (typeComparison != NSOrderedSame)
+    {
+        return typeComparison;
+    }
+    else if (ratingComparison != NSOrderedSame)
+    {
+        return ratingComparison;
+    }
+    else
+    {
+        return ratingCountComparison;
+    }
+};
+
 static NSString *const kLRTVDBArtworkTypeFanartKey = @"fanart";
 static NSString *const kLRTVDBArtworkTypePosterKey = @"poster";
 static NSString *const kLRTVDBArtworkTypeSeasonKey = @"season";
@@ -120,6 +143,11 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 - (NSUInteger)hash
 {
     return [self.artworkURL hash];
+}
+
+- (NSComparisonResult)compare:(id)object
+{
+    return LRTVDBArtworkComparisonBlock(self, object);
 }
 
 #pragma mark - Description

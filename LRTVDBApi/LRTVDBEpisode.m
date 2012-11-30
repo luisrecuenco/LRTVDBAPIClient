@@ -23,6 +23,21 @@
 #import "LRTVDBEpisode.h"
 #import "LRTVDBAPIClient.h"
 #import "NSString+LRTVDBAdditions.h"
+#import "NSArray+LRTVDBAdditions.h"
+
+/**
+ Episode comparison block.
+ */
+NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisode *) = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
+{
+    // It'd be easier to compare using LRTVDBEpisode airedDate property but
+    // episodes that are yet to be aired are more likely to have season and
+    // episode numbers rather than aired date...
+    NSComparisonResult seasonNumberComparison = !secondEpisode.seasonNumber ? NSOrderedSame : [firstEpisode.seasonNumber compare:secondEpisode.seasonNumber];
+    NSComparisonResult episodeNumberComparison = !secondEpisode.episodeNumber ?NSOrderedSame : [firstEpisode.episodeNumber compare:secondEpisode.episodeNumber];
+    
+    return seasonNumberComparison != NSOrderedSame ? seasonNumberComparison : episodeNumberComparison;
+};
 
 @interface LRTVDBEpisode ()
 
@@ -35,9 +50,9 @@
  Making the following containers NSOrderedSet instead of simple NSArray
  has the only advantage of removing duplicates TVDB API may send.
  */
-@property (nonatomic, copy) NSOrderedSet *writers;
-@property (nonatomic, copy) NSOrderedSet *directors;
-@property (nonatomic, copy) NSOrderedSet *guestStars;
+@property (nonatomic, copy) NSArray *writers;
+@property (nonatomic, copy) NSArray *directors;
+@property (nonatomic, copy) NSArray *guestStars;
 
 @property (nonatomic, strong) NSNumber *episodeNumber;
 @property (nonatomic, strong) NSNumber *seasonNumber;
@@ -117,19 +132,19 @@
 - (void)setWritersList:(NSString *)writersList
 {
     _writersList = writersList;
-    self.writers = [NSOrderedSet orderedSetWithArray:[_writersList pipedStringToArray]];
+    self.writers = [[_writersList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setDirectorsList:(NSString *)directorsList
 {
     _directorsList = directorsList;
-    self.directors = [NSOrderedSet orderedSetWithArray:[_directorsList pipedStringToArray]];
+    self.directors = [[_directorsList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setGuestStarsList:(NSString *)guestStarsList
 {
     _guestStarsList = guestStarsList;
-    self.guestStars = [NSOrderedSet orderedSetWithArray:[_guestStarsList pipedStringToArray]];
+    self.guestStars = [[_guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 #pragma mark - Update episode
@@ -187,6 +202,11 @@
 - (NSUInteger)hash
 {
     return [self.episodeID hash];
+}
+
+- (NSComparisonResult)compare:(id)object
+{
+    return LRTVDBEpisodeComparisonBlock(self, object);
 }
 
 #pragma mark - Description

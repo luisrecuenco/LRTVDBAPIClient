@@ -22,6 +22,8 @@
 
 #import "LRKVCBaseModel.h"
 
+extern NSComparisonResult (^LRTVDBArtworkComparisonBlock)(id, id);
+
 typedef NS_ENUM(NSInteger, LRTVDBArtworkType)
 {
     LRTVDBArtworkTypeUnknown,

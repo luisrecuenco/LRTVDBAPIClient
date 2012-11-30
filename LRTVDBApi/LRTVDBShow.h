@@ -22,6 +22,8 @@
 
 #import "LRKVCBaseModel.h"
 
+extern NSComparisonResult (^LRTVDBShowComparisonBlock)(id, id);
+
 typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 {
     LRTVDBShowStatusUnknown,
@@ -68,19 +70,19 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, copy, readonly) NSString *airDay; /** Monday, Tuesday... */
 @property (nonatomic, copy, readonly) NSString *airTime; /** 9:00 PM */
 @property (nonatomic, copy, readonly) NSString *contentRating; /** TV-14 */
-@property (nonatomic, copy, readonly) NSOrderedSet *genres;
+@property (nonatomic, copy, readonly) NSArray *genres;
 
-/** Ordered set of actors names.
+/** Array of actors names.
  @discussion This property only contains the actors names (NSString *).
- If looking for the same container with LRTVDBActor instances, see
+ For the more useful array with LRTVDBActor instances, see
  actors property below.
  */
-@property (nonatomic, copy, readonly) NSOrderedSet *actorsNames;
+@property (nonatomic, copy, readonly) NSArray *actorsNames;
 
 @property (nonatomic, copy, readonly) NSString *network; /** ABC, HBO... */
+@property (nonatomic, copy, readonly) NSString *runtime;
 @property (nonatomic, strong, readonly) NSNumber *rating;
 @property (nonatomic, strong, readonly) NSNumber *ratingCount;
-@property (nonatomic, copy, readonly) NSString *runtime;
 
 /**
  Example: http:/www.thetvdb.com/banners/posters/82066-53.jpg
@@ -99,8 +101,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 /** Relationships */
 
-/** Ordered set of LRTVDBEpisode objects. */
-@property (nonatomic, copy, readonly) NSOrderedSet *episodes;
+@property (nonatomic, copy, readonly) NSArray *episodes;
 
 @property (nonatomic, strong, readonly) LRTVDBEpisode *lastEpisode;
 @property (nonatomic, strong, readonly) LRTVDBEpisode *nextEpisode;
@@ -108,18 +109,18 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, strong, readonly) NSNumber *numberOfSeasons;
 
 /** Ordered set of LRTVDBArtwork objects. */
-@property (nonatomic, copy, readonly) NSOrderedSet *artworks;
+@property (nonatomic, copy, readonly) NSArray *artworks;
 
 /**
  @see LRTVDBArtwork class to see an example of the different artwork types.
  */
-@property (nonatomic, copy, readonly) NSOrderedSet *fanartArtworks;
-@property (nonatomic, copy, readonly) NSOrderedSet *posterArtworks;
-@property (nonatomic, copy, readonly) NSOrderedSet *seasonArtworks;
-@property (nonatomic, copy, readonly) NSOrderedSet *bannerArtworks;
+@property (nonatomic, copy, readonly) NSArray *fanartArtworks;
+@property (nonatomic, copy, readonly) NSArray *posterArtworks;
+@property (nonatomic, copy, readonly) NSArray *seasonArtworks;
+@property (nonatomic, copy, readonly) NSArray *bannerArtworks;
 
-/** Ordered set of LRTVDBActor instances. */
-@property (nonatomic, copy, readonly) NSOrderedSet *actors;
+/** Array of LRTVDBActor instances. */
+@property (nonatomic, copy, readonly) NSArray *actors;
 
 /**
  Retrieves the episodes for a specific show season.

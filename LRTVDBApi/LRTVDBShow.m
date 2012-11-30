@@ -27,6 +27,30 @@
 #import "NSDate+LRTVDBAdditions.h"
 #import "NSString+LRTVDBAdditions.h"
 #import "LRTVDBAPIClient.h"
+#import "NSArray+LRTVDBAdditions.h"
+
+/**
+ Show comparison block.
+ */
+NSComparisonResult (^LRTVDBShowComparisonBlock)(LRTVDBShow *, LRTVDBShow *) = ^NSComparisonResult(LRTVDBShow *firstShow, LRTVDBShow *secondShow)
+{
+    NSComparisonResult daysComparison = !secondShow.daysToNextEpisode ? NSOrderedSame : [firstShow.daysToNextEpisode compare:secondShow.daysToNextEpisode];
+    NSComparisonResult statusComparison = [@(firstShow.showStatus) compare:@(secondShow.showStatus)];
+    NSComparisonResult nameComparison = !secondShow.name ? NSOrderedSame : [firstShow.name compare:secondShow.name options:NSCaseInsensitiveSearch];
+        
+    if (daysComparison != NSOrderedSame)
+    {
+        return daysComparison;
+    }
+    else if (statusComparison != NSOrderedSame)
+    {
+        return statusComparison;
+    }
+    else
+    {
+        return nameComparison;
+    }
+};
 
 /**
  Status XML dictionary keys.
@@ -42,51 +66,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     LRTVDBShowBasicStatusUnknown,
     LRTVDBShowBasicStatusContinuing,
     LRTVDBShowBasicStatusEnded,
-};
-
-/**
- Episodes comparison block.
- */
-static NSComparisonResult (^episodesComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisode *) = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
-{
-    // It'd be easier to compare using LRTVDBEpisode airedDate property but
-    // episodes that are yet to be aired are more likely to have season and
-    // episode numbers rather than aired date...
-    NSComparisonResult seasonNumberComparison = [firstEpisode.seasonNumber compare:secondEpisode.seasonNumber];
-    NSComparisonResult episodeNumberComparison = [firstEpisode.episodeNumber compare:secondEpisode.episodeNumber];
-    
-    return seasonNumberComparison != NSOrderedSame ? seasonNumberComparison : episodeNumberComparison;
-};
-
-/**
- Artwork comparison block.
- */
-static NSComparisonResult (^artworkComparisonBlock)(LRTVDBArtwork *, LRTVDBArtwork *) = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
-{
-    NSComparisonResult typeComparison = [@(firstArtwork.artworkType) compare:@(secondArtwork.artworkType)];
-    NSComparisonResult ratingComparison = [secondArtwork.rating compare:firstArtwork.rating];
-    NSComparisonResult ratingCountComparison = [secondArtwork.ratingCount compare:firstArtwork.ratingCount];
-    
-    if (typeComparison != NSOrderedSame)
-    {
-        return typeComparison;
-    }
-    else if (ratingComparison != NSOrderedSame)
-    {
-        return ratingComparison;
-    }
-    else
-    {
-        return ratingCountComparison;
-    }
-};
-
-/**
- Actors comparison block.
- */
-static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
-{
-    return [firstActor.sortOrder compare:secondActor.sortOrder];
 };
 
 @interface LRTVDBShow ()
@@ -110,26 +89,22 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 @property (nonatomic) LRTVDBShowStatus showStatus;
 @property (nonatomic) LRTVDBShowBasicStatus showBasicStatus;
 
-/**
- Making the following containers NSOrderedSet instead of simple NSArray
- has the only advantage of removing duplicates TVDB API may send.
- */
-@property (nonatomic, copy) NSOrderedSet *genres;
-@property (nonatomic, copy) NSOrderedSet *actorsNames;
+@property (nonatomic, copy) NSArray *genres;
+@property (nonatomic, copy) NSArray *actorsNames;
 
-@property (nonatomic, copy) NSOrderedSet *episodes;
+@property (nonatomic, copy) NSArray *episodes;
 @property (nonatomic, strong) LRTVDBEpisode *lastEpisode;
 @property (nonatomic, strong) LRTVDBEpisode *nextEpisode;
 @property (nonatomic, strong) NSNumber *daysToNextEpisode;
 @property (nonatomic, strong) NSNumber *numberOfSeasons;
 
-@property (nonatomic, copy) NSOrderedSet *artworks;
-@property (nonatomic, copy) NSOrderedSet *fanartArtworks;
-@property (nonatomic, copy) NSOrderedSet *posterArtworks;
-@property (nonatomic, copy) NSOrderedSet *seasonArtworks;
-@property (nonatomic, copy) NSOrderedSet *bannerArtworks;
+@property (nonatomic, copy) NSArray *artworks;
+@property (nonatomic, copy) NSArray *fanartArtworks;
+@property (nonatomic, copy) NSArray *posterArtworks;
+@property (nonatomic, copy) NSArray *seasonArtworks;
+@property (nonatomic, copy) NSArray *bannerArtworks;
 
-@property (nonatomic, copy) NSOrderedSet *actors;
+@property (nonatomic, copy) NSArray *actors;
 
 @property (nonatomic, copy) NSString *bannerURLString;
 @property (nonatomic, copy) NSString *posterURLString;
@@ -139,10 +114,6 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 @property (nonatomic, copy) NSString *ratingCountString;
 @property (nonatomic, copy) NSString *showStatusString;
 @property (nonatomic, copy) NSString *premiereDateString;
-
-@property (nonatomic, strong) NSMutableOrderedSet *mutableEpisodes;
-@property (nonatomic, strong) NSMutableOrderedSet *mutableArtworks;
-@property (nonatomic, strong) NSMutableOrderedSet *mutableActors;
 
 @property (nonatomic, strong) NSMutableDictionary *seasonToEpisodesDictionary;
 
@@ -204,13 +175,13 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 - (void)setGenresList:(NSString *)genresList
 {
     _genresList = genresList;
-    self.genres = [NSOrderedSet orderedSetWithArray:[_genresList pipedStringToArray]];
+    self.genres = [[_genresList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setActorsNamesList:(NSString *)actorsNamesList
 {
     _actorsNamesList = actorsNamesList;
-    self.actorsNames = [NSOrderedSet orderedSetWithArray:[_actorsNamesList pipedStringToArray]];
+    self.actorsNames = [[_actorsNamesList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setShowStatusString:(NSString *)showStatusString
@@ -233,17 +204,11 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 
 #pragma mark - Episodes handling
 
-- (void)addEpisodes:(NSOrderedSet *)episodes
+- (void)addEpisodes:(NSArray *)episodes
 {
-    if (episodes.count == 0) return;
-    
-    // Assumption: episodes are newer than the ones we may already have.
-    NSMutableOrderedSet *updatedEpisodes = [episodes mutableCopy];
-    [updatedEpisodes unionOrderedSet:self.episodes];
-    [updatedEpisodes sortUsingComparator:episodesComparisonBlock];
-    
-    self.mutableEpisodes = updatedEpisodes;
-    self.episodes = self.mutableEpisodes; // immutable via copy
+    self.episodes = [self mergeObjects:episodes
+                           withObjects:self.episodes
+                       comparisonBlock:LRTVDBEpisodeComparisonBlock];
     
     [self refreshEpisodesInfomation];
 }
@@ -360,17 +325,11 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 
 #pragma mark - Artwork handling
 
-- (void)addArtworks:(NSOrderedSet *)artworks
-{
-    if (artworks.count == 0) return;
-    
-    // Assumption: artworks are newer than the ones we may already have.
-    NSMutableOrderedSet *updatedArtworks = [artworks mutableCopy];
-    [updatedArtworks unionOrderedSet:self.artworks];
-    [updatedArtworks sortUsingComparator:artworkComparisonBlock];
-    
-    self.mutableArtworks = updatedArtworks;
-    self.artworks = self.mutableArtworks; // immutable via copy
+- (void)addArtworks:(NSArray *)artworks
+{    
+    self.artworks = [self mergeObjects:artworks
+                           withObjects:self.artworks
+                       comparisonBlock:LRTVDBArtworkComparisonBlock];
     
     [self computeArtworkInfomation];
 }
@@ -403,25 +362,19 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
         }
     }
     
-    self.fanartArtworks = [NSOrderedSet orderedSetWithArray:fanartArray];
-    self.posterArtworks = [NSOrderedSet orderedSetWithArray:posterArray];
-    self.seasonArtworks = [NSOrderedSet orderedSetWithArray:seasonArray];
-    self.bannerArtworks = [NSOrderedSet orderedSetWithArray:bannerArray];
+    self.fanartArtworks = fanartArray;
+    self.posterArtworks = posterArray;
+    self.seasonArtworks = seasonArray;
+    self.bannerArtworks = bannerArray;
 }
 
 #pragma mark - Actors handling
 
-- (void)addActors:(NSOrderedSet *)actors
+- (void)addActors:(NSArray *)actors
 {
-    if (actors.count == 0) return;
-        
-    // Assumption: actors are newer than the ones we may already have.
-    NSMutableOrderedSet *updatedActors = [actors mutableCopy];
-    [updatedActors unionOrderedSet:self.actors];
-    [updatedActors sortUsingComparator:actorsComparisonBlock];
-    
-    self.mutableActors = updatedActors;
-    self.actors = self.mutableActors; // immutable via copy
+    self.actors = [self mergeObjects:actors
+                         withObjects:self.actors
+                     comparisonBlock:LRTVDBActorComparisonBlock];
 }
 
 #pragma mark - Update show
@@ -454,6 +407,49 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
     [self addEpisodes:updatedShow.episodes];
     [self addArtworks:updatedShow.artworks];
     [self addActors:updatedShow.actors];
+}
+
+#pragma mark - Private
+
+/**
+ @remarks This method could have been easily implemented using
+ NSSet's methods, but binary search performs much faster.
+ */
+- (NSArray *)mergeObjects:(NSArray *)newObjects
+              withObjects:(NSArray *)oldObjects
+          comparisonBlock:(NSComparisonResult (^) (id, id))comparisonBlock
+{
+    NSArray *mergedObjects = nil;
+    
+    if (newObjects.count == 0)
+    {
+        mergedObjects = [[oldObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparisonBlock];
+    }
+    else if (oldObjects.count == 0)
+    {
+        mergedObjects = [[newObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparisonBlock];
+    }
+    else
+    {
+        NSMutableArray *mutableOldObjects = [oldObjects mutableCopy];
+        [mutableOldObjects removeObjectsInArray:newObjects];
+        
+        for (id newObject in newObjects)
+        {
+            NSUInteger newIndexToInsertNewObject = [mutableOldObjects indexOfObject:newObject
+                                                                      inSortedRange:NSMakeRange(0, mutableOldObjects.count)
+                                                                            options:NSBinarySearchingInsertionIndex
+                                                                    usingComparator:comparisonBlock];
+            if (newIndexToInsertNewObject != NSNotFound)
+            {
+                [mutableOldObjects insertObject:newObject atIndex:newIndexToInsertNewObject];
+            }
+        }
+        
+        mergedObjects = [mutableOldObjects arrayByRemovingDuplicates];
+    }
+    
+    return mergedObjects;
 }
 
 #pragma mark - LRKVCBaseModelProtocol
@@ -493,6 +489,11 @@ static NSComparisonResult (^actorsComparisonBlock)(LRTVDBActor *, LRTVDBActor*) 
 - (NSUInteger)hash
 {
     return [self.showID hash];
+}
+
+- (NSComparisonResult)compare:(id)object
+{
+    return LRTVDBShowComparisonBlock(self, object);
 }
 
 #pragma mark - Description

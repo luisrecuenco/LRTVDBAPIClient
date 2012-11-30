@@ -27,9 +27,9 @@
 /**
  Methods to manage relationships.
  */
-- (void)addEpisodes:(NSOrderedSet *)episodes;
-- (void)addArtworks:(NSOrderedSet *)artworks;
-- (void)addActors:(NSOrderedSet *)actors;
+- (void)addEpisodes:(NSArray *)episodes;
+- (void)addArtworks:(NSArray *)artworks;
+- (void)addActors:(NSArray *)actors;
 
 /**
  Updates a show.

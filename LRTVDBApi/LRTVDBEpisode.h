@@ -22,6 +22,8 @@
 
 #import "LRKVCBaseModel.h"
 
+extern NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(id, id);
+
 @interface LRTVDBEpisode : LRKVCBaseModel
 
 @property (nonatomic, copy, readonly) NSString *episodeID;
@@ -46,8 +48,8 @@
 @property (nonatomic, copy, readonly) NSString *language;
 @property (nonatomic, copy, readonly) NSString *showID;
 
-@property (nonatomic, copy, readonly) NSOrderedSet *writers;
-@property (nonatomic, copy, readonly) NSOrderedSet *directors;
-@property (nonatomic, copy, readonly) NSOrderedSet *guestStars;
+@property (nonatomic, copy, readonly) NSArray *writers;
+@property (nonatomic, copy, readonly) NSArray *directors;
+@property (nonatomic, copy, readonly) NSArray *guestStars;
 
 @end
