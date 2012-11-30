@@ -299,7 +299,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (NSArray *)episodesForSeason:(NSNumber *)seasonNumber
 {
-    if (seasonNumber < 0) return @[];
+    if (self.episodes == nil || seasonNumber < 0) return @[];
 
     if (self.seasonToEpisodesDictionary == nil)
     {
