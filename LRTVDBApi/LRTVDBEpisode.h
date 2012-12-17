@@ -52,6 +52,8 @@ extern NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(id, id);
 @property (nonatomic, copy, readonly) NSArray *directors;
 @property (nonatomic, copy, readonly) NSArray *guestStars;
 
+@property (nonatomic, readonly, getter = hasAlreadyAired) BOOL alreadyAired;
+
 /**
  Creates a new episode.
  @see LRKVCBaseModel initializer for more info.

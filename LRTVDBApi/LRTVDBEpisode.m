@@ -199,6 +199,11 @@ NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisod
             };
 }
 
+- (BOOL)hasAlreadyAired
+{
+    return [self.airedDate compare:[NSDate date]] == NSOrderedAscending;
+}
+
 #pragma mark - Equality methods
 
 - (BOOL)isEqual:(id)object
