@@ -24,6 +24,7 @@
 #import "LRTVDBAPIClient.h"
 #import "NSString+LRTVDBAdditions.h"
 #import "NSArray+LRTVDBAdditions.h"
+#import "LRTVDBShow.h"
 
 /**
  Episode comparison block.
@@ -152,6 +153,11 @@ NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisod
 {
     _guestStarsList = guestStarsList;
     self.guestStars = [[_guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
+}
+
+- (BOOL)hasAlreadyAired
+{
+    return [self compare:self.show.lastEpisode] <= NSOrderedSame;
 }
 
 #pragma mark - Update episode

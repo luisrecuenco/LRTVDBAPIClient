@@ -24,6 +24,8 @@
 
 extern NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(id, id);
 
+@class LRTVDBShow;
+
 @interface LRTVDBEpisode : LRKVCBaseModel
 
 @property (nonatomic, copy, readonly) NSString *episodeID;
@@ -53,6 +55,8 @@ extern NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(id, id);
 @property (nonatomic, copy, readonly) NSArray *guestStars;
 
 @property (nonatomic, readonly, getter = hasAlreadyAired) BOOL alreadyAired;
+
+@property (nonatomic, weak) LRTVDBShow *show;
 
 /**
  Creates a new episode.

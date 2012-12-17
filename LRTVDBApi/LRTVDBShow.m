@@ -219,6 +219,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
                        withObjects:self.episodes
                    comparisonBlock:LRTVDBEpisodeComparisonBlock];
     
+    [_episodes makeObjectsPerformSelector:@selector(setShow:) withObject:self];
+    
     [self refreshEpisodesInfomation];
     
     [self didChangeValueForKey:@"episodes"];
