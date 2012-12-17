@@ -43,6 +43,13 @@ NSComparisonResult (^LRTVDBActorComparisonBlock)(LRTVDBActor *, LRTVDBActor*) = 
 
 @implementation LRTVDBActor
 
+#pragma mark - Initializer
+
++ (instancetype)actorWithDictionary:(NSDictionary *)dictionary
+{
+    return [[self alloc] initWithDictionary:dictionary];
+}
+
 #pragma mark - Custom Setters
 
 - (void)setArtworkURLString:(NSString *)artworkURLString

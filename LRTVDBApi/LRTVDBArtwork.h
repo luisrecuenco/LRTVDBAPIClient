@@ -46,4 +46,10 @@ typedef NS_ENUM(NSInteger, LRTVDBArtworkType)
 
 @property (nonatomic, readonly) LRTVDBArtworkType artworkType;
 
+/**
+ Creates a new artwork.
+ @see LRKVCBaseModel initializer for more info.
+ */
++ (instancetype)artworkWithDictionary:(NSDictionary *)dictionary;
+
 @end

@@ -40,4 +40,10 @@ extern NSComparisonResult (^LRTVDBActorComparisonBlock)(id, id);
 /** Number to be used when sorting different actors, i.e, 0 -> most important actor. */
 @property (nonatomic, strong, readonly) NSNumber *sortOrder;
 
+/**
+ Creates a new actor.
+ @see LRKVCBaseModel initializer for more info.
+ */
++ (instancetype)actorWithDictionary:(NSDictionary *)dictionary;
+
 @end

@@ -81,6 +81,13 @@ NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisod
 
 @implementation LRTVDBEpisode
 
+#pragma mark - Initializer
+
++ (instancetype)episodeWithDictionary:(NSDictionary *)dictionary
+{
+    return [[self alloc] initWithDictionary:dictionary];
+}
+
 #pragma mark - Custom Setters
 
 - (void)setTitle:(NSString *)title

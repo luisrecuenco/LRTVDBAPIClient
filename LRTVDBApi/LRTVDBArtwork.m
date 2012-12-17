@@ -69,6 +69,13 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 @implementation LRTVDBArtwork
 
+#pragma mark - Initializer
+
++ (instancetype)artworkWithDictionary:(NSDictionary *)dictionary
+{
+    return [[self alloc] initWithDictionary:dictionary];
+}
+
 #pragma mark - Custom Setters
 
 - (void)setArtworkURLString:(NSString *)artworkURLString

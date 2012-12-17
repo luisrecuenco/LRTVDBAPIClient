@@ -123,6 +123,12 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, copy, readonly) NSArray *actors;
 
 /**
+ Creates a new show.
+ @see LRKVCBaseModel initializer for more info.
+ */
++ (instancetype)showWithDictionary:(NSDictionary *)dictionary;
+
+/**
  Retrieves the episodes for a specific show season.
  @param seasonNumber The season you want to retrieve the episodes for.
  @return A NSArray object of LRTVDBEpisode instances.

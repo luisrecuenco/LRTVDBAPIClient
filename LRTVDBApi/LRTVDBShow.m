@@ -124,6 +124,13 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 @implementation LRTVDBShow
 
+#pragma mark - Initializer
+
++ (instancetype)showWithDictionary:(NSDictionary *)dictionary
+{
+    return [[self alloc] initWithDictionary:dictionary];
+}
+
 #pragma mark - Custom Setters
 
 - (void)setName:(NSString *)name
