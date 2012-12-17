@@ -164,6 +164,8 @@ NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisod
 
 - (void)updateWithEpisode:(LRTVDBEpisode *)updatedEpisode;
 {
+    if (updatedEpisode == nil) return;
+
     NSAssert([self isEqual:updatedEpisode], @"Trying to update episode with one with different ID?");
     
     self.episodeID = updatedEpisode.episodeID;

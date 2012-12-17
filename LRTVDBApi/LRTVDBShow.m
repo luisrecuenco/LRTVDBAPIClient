@@ -398,6 +398,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)updateWithShow:(LRTVDBShow *)updatedShow
 {
+    if (updatedShow == nil) return;
+  
     NSAssert([self isEqual:updatedShow], @"Trying to update show with one with different ID?");
     
     self.showID = updatedShow.showID;
