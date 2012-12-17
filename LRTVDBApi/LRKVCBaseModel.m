@@ -56,6 +56,16 @@
     [super setValuesForKeysWithDictionary:validMappings];
 }
 
+- (void)setValue:(id)value forKey:(NSString *)key
+{
+    // In some weird occasions, the XML we get from the TVDB is wrong formatted
+    // and we don't get value being a NSString. Checking for that...
+    if ([value isKindOfClass:[NSString class]])
+    {
+        [super setValue:value forKey:key];
+    }
+}
+
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
     NSAssert(NO, @"Property \"%@\" not found in object of type \"%@\"", key, NSStringFromClass(self.class));
