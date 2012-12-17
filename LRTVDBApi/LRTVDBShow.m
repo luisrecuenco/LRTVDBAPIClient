@@ -213,11 +213,15 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addEpisodes:(NSArray *)episodes
 {
-    self.episodes = [self mergeObjects:episodes
-                           withObjects:self.episodes
-                       comparisonBlock:LRTVDBEpisodeComparisonBlock];
+    [self willChangeValueForKey:@"episodes"];
+    
+    _episodes = [self mergeObjects:episodes
+                       withObjects:self.episodes
+                   comparisonBlock:LRTVDBEpisodeComparisonBlock];
     
     [self refreshEpisodesInfomation];
+    
+    [self didChangeValueForKey:@"episodes"];
 }
 
 - (void)refreshEpisodesInfomation
@@ -333,12 +337,16 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 #pragma mark - Artwork handling
 
 - (void)addArtworks:(NSArray *)artworks
-{    
-    self.artworks = [self mergeObjects:artworks
+{
+    [self willChangeValueForKey:@"artworks"];
+
+    _artworks = [self mergeObjects:artworks
                            withObjects:self.artworks
                        comparisonBlock:LRTVDBArtworkComparisonBlock];
     
     [self computeArtworkInfomation];
+    
+    [self didChangeValueForKey:@"artworks"];
 }
 
 - (void)computeArtworkInfomation
