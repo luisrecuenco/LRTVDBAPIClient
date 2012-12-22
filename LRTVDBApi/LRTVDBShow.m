@@ -468,7 +468,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
         mergedObjects = [mutableOldObjects arrayByRemovingDuplicates];
     }
     
-    return mergedObjects;
+    return mergedObjects ? : @[];
 }
 
 #pragma mark - LRKVCBaseModelProtocol
