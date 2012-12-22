@@ -22,7 +22,7 @@
 
 #import "LRKVCBaseModel.h"
 
-extern NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(id, id);
+extern NSComparator LRTVDBEpisodeComparator;
 
 @class LRTVDBShow;
 

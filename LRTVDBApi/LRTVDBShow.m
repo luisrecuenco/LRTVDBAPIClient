@@ -32,7 +32,7 @@
 /**
  Show comparison block.
  */
-NSComparisonResult (^LRTVDBShowComparisonBlock)(LRTVDBShow *, LRTVDBShow *) = ^NSComparisonResult(LRTVDBShow *firstShow, LRTVDBShow *secondShow)
+NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, LRTVDBShow *secondShow)
 {
     NSComparisonResult daysComparison = !secondShow.daysToNextEpisode ? NSOrderedSame : [firstShow.daysToNextEpisode compare:secondShow.daysToNextEpisode];
     NSComparisonResult statusComparison = [@(firstShow.showStatus) compare:@(secondShow.showStatus)];
@@ -217,7 +217,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     
     _episodes = [self mergeObjects:episodes
                        withObjects:self.episodes
-                   comparisonBlock:LRTVDBEpisodeComparisonBlock];
+                   comparisonBlock:LRTVDBEpisodeComparator];
     
     [_episodes makeObjectsPerformSelector:@selector(setShow:) withObject:self];
     
@@ -341,10 +341,10 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 - (void)addArtworks:(NSArray *)artworks
 {
     [self willChangeValueForKey:@"artworks"];
-
+    
     _artworks = [self mergeObjects:artworks
-                           withObjects:self.artworks
-                       comparisonBlock:LRTVDBArtworkComparisonBlock];
+                       withObjects:self.artworks
+                   comparisonBlock:LRTVDBArtworkComparator];
     
     [self computeArtworkInfomation];
     
@@ -391,7 +391,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 {
     self.actors = [self mergeObjects:actors
                          withObjects:self.actors
-                     comparisonBlock:LRTVDBActorComparisonBlock];
+                     comparisonBlock:LRTVDBActorComparator];
 }
 
 #pragma mark - Update show
@@ -436,17 +436,17 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
  */
 - (NSArray *)mergeObjects:(NSArray *)newObjects
               withObjects:(NSArray *)oldObjects
-          comparisonBlock:(NSComparisonResult (^) (id, id))comparisonBlock
+          comparisonBlock:(NSComparator)comparator
 {
     NSArray *mergedObjects = nil;
     
     if (newObjects.count == 0)
     {
-        mergedObjects = [[oldObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparisonBlock];
+        mergedObjects = [[oldObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
     }
     else if (oldObjects.count == 0)
     {
-        mergedObjects = [[newObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparisonBlock];
+        mergedObjects = [[newObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
     }
     else
     {
@@ -458,7 +458,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
             NSUInteger newIndexToInsertNewObject = [mutableOldObjects indexOfObject:newObject
                                                                       inSortedRange:NSMakeRange(0, mutableOldObjects.count)
                                                                             options:NSBinarySearchingInsertionIndex
-                                                                    usingComparator:comparisonBlock];
+                                                                    usingComparator:comparator];
             if (newIndexToInsertNewObject != NSNotFound)
             {
                 [mutableOldObjects insertObject:newObject atIndex:newIndexToInsertNewObject];
@@ -512,7 +512,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (NSComparisonResult)compare:(id)object
 {
-    return LRTVDBShowComparisonBlock(self, object);
+    return LRTVDBShowComparator(self, object);
 }
 
 #pragma mark - Description

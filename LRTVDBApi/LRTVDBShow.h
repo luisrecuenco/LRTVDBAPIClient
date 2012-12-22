@@ -22,7 +22,7 @@
 
 #import "LRKVCBaseModel.h"
 
-extern NSComparisonResult (^LRTVDBShowComparisonBlock)(id, id);
+extern NSComparator LRTVDBShowComparator;
 
 typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 {

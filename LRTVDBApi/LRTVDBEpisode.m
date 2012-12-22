@@ -29,7 +29,7 @@
 /**
  Episode comparison block.
  */
-NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisode *) = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
+NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
 {
     // It'd be easier to compare using LRTVDBEpisode airedDate property but
     // episodes that are yet to be aired are more likely to have season and
@@ -221,7 +221,7 @@ NSComparisonResult (^LRTVDBEpisodeComparisonBlock)(LRTVDBEpisode *, LRTVDBEpisod
 
 - (NSComparisonResult)compare:(id)object
 {
-    return LRTVDBEpisodeComparisonBlock(self, object);
+    return LRTVDBEpisodeComparator(self, object);
 }
 
 #pragma mark - Description

@@ -26,7 +26,7 @@
 /**
  Actor comparison block.
  */
-NSComparisonResult (^LRTVDBActorComparisonBlock)(LRTVDBActor *, LRTVDBActor*) = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
+NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {
     return !secondActor.sortOrder ? NSOrderedSame : [firstActor.sortOrder compare:secondActor.sortOrder];
 };
@@ -90,7 +90,7 @@ NSComparisonResult (^LRTVDBActorComparisonBlock)(LRTVDBActor *, LRTVDBActor*) = 
 
 - (NSComparisonResult)compare:(id)object
 {
-    return LRTVDBActorComparisonBlock(self, object);
+    return LRTVDBActorComparator(self, object);
 }
 
 #pragma mark - Description

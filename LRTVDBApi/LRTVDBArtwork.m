@@ -26,7 +26,7 @@
 /**
  Artwork comparison block.
  */
-NSComparisonResult (^LRTVDBArtworkComparisonBlock)(LRTVDBArtwork *, LRTVDBArtwork *) = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
+NSComparator LRTVDBArtworkComparator = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
 {
     NSComparisonResult typeComparison = [@(firstArtwork.artworkType) compare:@(secondArtwork.artworkType)];
     NSComparisonResult ratingComparison = !firstArtwork.rating ? NSOrderedSame : [secondArtwork.rating compare:firstArtwork.rating];
@@ -154,7 +154,7 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 - (NSComparisonResult)compare:(id)object
 {
-    return LRTVDBArtworkComparisonBlock(self, object);
+    return LRTVDBArtworkComparator(self, object);
 }
 
 #pragma mark - Description
