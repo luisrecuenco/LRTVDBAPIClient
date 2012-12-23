@@ -28,7 +28,10 @@
  */
 NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {
-    return !secondActor.sortOrder ? NSOrderedSame : [firstActor.sortOrder compare:secondActor.sortOrder];
+    NSNumber *firstActorSortOrder = firstActor.sortOrder ? : @(INT_MAX);
+    NSNumber *secondActorSortOrder = secondActor.sortOrder ? : @(INT_MAX);
+
+    return [firstActorSortOrder compare:secondActorSortOrder];
 };
 
 @interface LRTVDBActor ()
