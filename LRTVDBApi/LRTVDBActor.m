@@ -83,7 +83,16 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 - (BOOL)isEqual:(id)object
 {
-    return [self.actorID isEqualToString:[(LRTVDBActor *)object actorID]];
+    NSParameterAssert([object isKindOfClass:[LRTVDBActor class]]);
+    
+    if (![object isKindOfClass:[LRTVDBActor class]])
+    {
+        return NO;
+    }
+    else
+    {
+        return [self.actorID isEqualToString:[(LRTVDBActor *)object actorID]];
+    }
 }
 
 - (NSUInteger)hash

@@ -502,7 +502,16 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (BOOL)isEqual:(id)object
 {
-    return [self.showID isEqualToString:[(LRTVDBShow *)object showID]];
+    NSParameterAssert([object isKindOfClass:[LRTVDBShow class]]);
+    
+    if (![object isKindOfClass:[LRTVDBShow class]])
+    {
+        return NO;
+    }
+    else
+    {
+        return [self.showID isEqualToString:[(LRTVDBShow *)object showID]];
+    }
 }
 
 - (NSUInteger)hash

@@ -211,7 +211,16 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (BOOL)isEqual:(id)object
 {
-    return [self.episodeID isEqualToString:[(LRTVDBEpisode *)object episodeID]];
+    NSParameterAssert([object isKindOfClass:[LRTVDBEpisode class]]);
+    
+    if (![object isKindOfClass:[LRTVDBEpisode class]])
+    {
+        return NO;
+    }
+    else
+    {
+        return [self.episodeID isEqualToString:[(LRTVDBEpisode *)object episodeID]];
+    }
 }
 
 - (NSUInteger)hash

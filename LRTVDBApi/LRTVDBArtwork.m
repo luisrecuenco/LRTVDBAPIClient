@@ -157,7 +157,16 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 - (BOOL)isEqual:(id)object
 {
-    return [self.url isEqual:[(LRTVDBArtwork *)object url]];
+    NSParameterAssert([object isKindOfClass:[LRTVDBArtwork class]]);
+    
+    if (![object isKindOfClass:[LRTVDBArtwork class]])
+    {
+        return NO;
+    }
+    else
+    {
+        return [self.url isEqual:[(LRTVDBArtwork *)object url]];
+    }
 }
 
 - (NSUInteger)hash
