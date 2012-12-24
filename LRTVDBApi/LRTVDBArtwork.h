@@ -36,15 +36,15 @@ typedef NS_ENUM(NSInteger, LRTVDBArtworkType)
 @interface LRTVDBArtwork : LRKVCBaseModel
 
 /** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
-@property (nonatomic, strong, readonly) NSURL *artworkURL;
+@property (nonatomic, strong, readonly) NSURL *url;
 
 /** Example: http:/www.thetvdb.com/banners/_cache/fanart/original/82066-78.jpg. */
-@property (nonatomic, strong, readonly) NSURL *artworkThumbnailURL;
+@property (nonatomic, strong, readonly) NSURL *thumbnailURL;
 
 @property (nonatomic, strong, readonly) NSNumber *rating;
 @property (nonatomic, strong, readonly) NSNumber *ratingCount;
 
-@property (nonatomic, readonly) LRTVDBArtworkType artworkType;
+@property (nonatomic, readonly) LRTVDBArtworkType type;
 
 /**
  Creates a new artwork.

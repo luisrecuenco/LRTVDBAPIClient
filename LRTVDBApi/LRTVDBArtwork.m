@@ -29,8 +29,8 @@
 NSComparator LRTVDBArtworkComparator = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
 {
     // Type: unknown artwork types at the end
-    LRTVDBArtworkType firstArtworkType = firstArtwork.artworkType;
-    LRTVDBArtworkType secondArtworkType = secondArtwork.artworkType;
+    LRTVDBArtworkType firstArtworkType = firstArtwork.type;
+    LRTVDBArtworkType secondArtworkType = secondArtwork.type;
     
     if (firstArtworkType == LRTVDBArtworkTypeUnknown) { firstArtworkType = INT_MAX; }
     if (secondArtworkType == LRTVDBArtworkTypeUnknown) { secondArtworkType = INT_MAX; }
@@ -56,6 +56,9 @@ NSComparator LRTVDBArtworkComparator = ^NSComparisonResult(LRTVDBArtwork *firstA
     return comparisonResult;
 };
 
+/**
+ Artwork type XML strings.
+ */
 static NSString *const kLRTVDBArtworkTypeFanartKey = @"fanart";
 static NSString *const kLRTVDBArtworkTypePosterKey = @"poster";
 static NSString *const kLRTVDBArtworkTypeSeasonKey = @"season";
@@ -63,17 +66,17 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 @interface LRTVDBArtwork ()
 
-@property (nonatomic, strong) NSURL *artworkURL;
-@property (nonatomic, strong) NSURL *artworkThumbnailURL;
+@property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) NSURL *thumbnailURL;
 @property (nonatomic, strong) NSNumber *rating;
 @property (nonatomic, strong) NSNumber *ratingCount;
-@property (nonatomic) LRTVDBArtworkType artworkType;
+@property (nonatomic) LRTVDBArtworkType type;
 
-@property (nonatomic, copy) NSString *artworkURLString;
-@property (nonatomic, copy) NSString *artworkThumbnailURLString;
+@property (nonatomic, copy) NSString *urlString;
+@property (nonatomic, copy) NSString *thumbnailURLString;
 @property (nonatomic, copy) NSString *ratingString;
 @property (nonatomic, copy) NSString *ratingCountString;
-@property (nonatomic, copy) NSString *artworkTypeString;
+@property (nonatomic, copy) NSString *typeString;
 
 @end
 
@@ -88,16 +91,16 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 #pragma mark - Custom Setters
 
-- (void)setArtworkURLString:(NSString *)artworkURLString
+- (void)setUrlString:(NSString *)urlString
 {
-    _artworkURLString = artworkURLString;
-    self.artworkURL = LRTVDBArtworkURLForPath(_artworkURLString);
+    _urlString = urlString;
+    self.url = LRTVDBArtworkURLForPath(_urlString);
 }
 
-- (void)setArtworkThumbnailURLString:(NSString *)artworkThumbnailURLString
+- (void)setThumbnailURLString:(NSString *)thumbnailURLString
 {
-    _artworkThumbnailURLString = artworkThumbnailURLString;
-    self.artworkThumbnailURL = LRTVDBArtworkURLForPath(_artworkThumbnailURLString);
+    _thumbnailURLString = thumbnailURLString;
+    self.thumbnailURL = LRTVDBArtworkURLForPath(_thumbnailURLString);
 }
 
 - (void)setRatingString:(NSString *)ratingString
@@ -112,29 +115,29 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
     self.ratingCount =  @(_ratingCountString.integerValue);
 }
 
-- (void)setArtworkTypeString:(NSString *)artworkTypeString
+- (void)setTypeString:(NSString *)typeString
 {
-    _artworkTypeString = artworkTypeString;
+    _typeString = typeString;
     
-    if ([_artworkTypeString isEqualToString:kLRTVDBArtworkTypeFanartKey])
+    if ([_typeString isEqualToString:kLRTVDBArtworkTypeFanartKey])
     {
-        self.artworkType = LRTVDBArtworkTypeFanart;
+        self.type = LRTVDBArtworkTypeFanart;
     }
-    else if ([_artworkTypeString isEqualToString:kLRTVDBArtworkTypePosterKey])
+    else if ([_typeString isEqualToString:kLRTVDBArtworkTypePosterKey])
     {
-        self.artworkType = LRTVDBArtworkTypePoster;
+        self.type = LRTVDBArtworkTypePoster;
     }
-    else if ([_artworkTypeString isEqualToString:kLRTVDBArtworkTypeSeasonKey])
+    else if ([_typeString isEqualToString:kLRTVDBArtworkTypeSeasonKey])
     {
-        self.artworkType = LRTVDBArtworkTypeSeason;
+        self.type = LRTVDBArtworkTypeSeason;
     }
-    else if ([_artworkTypeString isEqualToString:kLRTVDBArtworkTypeSeriesKey])
+    else if ([_typeString isEqualToString:kLRTVDBArtworkTypeSeriesKey])
     {
-        self.artworkType = LRTVDBArtworkTypeBanner;
+        self.type = LRTVDBArtworkTypeBanner;
     }
     else
     {
-        self.artworkType = LRTVDBArtworkTypeUnknown;
+        self.type = LRTVDBArtworkTypeUnknown;
     }
 }
 
@@ -142,11 +145,11 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 - (NSDictionary *)mappings
 {
-    return @{ @"BannerPath" : @"artworkURLString",
-              @"ThumbnailPath": @"artworkThumbnailURLString",
+    return @{ @"BannerPath" : @"urlString",
+              @"ThumbnailPath": @"thumbnailURLString",
               @"Rating": @"ratingString",
               @"RatingCount": @"ratingCountString",
-              @"BannerType" : @"artworkTypeString"
+              @"BannerType" : @"typeString"
             };
 }
 
@@ -154,12 +157,12 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 - (BOOL)isEqual:(id)object
 {
-    return [self.artworkURL isEqual:[(LRTVDBArtwork *)object artworkURL]];
+    return [self.url isEqual:[(LRTVDBArtwork *)object url]];
 }
 
 - (NSUInteger)hash
 {
-    return [self.artworkURL hash];
+    return [self.url hash];
 }
 
 - (NSComparisonResult)compare:(id)object
@@ -171,7 +174,7 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"\nURL: %@\nThumbnail URL: %@\nRating: %@\nRating Count: %@\nType: %d\n", self.artworkURL, self.artworkThumbnailURL, self.rating, self.ratingCount, self.artworkType];
+    return [NSString stringWithFormat:@"\nURL: %@\nThumbnail URL: %@\nRating: %@\nRating Count: %@\nType: %d\n", self.url, self.thumbnailURL, self.rating, self.ratingCount, self.type];
 }
 
 @end

@@ -360,7 +360,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     
     for (LRTVDBArtwork *artwork in self.artworks)
     {
-        switch (artwork.artworkType)
+        switch (artwork.type)
         {
             case LRTVDBArtworkTypeFanart:
                 [fanartArray addObject:artwork];
