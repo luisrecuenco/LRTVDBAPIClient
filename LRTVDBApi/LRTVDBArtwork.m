@@ -28,22 +28,32 @@
  */
 NSComparator LRTVDBArtworkComparator = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
 {
-    NSComparisonResult typeComparison = [@(firstArtwork.artworkType) compare:@(secondArtwork.artworkType)];
-    NSComparisonResult ratingComparison = !firstArtwork.rating ? NSOrderedSame : [secondArtwork.rating compare:firstArtwork.rating];
-    NSComparisonResult ratingCountComparison = !firstArtwork.ratingCount ? NSOrderedSame : [secondArtwork.ratingCount compare:firstArtwork.ratingCount];
+    // Type: unknown artwork types at the end
+    LRTVDBArtworkType firstArtworkType = firstArtwork.artworkType;
+    LRTVDBArtworkType secondArtworkType = secondArtwork.artworkType;
     
-    if (typeComparison != NSOrderedSame)
+    if (firstArtworkType == LRTVDBArtworkTypeUnknown) { firstArtworkType = INT_MAX; }
+    if (secondArtworkType == LRTVDBArtworkTypeUnknown) { secondArtworkType = INT_MAX; }
+    
+    NSComparisonResult comparisonResult = [@(firstArtworkType) compare:@(secondArtworkType)];
+    
+    if (comparisonResult == NSOrderedSame)
     {
-        return typeComparison;
+        // Rating
+        NSNumber *firstArtworkRating = firstArtwork.rating ? : @(0);
+        NSNumber *secondArtworkRating = secondArtwork.rating ? : @(0);
+        comparisonResult = [secondArtworkRating compare:firstArtworkRating];
+        
+        if (comparisonResult == NSOrderedSame)
+        {
+            // Rating count
+            NSNumber *firstArtworkRatingCount = firstArtwork.ratingCount ? : @(0);
+            NSNumber *secondArtworkRatingCount = secondArtwork.ratingCount ? : @(0);
+            comparisonResult = [secondArtworkRatingCount compare:firstArtworkRatingCount];
+        }
     }
-    else if (ratingComparison != NSOrderedSame)
-    {
-        return ratingComparison;
-    }
-    else
-    {
-        return ratingCountComparison;
-    }
+    
+    return comparisonResult;
 };
 
 static NSString *const kLRTVDBArtworkTypeFanartKey = @"fanart";
