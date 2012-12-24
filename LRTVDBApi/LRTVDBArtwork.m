@@ -32,8 +32,8 @@ NSComparator LRTVDBArtworkComparator = ^NSComparisonResult(LRTVDBArtwork *firstA
     LRTVDBArtworkType firstArtworkType = firstArtwork.type;
     LRTVDBArtworkType secondArtworkType = secondArtwork.type;
     
-    if (firstArtworkType == LRTVDBArtworkTypeUnknown) { firstArtworkType = INT_MAX; }
-    if (secondArtworkType == LRTVDBArtworkTypeUnknown) { secondArtworkType = INT_MAX; }
+    if (firstArtworkType == LRTVDBArtworkTypeUnknown) { firstArtworkType = NSIntegerMax; }
+    if (secondArtworkType == LRTVDBArtworkTypeUnknown) { secondArtworkType = NSIntegerMax; }
     
     NSComparisonResult comparisonResult = [@(firstArtworkType) compare:@(secondArtworkType)];
     

@@ -35,15 +35,15 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     // episodes that are yet to be aired are more likely to have season and
     // episode numbers rather than aired date...
     
-    NSNumber *firstEpisodeSeasonNumber = firstEpisode.seasonNumber ? : @(INT_MAX);
-    NSNumber *secondEpisodeSeasonNumber = secondEpisode.seasonNumber ? : @(INT_MAX);
+    NSNumber *firstEpisodeSeasonNumber = firstEpisode.seasonNumber ? : @(NSIntegerMax);
+    NSNumber *secondEpisodeSeasonNumber = secondEpisode.seasonNumber ? : @(NSIntegerMax);
     
     NSComparisonResult comparisonResult = [firstEpisodeSeasonNumber compare:secondEpisodeSeasonNumber];
         
     if (comparisonResult == NSOrderedSame)
     {
-        NSNumber *firstEpisodeEpisodeNumber = firstEpisode.episodeNumber ? : @(INT_MAX);
-        NSNumber *secondEpisodeEpisodeNumber = secondEpisode.episodeNumber ? : @(INT_MAX);
+        NSNumber *firstEpisodeEpisodeNumber = firstEpisode.episodeNumber ? : @(NSIntegerMax);
+        NSNumber *secondEpisodeEpisodeNumber = secondEpisode.episodeNumber ? : @(NSIntegerMax);
         
         comparisonResult = [firstEpisodeEpisodeNumber compare:secondEpisodeEpisodeNumber];
     }

@@ -40,7 +40,7 @@
 {
     if (!element) return nil;
     
-    NSMutableDictionary *dictionary = [@{} mutableCopy];
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     
     do
     {
@@ -56,7 +56,7 @@
             }
             else
             {
-                NSMutableArray *elements = [@[] mutableCopy];
+                NSMutableArray *elements = [NSMutableArray array];
                 [elements addObject:dictionary[[TBXML elementName:element]]];
                 [elements addObject:[self dictionaryWithTBXMLElement:element->firstChild]];
                 dictionary[[TBXML elementName:element]] = elements;

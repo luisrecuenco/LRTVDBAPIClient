@@ -42,7 +42,7 @@
 {
     // Let's compute the valid mappings. Only map the properties
     // in the mappings property defined in LRKVCBaseModelProtocol.
-    NSMutableDictionary *validMappings = [@{} mutableCopy];
+    NSMutableDictionary *validMappings = [NSMutableDictionary dictionary];
     
     [keyedValues enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)
      {

@@ -35,8 +35,8 @@
 NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, LRTVDBShow *secondShow)
 {
     // Days to next episode
-    NSNumber *firstShowDaysToNextEpisode = firstShow.daysToNextEpisode ? : @(INT_MAX);
-    NSNumber *secondShowDaysToNextEpisode = secondShow.daysToNextEpisode ? : @(INT_MAX);
+    NSNumber *firstShowDaysToNextEpisode = firstShow.daysToNextEpisode ? : @(NSIntegerMax);
+    NSNumber *secondShowDaysToNextEpisode = secondShow.daysToNextEpisode ? : @(NSIntegerMax);
     
     NSComparisonResult comparisonResult = [firstShowDaysToNextEpisode compare:secondShowDaysToNextEpisode];
     
@@ -46,8 +46,8 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         LRTVDBShowStatus firstShowStatus = firstShow.status;
         LRTVDBShowStatus secondShowStatus = secondShow.status;
         
-        if (firstShowStatus == LRTVDBShowStatusUnknown) { firstShowStatus = INT_MAX; }
-        if (secondShowStatus == LRTVDBShowStatusUnknown) { secondShowStatus = INT_MAX; }
+        if (firstShowStatus == LRTVDBShowStatusUnknown) { firstShowStatus = NSIntegerMax; }
+        if (secondShowStatus == LRTVDBShowStatusUnknown) { secondShowStatus = NSIntegerMax; }
         
         comparisonResult = [@(firstShowStatus) compare:@(secondShowStatus)];
         
@@ -265,7 +265,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
     else if (self.basicStatus == LRTVDBShowBasicStatusContinuing)
     {
-        self.status =  [self.daysToNextEpisode isEqualToNumber:@(NSNotFound)] ?
+        self.status =  [self.daysToNextEpisode isEqualToNumber:@(NSIntegerMax)] ?
         LRTVDBShowStatusTBA : LRTVDBShowStatusUpcoming;
     }
     else
@@ -290,7 +290,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (NSNumber *)daysToEpisode:(LRTVDBEpisode *)episode
 {
-    if (episode.airedDate == nil) return @(NSNotFound);
+    if (episode.airedDate == nil) return @(NSIntegerMax);
     
     static NSCalendar *calendar = nil;
     static dispatch_once_t onceToken;
@@ -342,10 +342,10 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)computeArtworkInfomation
 {
-    NSMutableArray *fanartArray = [@[] mutableCopy];
-    NSMutableArray *posterArray = [@[] mutableCopy];
-    NSMutableArray *seasonArray = [@[] mutableCopy];
-    NSMutableArray *bannerArray = [@[] mutableCopy];
+    NSMutableArray *fanartArray = [NSMutableArray array];
+    NSMutableArray *posterArray = [NSMutableArray array];
+    NSMutableArray *seasonArray = [NSMutableArray array];
+    NSMutableArray *bannerArray = [NSMutableArray array];
     
     for (LRTVDBArtwork *artwork in _artworks)
     {
