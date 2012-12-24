@@ -160,6 +160,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSString *genresList; /** |Genre 1|Genre 2|... */
 @property (nonatomic, copy) NSString *actorsNamesList; /** |Actor 1|Actor 2|... */
 
+@property (nonatomic) dispatch_queue_t syncQueue;
+
 @end
 
 @implementation LRTVDBShow
@@ -171,36 +173,57 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     return [[self alloc] initWithDictionary:dictionary];
 }
 
+- (id)initWithDictionary:(NSDictionary *)dictionary
+{
+    self = [super initWithDictionary:dictionary];
+    
+    if (self)
+    {
+        _syncQueue = dispatch_queue_create("com.LRTVDBAPI.LRTVDBShowQueue", NULL);
+    }
+    
+    return self;
+}
+
 #pragma mark - Episodes handling
+
+- (NSArray *)episodes
+{
+    __block NSArray *localEpisodes = nil;
+    dispatch_sync(self.syncQueue, ^{
+        localEpisodes = _episodes;
+    });
+    return localEpisodes;
+}
 
 - (void)addEpisodes:(NSArray *)episodes
 {
-    [self willChangeValueForKey:@"episodes"];
-    
-    _episodes = [self mergeObjects:episodes
-                       withObjects:self.episodes
-                   comparisonBlock:LRTVDBEpisodeComparator];
-    
-    [_episodes makeObjectsPerformSelector:@selector(setShow:) withObject:self];
-    
-    [self refreshEpisodesInfomation];
-    
-    [self didChangeValueForKey:@"episodes"];
+    dispatch_sync(self.syncQueue, ^{
+        [self willChangeValueForKey:@"episodes"];
+        
+        _episodes = [self mergeObjects:episodes
+                           withObjects:_episodes
+                       comparisonBlock:LRTVDBEpisodeComparator];
+        
+        [_episodes makeObjectsPerformSelector:@selector(setShow:) withObject:self];
+        
+        [self refreshEpisodesInfomation];
+        
+        [self didChangeValueForKey:@"episodes"];
+    });
 }
 
 - (void)refreshEpisodesInfomation
-{
-    self.seasonToEpisodesDictionary = nil; // Regenerate
-    __block BOOL lastEpisodeSet = NO;
-    
+{    
     // Last episode
     if (self.showBasicStatus == LRTVDBShowBasicStatusEnded)
     {
-        self.lastEpisode = self.episodes.lastObject;
-        lastEpisodeSet = YES;
+        self.lastEpisode = _episodes.lastObject;
     }
     else
     {
+        __block BOOL lastEpisodeSet = NO;
+
         NSDate *fromDate = [[NSDate date] dateByIgnoringTime];
         
         void (^block)(LRTVDBEpisode *, NSUInteger, BOOL *) = ^(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop)
@@ -215,25 +238,25 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
             }
         };
         
-        [self.episodes enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:block];
+        [_episodes enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:block];
         
         if (!lastEpisodeSet)
         {
-            self.lastEpisode = self.episodes.lastObject;
+            self.lastEpisode = _episodes.lastObject;
         }
     }
     
     // Next episode
-    NSUInteger nextEpisodeIndex = [self.episodes indexOfObject:self.lastEpisode] + 1;
-    BOOL notValidNextEpisode = nextEpisodeIndex >= self.episodes.count ||
-                               [(self.episodes)[nextEpisodeIndex] airedDate] == nil;
-    self.nextEpisode = notValidNextEpisode ? nil : (self.episodes)[nextEpisodeIndex];
+    NSUInteger nextEpisodeIndex = [_episodes indexOfObject:self.lastEpisode] + 1;
+    BOOL notValidNextEpisode = nextEpisodeIndex >= _episodes.count ||
+                               [_episodes[nextEpisodeIndex] airedDate] == nil;
+    self.nextEpisode = notValidNextEpisode ? nil : (_episodes)[nextEpisodeIndex];
     
     // Days to next episode
     self.daysToNextEpisode = [self daysToEpisode:self.nextEpisode];
     
     // Number of seasons
-    self.numberOfSeasons = [self.episodes.lastObject seasonNumber];
+    self.numberOfSeasons = [_episodes.lastObject seasonNumber];
     
     // Show status
     if (self.showBasicStatus == LRTVDBShowStatusEnded)
@@ -248,6 +271,20 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     else
     {
         self.showStatus = LRTVDBShowStatusUnknown;
+    }
+    
+    // Re compute season dictionary
+    self.seasonToEpisodesDictionary = [NSMutableDictionary dictionary];
+    
+    NSUInteger firstSeason = [[_episodes firstObject] seasonNumber].unsignedIntegerValue;
+    
+    for (NSUInteger seasonNumber = firstSeason; seasonNumber <= self.numberOfSeasons.unsignedIntegerValue; seasonNumber++)
+    {
+        NSIndexSet *indexSet = [_episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+            return [episode.seasonNumber isEqualToNumber:@(seasonNumber)];
+        }];
+                
+        (self.seasonToEpisodesDictionary)[@(seasonNumber)] = [_episodes objectsAtIndexes:indexSet];
     }
 }
 
@@ -274,43 +311,33 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (NSArray *)episodesForSeason:(NSNumber *)seasonNumber
 {
-    if (self.episodes == nil || seasonNumber < 0) return @[];
-
-    if (self.seasonToEpisodesDictionary == nil)
-    {
-        self.seasonToEpisodesDictionary = [@{} mutableCopy];
-    }
-    
-    NSArray *episodes = (self.seasonToEpisodesDictionary)[seasonNumber];
-    
-    if (!episodes)
-    {
-        NSIndexSet *indexSet = [self.episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop)
-        {
-            return [episode.seasonNumber isEqualToNumber:seasonNumber];
-        }];
-        
-        episodes = [self.episodes objectsAtIndexes:indexSet];
-        
-        (self.seasonToEpisodesDictionary)[seasonNumber] = episodes;
-    }
-    
-    return episodes;
+    return (self.seasonToEpisodesDictionary)[seasonNumber];
 }
 
 #pragma mark - Artwork handling
 
+- (NSArray *)artworks
+{
+    __block NSArray *localArtworks = nil;
+    dispatch_sync(self.syncQueue, ^{
+        localArtworks = _artworks;
+    });
+    return localArtworks;
+}
+
 - (void)addArtworks:(NSArray *)artworks
 {
-    [self willChangeValueForKey:@"artworks"];
-    
-    _artworks = [self mergeObjects:artworks
-                       withObjects:self.artworks
-                   comparisonBlock:LRTVDBArtworkComparator];
-    
-    [self computeArtworkInfomation];
-    
-    [self didChangeValueForKey:@"artworks"];
+    dispatch_sync(self.syncQueue, ^{
+        [self willChangeValueForKey:@"artworks"];
+        
+        _artworks = [self mergeObjects:artworks
+                           withObjects:_artworks
+                       comparisonBlock:LRTVDBArtworkComparator];
+        
+        [self computeArtworkInfomation];
+        
+        [self didChangeValueForKey:@"artworks"];
+    });
 }
 
 - (void)computeArtworkInfomation
@@ -320,7 +347,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     NSMutableArray *seasonArray = [@[] mutableCopy];
     NSMutableArray *bannerArray = [@[] mutableCopy];
     
-    for (LRTVDBArtwork *artwork in self.artworks)
+    for (LRTVDBArtwork *artwork in _artworks)
     {
         switch (artwork.type)
         {
@@ -349,12 +376,23 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 #pragma mark - Actors handling
 
+- (NSArray *)actors
+{
+    __block NSArray *localActors = nil;
+    dispatch_sync(self.syncQueue, ^{
+        localActors = _actors;
+    });
+    return localActors;
+}
+
 - (void)addActors:(NSArray *)actors
 {
-    self.actors = [self mergeObjects:actors
-                         withObjects:self.actors
+    dispatch_sync(self.syncQueue, ^{
+        _actors = [self mergeObjects:actors
+                         withObjects:_actors
                      comparisonBlock:LRTVDBActorComparator];
-}
+    });
+};
 
 #pragma mark - Update show
 
@@ -413,9 +451,10 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     else
     {
         NSMutableArray *mutableOldObjects = [oldObjects mutableCopy];
-        [mutableOldObjects removeObjectsInArray:newObjects];
+        NSArray *copiedNewObjects = [newObjects copy];
+        [mutableOldObjects removeObjectsInArray:copiedNewObjects];
         
-        for (id newObject in newObjects)
+        for (id newObject in copiedNewObjects)
         {
             NSUInteger newIndexToInsertNewObject = [mutableOldObjects indexOfObject:newObject
                                                                       inSortedRange:NSMakeRange(0, mutableOldObjects.count)
