@@ -43,8 +43,8 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     if (comparisonResult == NSOrderedSame)
     {
         // status: unknown status at the end
-        LRTVDBShowStatus firstShowStatus = firstShow.showStatus;
-        LRTVDBShowStatus secondShowStatus = secondShow.showStatus;
+        LRTVDBShowStatus firstShowStatus = firstShow.status;
+        LRTVDBShowStatus secondShowStatus = secondShow.status;
         
         if (firstShowStatus == LRTVDBShowStatusUnknown) { firstShowStatus = INT_MAX; }
         if (secondShowStatus == LRTVDBShowStatusUnknown) { secondShowStatus = INT_MAX; }
@@ -126,8 +126,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, strong) NSURL *posterURL;
 @property (nonatomic, strong) NSNumber *rating;
 @property (nonatomic, strong) NSNumber *ratingCount;
-@property (nonatomic) LRTVDBShowStatus showStatus;
-@property (nonatomic) LRTVDBShowBasicStatus showBasicStatus;
+@property (nonatomic) LRTVDBShowStatus status;
+@property (nonatomic) LRTVDBShowBasicStatus basicStatus;
 
 @property (nonatomic, copy) NSArray *genres;
 @property (nonatomic, copy) NSArray *actorsNames;
@@ -152,7 +152,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 @property (nonatomic, copy) NSString *ratingString;
 @property (nonatomic, copy) NSString *ratingCountString;
-@property (nonatomic, copy) NSString *showStatusString;
+@property (nonatomic, copy) NSString *basicStatusString;
 @property (nonatomic, copy) NSString *premiereDateString;
 
 @property (nonatomic, strong) NSMutableDictionary *seasonToEpisodesDictionary;
@@ -216,7 +216,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 - (void)refreshEpisodesInfomation
 {    
     // Last episode
-    if (self.showBasicStatus == LRTVDBShowBasicStatusEnded)
+    if (self.basicStatus == LRTVDBShowBasicStatusEnded)
     {
         self.lastEpisode = _episodes.lastObject;
     }
@@ -259,18 +259,18 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.numberOfSeasons = [_episodes.lastObject seasonNumber];
     
     // Show status
-    if (self.showBasicStatus == LRTVDBShowStatusEnded)
+    if (self.basicStatus == LRTVDBShowStatusEnded)
     {
-        self.showStatus = LRTVDBShowStatusEnded;
+        self.status = LRTVDBShowStatusEnded;
     }
-    else if (self.showBasicStatus == LRTVDBShowBasicStatusContinuing)
+    else if (self.basicStatus == LRTVDBShowBasicStatusContinuing)
     {
-        self.showStatus =  [self.daysToNextEpisode isEqualToNumber:@(NSNotFound)] ?
+        self.status =  [self.daysToNextEpisode isEqualToNumber:@(NSNotFound)] ?
         LRTVDBShowStatusTBA : LRTVDBShowStatusUpcoming;
     }
     else
     {
-        self.showStatus = LRTVDBShowStatusUnknown;
+        self.status = LRTVDBShowStatusUnknown;
     }
     
     // Re compute season dictionary
@@ -414,7 +414,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.actorsNamesList = updatedShow.actorsNamesList;
     self.network = updatedShow.network;
     self.runtime = updatedShow.runtime;
-    self.showStatusString = updatedShow.showStatusString;
+    self.basicStatusString = updatedShow.basicStatusString;
     self.bannerURLString = updatedShow.bannerURLString;
     self.fanartURLString = updatedShow.fanartURLString;
     self.posterURLString = updatedShow.posterURLString;
@@ -532,21 +532,21 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.actorsNames = [[_actorsNamesList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
-- (void)setShowStatusString:(NSString *)showStatusString
+- (void)setBasicStatusString:(NSString *)basicStatusString
 {
-    _showStatusString = showStatusString;
+    _basicStatusString = basicStatusString;
     
-    if ([_showStatusString isEqualToString:kLRTVDBShowBasicStatusContinuingKey])
+    if ([_basicStatusString isEqualToString:kLRTVDBShowBasicStatusContinuingKey])
     {
-        self.showBasicStatus = LRTVDBShowBasicStatusContinuing;
+        self.basicStatus = LRTVDBShowBasicStatusContinuing;
     }
-    else if ([_showStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
+    else if ([_basicStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
     {
-        self.showBasicStatus = LRTVDBShowStatusEnded;
+        self.basicStatus = LRTVDBShowStatusEnded;
     }
     else
     {
-        self.showBasicStatus = LRTVDBShowStatusUnknown;
+        self.basicStatus = LRTVDBShowStatusUnknown;
     }
 }
 
@@ -571,7 +571,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
               @"Actors" : @"actorsNamesList",
               @"Network" : @"network",
               @"Runtime" : @"runtime",
-              @"Status" : @"showStatusString",
+              @"Status" : @"basicStatusString",
               @"Rating" : @"ratingString",
               @"RatingCount" : @"ratingCountString"
             };

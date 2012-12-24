@@ -96,7 +96,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
  */
 @property (nonatomic, strong, readonly) NSURL *fanartURL;
 
-@property (nonatomic, readonly) LRTVDBShowStatus showStatus;
+@property (nonatomic, readonly) LRTVDBShowStatus status;
 
 
 /** Relationships */
