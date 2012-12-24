@@ -34,22 +34,62 @@
  */
 NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, LRTVDBShow *secondShow)
 {
-    NSComparisonResult daysComparison = !secondShow.daysToNextEpisode ? NSOrderedSame : [firstShow.daysToNextEpisode compare:secondShow.daysToNextEpisode];
-    NSComparisonResult statusComparison = [@(firstShow.showStatus) compare:@(secondShow.showStatus)];
-    NSComparisonResult nameComparison = !secondShow.name ? NSOrderedSame : [firstShow.name compare:secondShow.name options:NSCaseInsensitiveSearch];
+    // Days to next episode
+    NSNumber *firstShowDaysToNextEpisode = firstShow.daysToNextEpisode ? : @(INT_MAX);
+    NSNumber *secondShowDaysToNextEpisode = secondShow.daysToNextEpisode ? : @(INT_MAX);
+    
+    NSComparisonResult comparisonResult = [firstShowDaysToNextEpisode compare:secondShowDaysToNextEpisode];
+    
+    if (comparisonResult == NSOrderedSame)
+    {
+        // status: unknown status at the end
+        LRTVDBShowStatus firstShowStatus = firstShow.showStatus;
+        LRTVDBShowStatus secondShowStatus = secondShow.showStatus;
         
-    if (daysComparison != NSOrderedSame)
-    {
-        return daysComparison;
+        if (firstShowStatus == LRTVDBShowStatusUnknown) { firstShowStatus = INT_MAX; }
+        if (secondShowStatus == LRTVDBShowStatusUnknown) { secondShowStatus = INT_MAX; }
+        
+        comparisonResult = [@(firstShowStatus) compare:@(secondShowStatus)];
+        
+        if (comparisonResult == NSOrderedSame)
+        {
+            // Rating
+            NSNumber *firstShowRating = firstShow.rating ? : @(0);
+            NSNumber *secondShowRating = secondShow.rating ? : @(0);
+            comparisonResult = [secondShowRating compare:firstShowRating];
+            
+            if (comparisonResult == NSOrderedSame)
+            {
+                // Rating count
+                NSNumber *firstShowRatingCount = firstShow.ratingCount ? : @(0);
+                NSNumber *secondShowRatingCount = secondShow.ratingCount ? : @(0);
+                comparisonResult = [secondShowRatingCount compare:firstShowRatingCount];
+                
+                if (comparisonResult == NSOrderedSame)
+                {
+                    // Name
+                    if (!secondShow.name && !firstShow.name)
+                    {
+                        comparisonResult = NSOrderedSame;
+                    }
+                    else if (!secondShow.name)
+                    {
+                        comparisonResult = NSOrderedAscending;
+                    }
+                    else if (!firstShow.name)
+                    {
+                        comparisonResult = NSOrderedDescending;
+                    }
+                    else
+                    {
+                        comparisonResult = [firstShow.name compare:secondShow.name options:(NSCaseInsensitiveSearch | NSDiacriticInsensitiveSearch)];
+                    }
+                }
+            }
+        }
     }
-    else if (statusComparison != NSOrderedSame)
-    {
-        return statusComparison;
-    }
-    else
-    {
-        return nameComparison;
-    }
+    
+    return comparisonResult;
 };
 
 /**
@@ -129,84 +169,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 + (instancetype)showWithDictionary:(NSDictionary *)dictionary
 {
     return [[self alloc] initWithDictionary:dictionary];
-}
-
-#pragma mark - Custom Setters
-
-- (void)setName:(NSString *)name
-{
-    _name = [name unescapeHTMLEntities];
-}
-
-- (void)setOverview:(NSString *)overview
-{
-    _overview = [overview unescapeHTMLEntities];
-}
-
-- (void)setPremiereDateString:(NSString *)premiereDateString
-{
-    _premiereDateString = premiereDateString;
-    self.premiereDate = _premiereDateString.dateValue;
-}
-
-- (void)setBannerURLString:(NSString *)bannerURLString
-{
-    _bannerURLString = bannerURLString;
-    self.bannerURL = LRTVDBArtworkURLForPath(_bannerURLString);
-}
-
-- (void)setFanartURLString:(NSString *)fanartURLString
-{
-    _fanartURLString = fanartURLString;
-    self.fanartURL = LRTVDBArtworkURLForPath(_fanartURLString);
-}
-
-- (void)setPosterURLString:(NSString *)posterURLString
-{
-    _posterURLString = posterURLString;
-    self.posterURL = LRTVDBArtworkURLForPath(_posterURLString);
-}
-
-- (void)setRatingString:(NSString *)ratingString
-{
-    _ratingString = ratingString;
-    self.rating = @(_ratingString.floatValue);
-}
-
-- (void)setRatingCountString:(NSString *)ratingCountString
-{
-    _ratingCountString = ratingCountString;
-    self.ratingCount = @(_ratingCountString.integerValue);
-}
-
-- (void)setGenresList:(NSString *)genresList
-{
-    _genresList = genresList;
-    self.genres = [[_genresList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-- (void)setActorsNamesList:(NSString *)actorsNamesList
-{
-    _actorsNamesList = actorsNamesList;
-    self.actorsNames = [[_actorsNamesList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-- (void)setShowStatusString:(NSString *)showStatusString
-{
-    _showStatusString = showStatusString;
-    
-    if ([_showStatusString isEqualToString:kLRTVDBShowBasicStatusContinuingKey])
-    {
-        self.showBasicStatus = LRTVDBShowBasicStatusContinuing;
-    }
-    else if ([_showStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
-    {
-        self.showBasicStatus = LRTVDBShowStatusEnded;
-    }
-    else
-    {
-        self.showBasicStatus = LRTVDBShowStatusUnknown;
-    }
 }
 
 #pragma mark - Episodes handling
@@ -469,6 +431,84 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
     
     return mergedObjects ? : @[];
+}
+
+#pragma mark - Custom Setters
+
+- (void)setName:(NSString *)name
+{
+    _name = [name unescapeHTMLEntities];
+}
+
+- (void)setOverview:(NSString *)overview
+{
+    _overview = [overview unescapeHTMLEntities];
+}
+
+- (void)setPremiereDateString:(NSString *)premiereDateString
+{
+    _premiereDateString = premiereDateString;
+    self.premiereDate = _premiereDateString.dateValue;
+}
+
+- (void)setBannerURLString:(NSString *)bannerURLString
+{
+    _bannerURLString = bannerURLString;
+    self.bannerURL = LRTVDBArtworkURLForPath(_bannerURLString);
+}
+
+- (void)setFanartURLString:(NSString *)fanartURLString
+{
+    _fanartURLString = fanartURLString;
+    self.fanartURL = LRTVDBArtworkURLForPath(_fanartURLString);
+}
+
+- (void)setPosterURLString:(NSString *)posterURLString
+{
+    _posterURLString = posterURLString;
+    self.posterURL = LRTVDBArtworkURLForPath(_posterURLString);
+}
+
+- (void)setRatingString:(NSString *)ratingString
+{
+    _ratingString = ratingString;
+    self.rating = @(_ratingString.floatValue);
+}
+
+- (void)setRatingCountString:(NSString *)ratingCountString
+{
+    _ratingCountString = ratingCountString;
+    self.ratingCount = @(_ratingCountString.integerValue);
+}
+
+- (void)setGenresList:(NSString *)genresList
+{
+    _genresList = genresList;
+    self.genres = [[_genresList pipedStringToArray] arrayByRemovingDuplicates];
+}
+
+- (void)setActorsNamesList:(NSString *)actorsNamesList
+{
+    _actorsNamesList = actorsNamesList;
+    self.actorsNames = [[_actorsNamesList pipedStringToArray] arrayByRemovingDuplicates];
+}
+
+- (void)setShowStatusString:(NSString *)showStatusString
+{
+    _showStatusString = showStatusString;
+    
+    if ([_showStatusString isEqualToString:kLRTVDBShowBasicStatusContinuingKey])
+    {
+        self.showBasicStatus = LRTVDBShowBasicStatusContinuing;
+    }
+    else if ([_showStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
+    {
+        self.showBasicStatus = LRTVDBShowStatusEnded;
+    }
+    else
+    {
+        self.showBasicStatus = LRTVDBShowStatusUnknown;
+    }
 }
 
 #pragma mark - LRKVCBaseModelProtocol
