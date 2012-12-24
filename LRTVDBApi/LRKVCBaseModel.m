@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #import "LRKVCBaseModel.h"
+#import "NSString+LRTVDBAdditions.h"
 
 @implementation LRKVCBaseModel
 
@@ -60,7 +61,7 @@
 {
     // In some weird occasions, the XML we get from the TVDB is wrong formatted
     // and we don't get value being a NSString. Checking for that...
-    if ([value isKindOfClass:[NSString class]] && [(NSString *)value length] != 0)
+    if ([value isKindOfClass:[NSString class]] && ![NSString isEmptyString:value])
     {
         [super setValue:value forKey:key];
     }
