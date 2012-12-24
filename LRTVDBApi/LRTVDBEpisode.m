@@ -34,10 +34,21 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     // It'd be easier to compare using LRTVDBEpisode airedDate property but
     // episodes that are yet to be aired are more likely to have season and
     // episode numbers rather than aired date...
-    NSComparisonResult seasonNumberComparison = !secondEpisode.seasonNumber ? NSOrderedSame : [firstEpisode.seasonNumber compare:secondEpisode.seasonNumber];
-    NSComparisonResult episodeNumberComparison = !secondEpisode.episodeNumber ?NSOrderedSame : [firstEpisode.episodeNumber compare:secondEpisode.episodeNumber];
     
-    return seasonNumberComparison != NSOrderedSame ? seasonNumberComparison : episodeNumberComparison;
+    NSNumber *firstEpisodeSeasonNumber = firstEpisode.seasonNumber ? : @(INT_MAX);
+    NSNumber *secondEpisodeSeasonNumber = secondEpisode.seasonNumber ? : @(INT_MAX);
+    
+    NSComparisonResult comparisonResult = [firstEpisodeSeasonNumber compare:secondEpisodeSeasonNumber];
+        
+    if (comparisonResult == NSOrderedSame)
+    {
+        NSNumber *firstEpisodeEpisodeNumber = firstEpisode.episodeNumber ? : @(INT_MAX);
+        NSNumber *secondEpisodeEpisodeNumber = secondEpisode.episodeNumber ? : @(INT_MAX);
+        
+        comparisonResult = [firstEpisodeEpisodeNumber compare:secondEpisodeEpisodeNumber];
+    }
+    
+    return comparisonResult;
 };
 
 @interface LRTVDBEpisode ()
@@ -87,6 +98,38 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 + (instancetype)episodeWithDictionary:(NSDictionary *)dictionary
 {
     return [[self alloc] initWithDictionary:dictionary];
+}
+
+#pragma mark - Has episode already aired ?
+
+- (BOOL)hasAlreadyAired
+{
+    return [self compare:self.show.lastEpisode] <= NSOrderedSame;
+}
+
+#pragma mark - Update episode
+
+- (void)updateWithEpisode:(LRTVDBEpisode *)updatedEpisode;
+{
+    if (updatedEpisode == nil) return;
+    
+    NSAssert([self isEqual:updatedEpisode], @"Trying to update episode with one with different ID?");
+    
+    self.episodeID = updatedEpisode.episodeID;
+    self.title = updatedEpisode.title;
+    self.episodeNumberString = updatedEpisode.episodeNumberString;
+    self.seasonNumberString = updatedEpisode.seasonNumberString;
+    self.ratingString = updatedEpisode.ratingString;
+    self.ratingCountString = updatedEpisode.ratingCountString;
+    self.airedDateString = updatedEpisode.airedDateString;
+    self.overview = updatedEpisode.overview;
+    self.artworkURLString = updatedEpisode.artworkURLString;
+    self.imdbID = updatedEpisode.imdbID;
+    self.language = updatedEpisode.language;
+    self.showID = updatedEpisode.showID;
+    self.writersList = updatedEpisode.writersList;
+    self.directorsList = updatedEpisode.directorsList;
+    self.guestStarsList = updatedEpisode.guestStarsList;
 }
 
 #pragma mark - Custom Setters
@@ -153,36 +196,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 {
     _guestStarsList = guestStarsList;
     self.guestStars = [[_guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-- (BOOL)hasAlreadyAired
-{
-    return [self compare:self.show.lastEpisode] <= NSOrderedSame;
-}
-
-#pragma mark - Update episode
-
-- (void)updateWithEpisode:(LRTVDBEpisode *)updatedEpisode;
-{
-    if (updatedEpisode == nil) return;
-
-    NSAssert([self isEqual:updatedEpisode], @"Trying to update episode with one with different ID?");
-    
-    self.episodeID = updatedEpisode.episodeID;
-    self.title = updatedEpisode.title;
-    self.episodeNumberString = updatedEpisode.episodeNumberString;
-    self.seasonNumberString = updatedEpisode.seasonNumberString;
-    self.ratingString = updatedEpisode.ratingString;
-    self.ratingCountString = updatedEpisode.ratingCountString;
-    self.airedDateString = updatedEpisode.airedDateString;
-    self.overview = updatedEpisode.overview;
-    self.artworkURLString = updatedEpisode.artworkURLString;
-    self.imdbID = updatedEpisode.imdbID;
-    self.language = updatedEpisode.language;
-    self.showID = updatedEpisode.showID;
-    self.writersList = updatedEpisode.writersList;
-    self.directorsList = updatedEpisode.directorsList;
-    self.guestStarsList = updatedEpisode.guestStarsList;
 }
 
 #pragma mark - LRKVCBaseModelProtocol

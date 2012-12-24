@@ -44,7 +44,7 @@ extern NSComparator LRTVDBEpisodeComparator;
 /** Example: http:/www.thetvdb.com/banners/episodes/82066/2948641.jpg. */
 @property (nonatomic, strong, readonly) NSURL *artworkURL;
 
-/** Example: http://www.imdb.com/title/imdbID (http://www.imdb.com/title/tt1635958/) */
+/** Example: http://www.imdb.com/title/imdbID ( http://www.imdb.com/title/tt1635958/ ) */
 @property (nonatomic, copy, readonly) NSString *imdbID;
 
 @property (nonatomic, copy, readonly) NSString *language;
@@ -54,9 +54,10 @@ extern NSComparator LRTVDBEpisodeComparator;
 @property (nonatomic, copy, readonly) NSArray *directors;
 @property (nonatomic, copy, readonly) NSArray *guestStars;
 
-@property (nonatomic, readonly, getter = hasAlreadyAired) BOOL alreadyAired;
-
+/** Weak reference to the show. */
 @property (nonatomic, weak) LRTVDBShow *show;
+
+@property (nonatomic, readonly, getter=hasAlreadyAired) BOOL alreadyAired;
 
 /**
  Creates a new episode.
