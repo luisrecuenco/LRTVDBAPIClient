@@ -24,6 +24,9 @@
 
 @interface NSOrderedSet (LRTVDBAdditions)
 
+/**
+ Makes subscripting available for NSOrderedSet in iOS 5.
+ */
 - (id)objectAtIndexedSubscript:(NSUInteger)idx;
 
 @end

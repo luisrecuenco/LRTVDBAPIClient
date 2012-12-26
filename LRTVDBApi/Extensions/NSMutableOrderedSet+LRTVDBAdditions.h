@@ -24,6 +24,9 @@
 
 @interface NSMutableOrderedSet (LRTVDBAdditions)
 
+/**
+ Makes subscripting available for NSMutableOrderedSet in iOS 5.
+ */
 - (void)setObject:(id)anObject atIndexedSubscript:(NSUInteger)index;
 
 @end
