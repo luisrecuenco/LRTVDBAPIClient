@@ -38,12 +38,18 @@
 
 - (NSString *)unescapeHTMLEntities
 {
-    NSString *unescapedString = [self stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
-    unescapedString = [unescapedString stringByReplacingOccurrencesOfString:@"&apos;" withString:@"'"];
-    unescapedString = [unescapedString stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
-    unescapedString = [unescapedString stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
-    unescapedString = [unescapedString stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
+    NSDictionary *htmlEntities = @{ @"&quot;" : @"\"",
+                                    @"&apos;" : @"\"",
+                                    @"&amp;" : @"&",
+                                    @"&lt;" : @"<",
+                                    @"&gt;" : @">"
+                                  };
     
+    __block NSString *unescapedString = [self copy];
+    [htmlEntities enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        unescapedString = [unescapedString stringByReplacingOccurrencesOfString:key withString:obj];
+    }];
+
     return unescapedString;
 }
 
