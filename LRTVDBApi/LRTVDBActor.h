@@ -22,6 +22,9 @@
 
 #import "LRKVCBaseModel.h"
 
+/**
+ Actor comparison block.
+ */
 extern NSComparator LRTVDBActorComparator;
 
 @interface LRTVDBActor : LRKVCBaseModel

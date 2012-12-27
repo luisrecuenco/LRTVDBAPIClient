@@ -23,9 +23,6 @@
 #import "LRTVDBArtwork.h"
 #import "LRTVDBAPIClient.h"
 
-/**
- Artwork comparison block.
- */
 NSComparator LRTVDBArtworkComparator = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
 {
     // Type: unknown artwork types at the end

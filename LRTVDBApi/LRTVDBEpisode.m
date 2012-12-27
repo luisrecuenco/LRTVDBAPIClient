@@ -26,9 +26,6 @@
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBShow.h"
 
-/**
- Episode comparison block.
- */
 NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
 {
     // It'd be easier to compare using LRTVDBEpisode airedDate property but
@@ -58,10 +55,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 @property (nonatomic, copy) NSString *language;
 @property (nonatomic, copy) NSString *showID;
 
-/**
- Making the following containers NSOrderedSet instead of simple NSArray
- has the only advantage of removing duplicates TVDB API may send.
- */
 @property (nonatomic, copy) NSArray *writers;
 @property (nonatomic, copy) NSArray *directors;
 @property (nonatomic, copy) NSArray *guestStars;

@@ -22,6 +22,9 @@
 
 #import "LRKVCBaseModel.h"
 
+/**
+ Artwork comparison block.
+ */
 extern NSComparator LRTVDBArtworkComparator;
 
 typedef NS_ENUM(NSInteger, LRTVDBArtworkType)

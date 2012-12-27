@@ -22,6 +22,9 @@
 
 #import "LRKVCBaseModel.h"
 
+/**
+ Episode comparison block.
+ */
 extern NSComparator LRTVDBEpisodeComparator;
 
 @class LRTVDBShow;

@@ -44,15 +44,13 @@
     // in the mappings property defined in LRKVCBaseModelProtocol.
     NSMutableDictionary *validMappings = [NSMutableDictionary dictionary];
     
-    [keyedValues enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)
-     {
-         NSString *objectKey = self.mappings[key];
-         
-         if (objectKey)
-         {
-             validMappings[objectKey] = obj;
-         }
-     }];
+    [keyedValues enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        NSString *objectKey = self.mappings[key];
+        if (objectKey)
+        {
+            validMappings[objectKey] = obj;
+        }
+    }];
     
     [super setValuesForKeysWithDictionary:validMappings];
 }

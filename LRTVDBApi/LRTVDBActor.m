@@ -23,9 +23,6 @@
 #import "LRTVDBActor.h"
 #import "LRTVDBAPIClient.h"
 
-/**
- Actor comparison block.
- */
 NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {
     NSNumber *firstActorSortOrder = firstActor.sortOrder ? : @(NSIntegerMax);

@@ -22,7 +22,23 @@
 
 #import "LRKVCBaseModel.h"
 
+/**
+ Show comparison block.
+ */
 extern NSComparator LRTVDBShowComparator;
+
+/**
+ Struct in order to make KVO a little more strong typed.
+ 
+ @discussion When observing a key value like @"episodes", use
+ LRTVDBShowAttributes.episodes instead."
+ */
+extern const struct LRTVDBShowAttributes
+{
+    __unsafe_unretained NSString *episodes;
+    __unsafe_unretained NSString *artworks;
+    __unsafe_unretained NSString *actors;
+} LRTVDBShowAttributes;
 
 typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 {

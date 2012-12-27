@@ -29,9 +29,12 @@
 #import "LRTVDBAPIClient.h"
 #import "NSArray+LRTVDBAdditions.h"
 
-/**
- Show comparison block.
- */
+const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
+    .episodes = @"episodes",
+    .artworks = @"artworks",
+    .actors = @"actors",
+};
+
 NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, LRTVDBShow *secondShow)
 {
     // Days to next episode
@@ -199,17 +202,21 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 - (void)addEpisodes:(NSArray *)episodes
 {
     dispatch_sync(self.syncQueue, ^{
-        [self willChangeValueForKey:@"episodes"];
+        [self willChangeValueForKey:LRTVDBShowAttributes.episodes];
         
         _episodes = [self mergeObjects:episodes
                            withObjects:_episodes
                        comparisonBlock:LRTVDBEpisodeComparator];
         
-        [_episodes makeObjectsPerformSelector:@selector(setShow:) withObject:self];
+        // Assign weak reference to the show.
+        for (LRTVDBEpisode *episode in _episodes)
+        {
+            episode.show = self;
+        }
         
         [self refreshEpisodesInfomation];
-        
-        [self didChangeValueForKey:@"episodes"];
+
+        [self didChangeValueForKey:LRTVDBShowAttributes.episodes];
     });
 }
 
@@ -223,11 +230,10 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     else
     {
         __block BOOL lastEpisodeSet = NO;
-
+        
         NSDate *fromDate = [[NSDate date] dateByIgnoringTime];
         
-        void (^block)(LRTVDBEpisode *, NSUInteger, BOOL *) = ^(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop)
-        {
+        void (^block)(LRTVDBEpisode *, NSUInteger, BOOL *) = ^(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
             NSDate *toDate = [episode.airedDate dateByIgnoringTime];
             
             if ([toDate compare:fromDate] == NSOrderedAscending)
@@ -266,7 +272,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     else if (self.basicStatus == LRTVDBShowBasicStatusContinuing)
     {
         self.status =  [self.daysToNextEpisode isEqualToNumber:@(NSIntegerMax)] ?
-        LRTVDBShowStatusTBA : LRTVDBShowStatusUpcoming;
+                       LRTVDBShowStatusTBA : LRTVDBShowStatusUpcoming;
     }
     else
     {
@@ -274,18 +280,22 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
     
     // Re compute season dictionary
-    self.seasonToEpisodesDictionary = [NSMutableDictionary dictionary];
+    NSMutableDictionary *newSeasonToEpisodesDictionary = [NSMutableDictionary dictionary];
     
-    NSUInteger firstSeason = [[_episodes firstObject] seasonNumber].unsignedIntegerValue;
-    
-    for (NSUInteger seasonNumber = firstSeason; seasonNumber <= self.numberOfSeasons.unsignedIntegerValue; seasonNumber++)
+    for (LRTVDBEpisode *episode in _episodes)
     {
-        NSIndexSet *indexSet = [_episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
-            return [episode.seasonNumber isEqualToNumber:@(seasonNumber)];
-        }];
-                
-        (self.seasonToEpisodesDictionary)[@(seasonNumber)] = [_episodes objectsAtIndexes:indexSet];
+        NSMutableArray *episodesForSeason = [newSeasonToEpisodesDictionary[episode.seasonNumber] mutableCopy];
+        if (episodesForSeason == nil)
+        {
+            episodesForSeason = [NSMutableArray array];
+        }
+        
+        [episodesForSeason addObject:episode];
+        
+        newSeasonToEpisodesDictionary[episode.seasonNumber] = [episodesForSeason copy];
     }
+    
+    self.seasonToEpisodesDictionary = newSeasonToEpisodesDictionary;
 }
 
 - (NSNumber *)daysToEpisode:(LRTVDBEpisode *)episode
@@ -311,7 +321,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (NSArray *)episodesForSeason:(NSNumber *)seasonNumber
 {
-    return (self.seasonToEpisodesDictionary)[seasonNumber];
+    return (self.seasonToEpisodesDictionary)[seasonNumber] ? : @[];
 }
 
 #pragma mark - Artwork handling
@@ -328,7 +338,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 - (void)addArtworks:(NSArray *)artworks
 {
     dispatch_sync(self.syncQueue, ^{
-        [self willChangeValueForKey:@"artworks"];
+        [self willChangeValueForKey:LRTVDBShowAttributes.artworks];
         
         _artworks = [self mergeObjects:artworks
                            withObjects:_artworks
@@ -336,7 +346,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
         
         [self computeArtworkInfomation];
         
-        [self didChangeValueForKey:@"artworks"];
+        [self didChangeValueForKey:LRTVDBShowAttributes.artworks];
     });
 }
 
@@ -388,9 +398,13 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 - (void)addActors:(NSArray *)actors
 {
     dispatch_sync(self.syncQueue, ^{
+        [self willChangeValueForKey:LRTVDBShowAttributes.actors];
+
         _actors = [self mergeObjects:actors
                          withObjects:_actors
                      comparisonBlock:LRTVDBActorComparator];
+        
+        [self didChangeValueForKey:LRTVDBShowAttributes.actors];
     });
 };
 
