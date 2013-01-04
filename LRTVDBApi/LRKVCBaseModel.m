@@ -25,6 +25,18 @@
 
 @implementation LRKVCBaseModel
 
++ (instancetype)kvcBaseModelObjectWithDictionary:(NSDictionary *)dictionary
+{
+    if ([self correctDictionary:dictionary])
+    {
+       return [[self alloc] initWithDictionary:dictionary];
+    }
+    else
+    {
+        return nil;
+    }
+}
+
 - (id)initWithDictionary:(NSDictionary *)dictionary
 {
     if (self = [super init])
@@ -34,6 +46,23 @@
     }
     
     return self;
+}
+
+/**
+ In some weird occasions, the XML from the TVDB is wrong formatted.
+ This is a little bit of sanity check.
+ */
++ (BOOL)correctDictionary:(NSDictionary *)dictionary
+{
+    __block BOOL correctDictionary = YES;
+    
+    [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        
+        correctDictionary = [obj isKindOfClass:[NSString class]];
+        *stop = (correctDictionary == NO);
+    }];
+    
+    return correctDictionary;
 }
 
 #pragma mark - KVC handling
@@ -57,9 +86,10 @@
 
 - (void)setValue:(id)value forKey:(NSString *)key
 {
-    // In some weird occasions, the XML we get from the TVDB is wrong formatted
-    // and we don't get value being a NSString. Checking for that...
-    if ([value isKindOfClass:[NSString class]] && ![NSString isEmptyString:value])
+    // String check is already done in correctDictionary: method. Let's check
+    // for emptiness as it's preferred to get nil rather than an empty string for a
+    // NSString property.
+    if (![NSString isEmptyString:value])
     {
         [super setValue:value forKey:key];
     }

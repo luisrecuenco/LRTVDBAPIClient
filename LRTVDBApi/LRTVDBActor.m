@@ -47,7 +47,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 + (instancetype)actorWithDictionary:(NSDictionary *)dictionary
 {
-    return [[self alloc] initWithDictionary:dictionary];
+    return [self kvcBaseModelObjectWithDictionary:dictionary];
 }
 
 #pragma mark - Custom Setters

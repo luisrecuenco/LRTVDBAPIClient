@@ -67,6 +67,9 @@
  
  @return A new LRKVCBaseModel object.
  */
+
++ (instancetype)kvcBaseModelObjectWithDictionary:(NSDictionary *)dictionary;
+
 - (id)initWithDictionary:(NSDictionary *)dictionary;
 
 @end

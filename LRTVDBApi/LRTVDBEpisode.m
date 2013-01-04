@@ -90,7 +90,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 + (instancetype)episodeWithDictionary:(NSDictionary *)dictionary
 {
-    return [[self alloc] initWithDictionary:dictionary];
+    return [self kvcBaseModelObjectWithDictionary:dictionary];
 }
 
 #pragma mark - Has episode already aired ?

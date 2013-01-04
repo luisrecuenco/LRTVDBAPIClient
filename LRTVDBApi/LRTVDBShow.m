@@ -173,7 +173,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 + (instancetype)showWithDictionary:(NSDictionary *)dictionary
 {
-    return [[self alloc] initWithDictionary:dictionary];
+    return [self kvcBaseModelObjectWithDictionary:dictionary];
 }
 
 - (id)initWithDictionary:(NSDictionary *)dictionary

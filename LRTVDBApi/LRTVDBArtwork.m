@@ -83,7 +83,7 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 + (instancetype)artworkWithDictionary:(NSDictionary *)dictionary
 {
-    return [[self alloc] initWithDictionary:dictionary];
+    return [self kvcBaseModelObjectWithDictionary:dictionary];
 }
 
 #pragma mark - Custom Setters
