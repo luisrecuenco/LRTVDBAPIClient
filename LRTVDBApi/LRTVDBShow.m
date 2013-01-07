@@ -201,6 +201,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addEpisodes:(NSArray *)episodes
 {
+    if (!episodes) return;
+    
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.episodes];
         
@@ -337,6 +339,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addArtworks:(NSArray *)artworks
 {
+    if (!artworks) return;
+
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.artworks];
         
@@ -397,6 +401,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addActors:(NSArray *)actors
 {
+    if (!actors) return;
+    
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.actors];
 
