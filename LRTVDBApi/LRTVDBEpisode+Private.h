@@ -25,6 +25,13 @@
 @interface LRTVDBEpisode (Private)
 
 /**
+ Some episodes coming from theTVDB are not correct. They have no name, season
+ number or episode number and it's really not worth showing them. This getter
+ tells LRTVDBShow if the episode is correct so as to add it or not.
+ */
+@property (nonatomic, readonly, getter = isCorrect) BOOL correct;
+
+/**
  Updates an episode.
  */
 - (void)updateWithEpisode:(LRTVDBEpisode *)updatedEpisode;

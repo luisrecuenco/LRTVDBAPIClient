@@ -34,6 +34,9 @@
 /**
  Updates a show.
  */
-- (void)updateWithShow:(LRTVDBShow *)updatedShow;
+- (void)updateWithShow:(LRTVDBShow *)updatedShow
+        updateEpisodes:(BOOL)updateEpisodes
+        updateArtworks:(BOOL)updateArtworks
+          updateActors:(BOOL)updateActors;
 
 @end

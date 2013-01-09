@@ -49,7 +49,7 @@
 }
 
 /**
- In some weird occasions, the XML from the TVDB is wrong formatted.
+ In some weird occasions, the XML from theTVDB is wrong formatted.
  This is a little bit of sanity check.
  */
 + (BOOL)correctDictionary:(NSDictionary *)dictionary

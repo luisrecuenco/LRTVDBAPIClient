@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #import "LRTVDBArtwork.h"
-#import "LRTVDBAPIClient.h"
+#import "LRTVDBAPIClient+Private.h"
 
 NSComparator LRTVDBArtworkComparator = ^NSComparisonResult(LRTVDBArtwork *firstArtwork, LRTVDBArtwork *secondArtwork)
 {

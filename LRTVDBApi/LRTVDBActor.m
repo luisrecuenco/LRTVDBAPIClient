@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #import "LRTVDBActor.h"
-#import "LRTVDBAPIClient.h"
+#import "LRTVDBAPIClient+Private.h"
 
 NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {

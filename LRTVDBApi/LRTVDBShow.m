@@ -26,8 +26,9 @@
 #import "LRTVDBActor.h"
 #import "NSDate+LRTVDBAdditions.h"
 #import "NSString+LRTVDBAdditions.h"
-#import "LRTVDBAPIClient.h"
+#import "LRTVDBAPIClient+Private.h"
 #import "NSArray+LRTVDBAdditions.h"
+#import "LRTVDBEpisode+Private.h"
 
 const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
     .episodes = @"episodes",
@@ -188,6 +189,14 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     return self;
 }
 
+- (void)dealloc
+{
+    if (_syncQueue != NULL)
+    {
+        dispatch_release(_syncQueue);
+    }
+}
+
 #pragma mark - Episodes handling
 
 - (NSArray *)episodes
@@ -201,12 +210,18 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addEpisodes:(NSArray *)episodes
 {
-    if (!episodes) return;
+    // Filter not valid episodes
+    
+    NSIndexSet *indexSet = [episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+        return episode.isCorrect;
+    }];
+    
+    NSArray *validEpisodes = [episodes objectsAtIndexes:indexSet];
     
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.episodes];
         
-        _episodes = [self mergeObjects:episodes
+        _episodes = [self mergeObjects:validEpisodes
                            withObjects:_episodes
                        comparisonBlock:LRTVDBEpisodeComparator];
         
@@ -339,8 +354,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addArtworks:(NSArray *)artworks
 {
-    if (!artworks) return;
-
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.artworks];
         
@@ -401,8 +414,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addActors:(NSArray *)actors
 {
-    if (!actors) return;
-    
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.actors];
 
@@ -417,6 +428,9 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 #pragma mark - Update show
 
 - (void)updateWithShow:(LRTVDBShow *)updatedShow
+        updateEpisodes:(BOOL)updateEpisodes
+        updateArtworks:(BOOL)updateArtworks
+          updateActors:(BOOL)updateActors
 {
     if (updatedShow == nil) return;
   
@@ -443,9 +457,21 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.ratingCountString = updatedShow.ratingCountString;
     
     // Updates relationship info.
-    [self addEpisodes:updatedShow.episodes];
-    [self addArtworks:updatedShow.artworks];
-    [self addActors:updatedShow.actors];
+    
+    if (updateEpisodes)
+    {
+        [self addEpisodes:updatedShow.episodes];
+    }
+    
+    if (updateArtworks)
+    {
+        [self addArtworks:updatedShow.artworks];
+    }
+    
+    if (updateActors)
+    {
+        [self addActors:updatedShow.actors];
+    }
 }
 
 #pragma mark - Private

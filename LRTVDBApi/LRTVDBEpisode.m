@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #import "LRTVDBEpisode.h"
-#import "LRTVDBAPIClient.h"
+#import "LRTVDBAPIClient+Private.h"
 #import "NSString+LRTVDBAdditions.h"
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBShow.h"
@@ -98,6 +98,16 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 - (BOOL)hasAlreadyAired
 {
     return [self compare:self.show.lastEpisode] <= NSOrderedSame;
+}
+
+#pragma mark - Is Episode correct?
+
+/**
+ Used by LRTVDBShow addEpisodes: method to check if the episode is correct.
+ */
+- (BOOL)isCorrect
+{
+    return self.episodeID && self.title && self.seasonNumber && self.episodeNumber;
 }
 
 #pragma mark - Update episode
