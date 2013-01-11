@@ -69,6 +69,15 @@ static NSString *const kXMLActorTagName = @"Actor";
     {
         NSArray *episodesArrayOfDictionaries = LRTVDBAPICheckArray(dictionary[kXMLDataTagName][kXMLEpisodesTagName]);
         episodes = [[self class] episodesFromArray:episodesArrayOfDictionaries];
+        
+        if ([LRTVDBAPIClient sharedClient].includeSpecials == NO)
+        {
+            NSIndexSet *indexSet = [episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+                return [episode.seasonNumber compare:@(0)] == NSOrderedDescending;
+            }];
+            
+            episodes = [episodes objectsAtIndexes:indexSet];
+        }
     }
     
     return episodes;
