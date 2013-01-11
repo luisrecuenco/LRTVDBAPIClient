@@ -30,6 +30,26 @@
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBEpisode+Private.h"
 
+#if TARGET_OS_IPHONE
+// iOS
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
+// iOS 6
+#define LRDispatchRelease(queue)
+#else
+// iOS 5
+#define LRDispatchRelease(queue) (dispatch_release(queue));
+#endif
+#else
+// Mac OS X
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1080
+// 10.8
+#define LRDispatchRelease(queue)
+#else
+// 10.7
+#define LRDispatchRelease(queue) (dispatch_release(queue));
+#endif
+#endif
+
 const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
     .episodes = @"episodes",
     .artworks = @"artworks",
@@ -193,7 +213,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 {
     if (_syncQueue != NULL)
     {
-        dispatch_release(_syncQueue);
+        LRDispatchRelease(_syncQueue);
     }
 }
 
