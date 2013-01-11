@@ -83,7 +83,7 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
 
 + (instancetype)artworkWithDictionary:(NSDictionary *)dictionary
 {
-    return [self kvcBaseModelObjectWithDictionary:dictionary];
+    return [self baseModelObjectWithDictionary:dictionary];
 }
 
 #pragma mark - Custom Setters
@@ -138,7 +138,7 @@ static NSString *const kLRTVDBArtworkTypeSeriesKey = @"series";
     }
 }
 
-#pragma mark - LRKVCBaseModelProtocol
+#pragma mark - LRBaseModelProtocol
 
 - (NSDictionary *)mappings
 {

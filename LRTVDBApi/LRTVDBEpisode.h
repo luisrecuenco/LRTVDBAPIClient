@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRKVCBaseModel.h"
+#import "LRBaseModel.h"
 
 /**
  Episode comparison block.
@@ -29,7 +29,7 @@ extern NSComparator LRTVDBEpisodeComparator;
 
 @class LRTVDBShow;
 
-@interface LRTVDBEpisode : LRKVCBaseModel
+@interface LRTVDBEpisode : LRBaseModel
 
 @property (nonatomic, copy, readonly) NSString *episodeID;
 @property (nonatomic, copy, readonly) NSString *title;
@@ -64,7 +64,7 @@ extern NSComparator LRTVDBEpisodeComparator;
 
 /**
  Creates a new episode.
- @see LRKVCBaseModel initializer for more info.
+ @see LRBaseModel initializer for more info.
  */
 + (instancetype)episodeWithDictionary:(NSDictionary *)dictionary;
 

@@ -1,4 +1,4 @@
-// LRKVCBaseModel.m
+// LRBaseModel.m
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRKVCBaseModel.h"
+#import "LRBaseModel.h"
 #import "NSString+LRTVDBAdditions.h"
 
-@implementation LRKVCBaseModel
+@implementation LRBaseModel
 
-+ (instancetype)kvcBaseModelObjectWithDictionary:(NSDictionary *)dictionary
++ (instancetype)baseModelObjectWithDictionary:(NSDictionary *)dictionary
 {
     if ([self correctDictionary:dictionary])
     {
@@ -70,7 +70,7 @@
 - (void)setValuesForKeysWithDictionary:(NSDictionary *)keyedValues
 {
     // Let's compute the valid mappings. Only map the properties
-    // in the mappings property defined in LRKVCBaseModelProtocol.
+    // in the mappings dictionary defined in LRBaseModelProtocol.
     NSMutableDictionary *validMappings = [NSMutableDictionary dictionary];
     
     [keyedValues enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -101,7 +101,7 @@
     [super setValue:value forUndefinedKey:key];
 }
 
-#pragma mark - LRKVCBaseModelProtocol
+#pragma mark - LRBaseModelProtocol
 
 - (NSDictionary *)mappings
 {

@@ -90,7 +90,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 + (instancetype)episodeWithDictionary:(NSDictionary *)dictionary
 {
-    return [self kvcBaseModelObjectWithDictionary:dictionary];
+    return [self baseModelObjectWithDictionary:dictionary];
 }
 
 #pragma mark - Has episode already aired ?
@@ -201,7 +201,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     self.guestStars = [[_guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
-#pragma mark - LRKVCBaseModelProtocol
+#pragma mark - LRBaseModelProtocol
 
 - (NSDictionary *)mappings
 {

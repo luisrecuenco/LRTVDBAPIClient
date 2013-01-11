@@ -47,7 +47,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 + (instancetype)actorWithDictionary:(NSDictionary *)dictionary
 {
-    return [self kvcBaseModelObjectWithDictionary:dictionary];
+    return [self baseModelObjectWithDictionary:dictionary];
 }
 
 #pragma mark - Custom Setters
@@ -64,7 +64,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
     self.sortOrder = @(_sortOrderString.integerValue);
 }
 
-#pragma mark - LRKVCBaseModelProtocol
+#pragma mark - LRBaseModelProtocol
 
 - (NSDictionary *)mappings
 {

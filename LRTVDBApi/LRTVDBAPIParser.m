@@ -152,10 +152,10 @@ static NSString *const kXMLActorTagName = @"Actor";
 
 #pragma mark - Private
 
-typedef LRKVCBaseModel *(^LRKVCBaseModelDictionaryBlock)(NSDictionary *);
+typedef LRBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 
 + (NSArray *)objectsFromArray:(NSArray *)array
-              objectTypeBlock:(LRKVCBaseModelDictionaryBlock)block
+              objectTypeBlock:(LRBaseModelDictionaryBlock)block
 {
     NSMutableArray *objects = [NSMutableArray array];
     

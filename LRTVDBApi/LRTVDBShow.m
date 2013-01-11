@@ -194,7 +194,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 + (instancetype)showWithDictionary:(NSDictionary *)dictionary
 {
-    return [self kvcBaseModelObjectWithDictionary:dictionary];
+    return [self baseModelObjectWithDictionary:dictionary];
 }
 
 - (id)initWithDictionary:(NSDictionary *)dictionary
@@ -616,7 +616,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
 }
 
-#pragma mark - LRKVCBaseModelProtocol
+#pragma mark - LRBaseModelProtocol
 
 - (NSDictionary *)mappings
 {

@@ -1,4 +1,4 @@
-// LRKVCBaseModel.h
+// LRBaseModel.h
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma mark - LRKVCBaseModel Protocol definition
+#pragma mark - LRBaseModel Protocol definition
 
-@protocol LRKVCBaseModelProtocol <NSObject>
+@protocol LRBaseModelProtocol <NSObject>
 
 /**
  Dictionary with the correct mappings (@{ key : propertyName }).
@@ -32,9 +32,9 @@
 
 @end
 
-#pragma mark - LRKVCBaseModel Interface definition
+#pragma mark - LRBaseModel Interface definition
 
-@interface LRKVCBaseModel : NSObject <LRKVCBaseModelProtocol>
+@interface LRBaseModel : NSObject <LRBaseModelProtocol>
 
 /**
  Creates a new object via KVC.
@@ -48,7 +48,7 @@
  coming from XML/JSON via APIs are not very compliant with cocoa conventions.
  In order to be able to have an object whose property names are different
  from the keys in the dictionary, the 'mappings' property defined in
- LRKVCBaseModelProtocol must be provided.
+ LRBaseModelProtocol must be provided.
  
  Example:
  
@@ -56,7 +56,7 @@
  
  object: property 'awesomeKey'
  
- The object class (sublcass of LRKVCBaseModel) must have:
+ The object class (sublcass of LRBaseModel) must have:
  
  - (NSDictionary *)mappings
  {
@@ -65,10 +65,10 @@
  
  Thus, we'll have a property 'awesomeKey' whose value is 'value'.
  
- @return A new LRKVCBaseModel object.
+ @return A new LRBaseModel object.
  */
 
-+ (instancetype)kvcBaseModelObjectWithDictionary:(NSDictionary *)dictionary;
++ (instancetype)baseModelObjectWithDictionary:(NSDictionary *)dictionary;
 
 - (id)initWithDictionary:(NSDictionary *)dictionary;
 

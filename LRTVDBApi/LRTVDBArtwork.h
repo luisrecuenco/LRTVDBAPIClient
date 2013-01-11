@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRKVCBaseModel.h"
+#import "LRBaseModel.h"
 
 /**
  Artwork comparison block.
@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, LRTVDBArtworkType)
     LRTVDBArtworkTypeBanner, /** Example: http:/www.thetvdb.com/banners/graphical/82066-g38.jpg. */
 };
 
-@interface LRTVDBArtwork : LRKVCBaseModel
+@interface LRTVDBArtwork : LRBaseModel
 
 /** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
 @property (nonatomic, strong, readonly) NSURL *url;
@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, LRTVDBArtworkType)
 
 /**
  Creates a new artwork.
- @see LRKVCBaseModel initializer for more info.
+ @see LRBaseModel initializer for more info.
  */
 + (instancetype)artworkWithDictionary:(NSDictionary *)dictionary;
 
