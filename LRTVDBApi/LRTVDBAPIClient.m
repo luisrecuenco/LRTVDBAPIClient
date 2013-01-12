@@ -37,7 +37,7 @@
 #endif
 
 #if DEBUG
-#define LRLog(s,...) NSLog( @"\n\n************************************* DEBUG *************************************\n\t<%p %@:(%d)>\n\n\t%@\n*********************************************************************************\n\n", self, \
+#define LRLog(s,...) NSLog( @"\n\n------------------------------------- DEBUG -------------------------------------\n\t<%p %@:(%d)>\n\n\t%@\n---------------------------------------------------------------------------------\n\n", self, \
 [[NSString stringWithUTF8String:__FUNCTION__] lastPathComponent], __LINE__, \
 [NSString stringWithFormat:(s), ##__VA_ARGS__] )
 #else
@@ -95,12 +95,16 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     return self;
 }
 
+#pragma mark - Shows
+
 - (void)showsWithName:(NSString *)showName
       completionBlock:(void (^)(NSArray *shows, NSError *error))completionBlock
 {
     if ([NSString isEmptyString:showName])
     {
-        completionBlock(@[], nil);
+        dispatch_async(self.queue, ^{
+            completionBlock(@[], nil);
+        });
         return;
     }
     
@@ -115,7 +119,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     NSString *relativePath = [NSString stringWithFormat:@"GetSeries.php?seriesname=%@&language=all",
                               [trimmedShowName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -203,6 +207,8 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     }
 }
 
+#pragma mark - Episodes
+
 - (void)episodesWithIDs:(NSArray *)episodesIDs
         completionBlock:(void (^)(NSArray *episodes, NSDictionary *errorsDictionary))completionBlock
 {
@@ -266,7 +272,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/default/%@/%@/%@.xml", self.apiKey, showID, seasonNumber, episodeNumber, self.language];
     
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -293,12 +299,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
 }
 
+#pragma mark - Artworks
+
 - (void)artworksForShowWithID:(NSString *)showID
               completionBlock:(void (^)(NSArray *artworks, NSError *error))completionBlock
 {
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/banners.xml", self.apiKey, showID];
     
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -324,12 +332,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
 }
 
+#pragma mark - Actors
+
 - (void)actorsForShowWithID:(NSString *)showID
             completionBlock:(void (^)(NSArray *actors, NSError *error))completionBlock
 {
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/actors.xml", self.apiKey, showID];
     
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -356,73 +366,6 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 }
 
 #pragma mark - Updates
-
-- (void)updateLastUpdated
-{
-    _lastUpdated = [[NSDate date] timeIntervalSince1970];
-    [[NSUserDefaults standardUserDefaults] setDouble:_lastUpdated forKey:kLastUpdatedDefaultsKey];
-}
-
-- (void)showsIDsToUpdateWithCompletionBlock:(void (^)(NSArray *showsIDs, NSError *error))completionBlock
-{
-    NSString *relativePath = [NSString stringWithFormat:@"Updates.php?type=series&time=%f", self.lastUpdated];
-    
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
-    
-    void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        dispatch_async(self.queue, ^{
-            
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
-            
-            NSArray *showsIDs = [[LRTVDBAPIParser parser] showsIDsFromData:responseObject];
-            [self updateLastUpdated];
-            completionBlock(showsIDs, nil);
-        });
-    };
-    
-    void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
-        
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
-        
-        dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
-        });
-    };
-    
-    [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
-}
-
-- (void)episodesIDsToUpdateWithCompletionBlock:(void (^)(NSArray *episodesIDs, NSError *error))completionBlock
-{
-    NSString *relativePath = [NSString stringWithFormat:@"Updates.php?type=episode&time=%f", self.lastUpdated];
-    
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
-    
-    
-    void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        dispatch_async(self.queue, ^{
-            
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
-            
-            NSArray *episodesIDs = [[LRTVDBAPIParser parser] episodesIDsFromData:responseObject];
-            [self updateLastUpdated];
-            completionBlock(episodesIDs, nil);
-        });
-    };
-    
-    void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
-        
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
-        
-        dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
-        });
-    };
-    
-    [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
-}
 
 - (void)updateShows:(NSArray *)showsToUpdate
       checkIfNeeded:(BOOL)checkIfNeeded
@@ -470,8 +413,24 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         for (LRTVDBShow *show in validShowsToUpdate)
         {
+            // It's very likely that, after using showsWithName:completionBlock,
+            // we don't get an instance of the show in our preferred language. That
+            // doesn't necessarily mean that the show isn't translated, but theTVDB
+            // is not returning the correct information. Let's use the correct language
+            // for this very case.
+            NSString *correctLanguage = nil;
+            
+            if ([show.language isEqualToString:LRTVDBDefaultLanguage()])
+            {
+                correctLanguage = self.language;
+            }
+            else
+            {
+                correctLanguage = show.language;
+            }
+            
             [self showWithID:show.showID
-                    language:show.language
+                    language:correctLanguage
              includeEpisodes:updateEpisodes
              includeArtworks:updateArtworks
                includeActors:updateActors
@@ -575,6 +534,73 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     }
 }
 
+- (void)showsIDsToUpdateWithCompletionBlock:(void (^)(NSArray *showsIDs, NSError *error))completionBlock
+{
+    NSString *relativePath = [NSString stringWithFormat:@"Updates.php?type=series&time=%f", self.lastUpdated];
+    
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    
+    void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        dispatch_async(self.queue, ^{
+            
+            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+            
+            NSArray *showsIDs = [[LRTVDBAPIParser parser] showsIDsFromData:responseObject];
+            [self updateLastUpdated];
+            completionBlock(showsIDs, nil);
+        });
+    };
+    
+    void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        
+        dispatch_async(self.queue, ^{
+            completionBlock(nil, error);
+        });
+    };
+    
+    [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
+}
+
+- (void)episodesIDsToUpdateWithCompletionBlock:(void (^)(NSArray *episodesIDs, NSError *error))completionBlock
+{
+    NSString *relativePath = [NSString stringWithFormat:@"Updates.php?type=episode&time=%f", self.lastUpdated];
+    
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    
+    
+    void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        dispatch_async(self.queue, ^{
+            
+            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+            
+            NSArray *episodesIDs = [[LRTVDBAPIParser parser] episodesIDsFromData:responseObject];
+            [self updateLastUpdated];
+            completionBlock(episodesIDs, nil);
+        });
+    };
+    
+    void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        
+        dispatch_async(self.queue, ^{
+            completionBlock(nil, error);
+        });
+    };
+    
+    [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
+}
+
+- (void)updateLastUpdated
+{
+    _lastUpdated = [[NSDate date] timeIntervalSince1970];
+    [[NSUserDefaults standardUserDefaults] setDouble:_lastUpdated forKey:kLastUpdatedDefaultsKey];
+}
+
 #pragma mark - Private
 
 - (void)showWithID:(NSString *)showID
@@ -619,7 +645,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.zip", self.apiKey, showID, language ?: self.language];
     
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -690,7 +716,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         relativePath = [NSString stringWithFormat:@"%@/series/%@/%@.xml", self.apiKey, showID, language ?: self.language];
     }
     
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -738,7 +764,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSString *relativePath = [NSString stringWithFormat:@"%@/episodes/%@/%@.xml", self.apiKey, episodeID, language ?: self.language];
     
-    LRLog(@"Retrieving data from URL:: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         

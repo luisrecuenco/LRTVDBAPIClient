@@ -144,9 +144,6 @@
 - (void)actorsForShowWithID:(NSString *)showID
             completionBlock:(void (^)(NSArray *actors, NSError *error))completionBlock;
 
-
-#pragma mark - Updates
-
 /**
  Updates a list of shows.
  @param showsToUpdate Array of LRTVDBShow instances to be updated.
