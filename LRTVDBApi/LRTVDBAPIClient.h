@@ -148,7 +148,7 @@
  Updates a list of shows.
  @param showsToUpdate Array of LRTVDBShow instances to be updated.
  @param checkIfNeeded if YES, checks if the show needs to be updated
- since the last update based on showsIDsToUpdateWithCompletionBlock response.
+ since the last update (changed by refreshLastUpdateTimestamp).
  @param updateEpisodes Flag used to update the show episodes.
  @param updateArtworks Flag used to update the show artworks.
  @param updateActors Flag used to update the show actors.
@@ -167,7 +167,7 @@
  Updates a list of episodes.
  @param episodesToUpdate Array of LRTVDBEpisode instances to be updated.
  @param checkIfNeeded if YES, checks if the episode needs to be updated
- since the last update based on episodesIDsToUpdateWithCompletionBlock response.
+ since the last update (changed by refreshLastUpdateTimestamp).
  @param completionBlock A block object to be executed upon the completion of the request
  containing a BOOL indicating the operation success (every episode update went ok) or failure
  (there was an error in any of the episodes).
@@ -189,5 +189,12 @@
  containing an array of episodes ids (NSString's) and an error if any problem arises.
  */
 - (void)episodesIDsToUpdateWithCompletionBlock:(void (^)(NSArray *episodesIDs, NSError *error))completionBlock;
+
+/**
+ Refreshes the last update timestamp.
+ @remarks A normal use case for this method would be using it after
+ updateShows:checkIfNeeded:updateEpisodes:updateArtworks:updateActors:completionBlock:.
+ */
+- (void)refreshLastUpdateTimestamp;
 
 @end

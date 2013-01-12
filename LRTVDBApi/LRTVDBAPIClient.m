@@ -88,7 +88,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
         if (_lastUpdated == 0)
         {
-            [self updateLastUpdated];
+            [self refreshLastUpdateTimestamp];
         }
     }
     
@@ -547,7 +547,6 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             NSArray *showsIDs = [[LRTVDBAPIParser parser] showsIDsFromData:responseObject];
-            [self updateLastUpdated];
             completionBlock(showsIDs, nil);
         });
     };
@@ -578,7 +577,6 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             NSArray *episodesIDs = [[LRTVDBAPIParser parser] episodesIDsFromData:responseObject];
-            [self updateLastUpdated];
             completionBlock(episodesIDs, nil);
         });
     };
@@ -595,7 +593,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
 }
 
-- (void)updateLastUpdated
+- (void)refreshLastUpdateTimestamp
 {
     _lastUpdated = [[NSDate date] timeIntervalSince1970];
     [[NSUserDefaults standardUserDefaults] setDouble:_lastUpdated forKey:kLastUpdatedDefaultsKey];
