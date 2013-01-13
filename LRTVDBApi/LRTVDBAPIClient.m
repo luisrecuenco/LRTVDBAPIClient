@@ -752,20 +752,66 @@ static NSArray *LRTVDBLanguages(void)
     return languages;
 }
 
+/**
+ @return NSDictionary @{ languageCode : languageID } used to build the
+ show URL (http://thetvdb.com/?tab=series&id=seriesID&lid=languageID).
+ */
+static NSDictionary *LRTVDBLanguageCodes(void)
+{
+    static NSDictionary *languageCodes = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+       languageCodes = @{ @"el" : @"20",
+                          @"en" : @"7",
+                          @"zh" : @"27",
+                          @"it" : @"15",
+                          @"cs" : @"28",
+                          @"es" : @"16",
+                          @"ru" : @"22",
+                          @"nl" : @"13",
+                          @"pt" : @"26",
+                          @"no" : @"9",
+                          @"tr" : @"21",
+                          @"pl" : @"18",
+                          @"fr" : @"17",
+                          @"hr" : @"31",
+                          @"de" : @"14",
+                          @"da" : @"10",
+                          @"fi" : @"11",
+                          @"hu" : @"19",
+                          @"ja" : @"25",
+                          @"he" : @"24",
+                          @"ko" : @"32",
+                          @"sv" : @"8",
+                          @"sl" : @"30",
+                        };
+    });
+    
+    return languageCodes;
+}
+
+#pragma mark - TVDB Show URL
+
+/** TVDB show URL */
+static NSString *const kLRTVDBAPIShowURLString = @"http://thetvdb.com/?tab=series&id=%@&lid=%@";
+
+NSString *LRTVDBURLForShow(LRTVDBShow *show)
+{
+    return [NSString stringWithFormat:kLRTVDBAPIShowURLString, show.showID, LRTVDBLanguageCodes()[show.language]];
+}
+
 #pragma mark - API Key
+
+static NSString *const kLRTVDBDefaultAPIKey = @"0629B785CE550C8D";
 
 - (NSString *)apiKey
 {
     if (_apiKey == nil)
     {
-        _apiKey = [LRTVDBDefaultAPIKey() copy];
+        _apiKey = [kLRTVDBDefaultAPIKey copy];
     }
     return _apiKey;
-}
-
-NS_INLINE NSString *LRTVDBDefaultAPIKey(void)
-{
-    return @"0629B785CE550C8D";
 }
 
 @end

@@ -22,6 +22,7 @@
 
 #import "AFHTTPClient.h"
 
+@class LRTVDBShow;
 @class LRTVDBEpisode;
 
 /**
@@ -192,5 +193,10 @@
  updateShows:checkIfNeeded:updateEpisodes:updateArtworks:updateActors:completionBlock:.
  */
 - (void)refreshLastUpdateTimestamp;
+
+/**
+ @return theTVDB show URL (http://thetvdb.com/?tab=series&id=seriesID&lid=languageID).
+ */
+NSString *LRTVDBURLForShow(LRTVDBShow *show);
 
 @end
