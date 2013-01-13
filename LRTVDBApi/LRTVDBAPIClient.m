@@ -601,45 +601,16 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
 #pragma mark - Private
 
+/**
+ Creates a LRTVDBShow by downloading the zip file containing the
+ series data, artwork data and actors data.
+ */
 - (void)showWithID:(NSString *)showID
           language:(NSString *)language
    includeEpisodes:(BOOL)includeEpisodes
    includeArtworks:(BOOL)includeArtworks
      includeActors:(BOOL)includeActors
    completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
-{    
-    BOOL shouldUseZippedVersion = [self shouldUseZippedVersionBasedOnEpisodes:includeEpisodes
-                                                                     artworks:includeArtworks
-                                                                       actors:includeActors];
-    
-    if (shouldUseZippedVersion)
-    {
-        [self zipVersionOfShowWithID:showID
-                            language:language
-                     includeEpisodes:includeEpisodes
-                     includeArtworks:includeArtworks
-                       includeActors:includeActors
-                     completionBlock:completionBlock];
-    }
-    else
-    {
-        [self xmlVersionOfShowWithID:showID
-                            language:language
-                     includeEpisodes:includeEpisodes
-                     completionBlock:completionBlock];
-    }
-}
-
-/**
- Creates a LRTVDBShow by downloading the zip file containing the
- series data, artwork data and actors data.
- */
-- (void)zipVersionOfShowWithID:(NSString *)showID
-                      language:(NSString *)language
-               includeEpisodes:(BOOL)includeEpisodes
-               includeArtworks:(BOOL)includeArtworks
-                 includeActors:(BOOL)includeActors
-               completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
 {
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.zip", self.apiKey, showID, language ?: self.language];
     
@@ -656,13 +627,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             ZZArchiveEntry *thirdArchiveEntry = oldArchive.entries[2]; // actors XML info
             
             NSDictionary *seriesDictionary = [firstArchiveEntry.data toDictionary];
-            NSDictionary *artworksDictionary = [secondArchiveEntry.data toDictionary];
-            NSDictionary *actorsDictionary = [thirdArchiveEntry.data toDictionary];
             
             LRLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
             
             LRTVDBShow *show = [[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary].firstObject;
-           
+            
             if (includeEpisodes)
             {
                 [show addEpisodes:[[LRTVDBAPIParser parser] episodesFromDictionary:seriesDictionary]];
@@ -670,11 +639,13 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             if (includeArtworks)
             {
+                NSDictionary *artworksDictionary = [secondArchiveEntry.data toDictionary];
                 [show addArtworks:[[LRTVDBAPIParser parser] artworksFromDictionary:artworksDictionary]];
             }
             
             if (includeActors)
             {
+                NSDictionary *actorsDictionary = [thirdArchiveEntry.data toDictionary];
                 [show addActors:[[LRTVDBAPIParser parser] actorsFromDictionary:actorsDictionary]];
             }
             
@@ -692,75 +663,6 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
-}
-
-/**
- Creates a LRTVDBShow by downloading the xml file containing only
- series data (nothing about artwork or actors).
- */
-- (void)xmlVersionOfShowWithID:(NSString *)showID
-                      language:(NSString *)language
-               includeEpisodes:(BOOL)includeEpisodes
-               completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
-{
-    NSString *relativePath = nil;
-    
-    if (includeEpisodes)
-    {
-        relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.xml", self.apiKey, showID, language ?: self.language];
-    }
-    else
-    {
-        relativePath = [NSString stringWithFormat:@"%@/series/%@/%@.xml", self.apiKey, showID, language ?: self.language];
-    }
-    
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
-    
-    void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        dispatch_async(self.queue, ^{
-            
-            NSDictionary *seriesDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
-            LRTVDBShow *show = [[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary].firstObject;
-            
-            if (includeEpisodes)
-            {
-                [show addEpisodes:[[LRTVDBAPIParser parser] episodesFromDictionary:seriesDictionary]];
-            }
-            
-            completionBlock(show, nil);
-        });
-    };
-    
-    void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
-        
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
-        
-        dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
-        });
-    };
-    
-    [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
-}
-
-- (BOOL)shouldUseZippedVersionBasedOnEpisodes:(BOOL)episodes
-                                     artworks:(BOOL)artworks
-                                       actors:(BOOL)actors
-{
-    // From http://thetvdb.com/wiki/index.php/Programmers_API:
-    // "Please avoid making more API calls than are necessary to retrieve the information you need.
-    // Each series has a zipped XML file that contains all of the series and episode data for that
-    // series. If your program has the technical capability of handling these files, please make an
-    // attempt to use them since they'll be mirrored by more servers and will reduce bandwidth for
-    // both the server and clients".
-    
-    // Use zipped version whenever two normal request would be done
-    // to meet the requirements for the show. Sometimes, and depending on the
-    // number of episodes, the zip version is worthwhile when artworks = NO,
-    // actors = NO and episodes = YES. Let's skip episode condition for now.
-    return (artworks || actors);
 }
 
 - (void)episodeWithID:(NSString *)episodeID
