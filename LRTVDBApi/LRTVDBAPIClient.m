@@ -749,6 +749,13 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                                      artworks:(BOOL)artworks
                                        actors:(BOOL)actors
 {
+    // From http://thetvdb.com/wiki/index.php/Programmers_API:
+    // "Please avoid making more API calls than are necessary to retrieve the information you need.
+    // Each series has a zipped XML file that contains all of the series and episode data for that
+    // series. If your program has the technical capability of handling these files, please make an
+    // attempt to use them since they'll be mirrored by more servers and will reduce bandwidth for
+    // both the server and clients".
+    
     // Use zipped version whenever two normal request would be done
     // to meet the requirements for the show. Sometimes, and depending on the
     // number of episodes, the zip version is worthwhile when artworks = NO,
