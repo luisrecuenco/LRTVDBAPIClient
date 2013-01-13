@@ -569,7 +569,6 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
-    
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
@@ -757,8 +756,16 @@ static NSArray *LRTVDBLanguages(void)
 
 - (NSString *)apiKey
 {
-    NSAssert(_apiKey != nil, @"You must provide an API key.");
+    if (_apiKey == nil)
+    {
+        _apiKey = [LRTVDBDefaultAPIKey() copy];
+    }
     return _apiKey;
+}
+
+NS_INLINE NSString *LRTVDBDefaultAPIKey(void)
+{
+    return @"0629B785CE550C8D";
 }
 
 @end

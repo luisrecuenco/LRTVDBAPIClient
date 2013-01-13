@@ -31,16 +31,18 @@
 @interface LRTVDBAPIClient : AFHTTPClient
 
 /**
- The api key necessary to communicate with TVDB API.
+ The API key used to communicate with TVDB API.
+ @remarks If not set, the default TVDB API key will be used.
  */
 @property (nonatomic, copy) NSString *apiKey;
 
 /**
- The default language to be used in the API calls. The supported TVDB languages
- can be seen in LRTVDBLanguages() method or in the URL shown below.
- If no language provided (or the language provided is not available for theTVDB API),
- the device default language will be used. If the latter is not available for theTVDB
- API either, the default TVDB language (English) will be used.
+ The default language to be used in the API calls. 
+ @discussion The supported TVDB languages  can be seen in LRTVDBLanguages() method
+ or in the URL shown below. If no language provided (or the language provided is
+ not available for theTVDB API), the device default language will be used. If 
+ the latter is not available for theTVDB API either, the default TVDB language
+ (English) will be used.
  @see http://www.thetvdb.com/api/74204F775D9D3C87/languages.xml
  */
 @property (nonatomic, copy) NSString *language;
@@ -61,7 +63,6 @@
  @param showName The name of the show.
  @param completionBlock A block object to be executed upon the completion of the
  request containing an array of LRTVDBShow instances and the error if any problem occures.
- @remarks This method does not require an API Key.
  @discussion This method retrieves LRTVDBShow objects with basic information, i.e., only the following properties in LRTVDBShow will be available:
  
  - showID
@@ -90,7 +91,6 @@
  containing an array of sorted LRTVDBShow instances (the same order as the ones in
  the showsIDs array) and a dictionary of errors in case of any problems when retrieving
  any show (@{showID : NSError}).
- @remarks This method does require an API Key.
  */
 - (void)showsWithIDs:(NSArray *)showsIDs
      includeEpisodes:(BOOL)includeEpisodes
@@ -105,7 +105,6 @@
  containing an array of sorted LRTVDBEpisode instances (the same order as the ones in
  the episodesIDs array) and a dictionary of errors in case of any problems when retrieving
  any episode (@{episodeID : NSError}).
- @remarks This method does require an API Key.
  */
 - (void)episodesWithIDs:(NSArray *)episodesIDs
         completionBlock:(void (^)(NSArray *episodes, NSDictionary *errorsDictionary))completionBlock;
@@ -117,7 +116,6 @@
  @param showID ID of the show.
  @param completionBlock A block object to be executed upon the completion of the request
  containing a LRTVDBEpisode instance and an error if any problem arises.
- @remarks This method does require an API Key.
  */
 - (void)episodeWithSeasonNumber:(NSNumber *)seasonNumber
                   episodeNumber:(NSNumber *)episodeNumber
@@ -129,7 +127,6 @@
  @param showID ID of the show.
  @param completionBlock A block object to be executed upon the completion of the request
  containing an array of sorted LRTVDBArtwork instances and an error if any problem arises.
- @remarks This method does require an API Key.
  */
 - (void)artworksForShowWithID:(NSString *)showID
               completionBlock:(void (^)(NSArray *artworks, NSError *error))completionBlock;
@@ -139,7 +136,6 @@
  @param showID ID of the show.
  @param completionBlock A block object to be executed upon the completion of the request
  containing an array of sorted LRTVDBActor instances and an error if any problem arises.
- @remarks This method does require an API Key.
  */
 - (void)actorsForShowWithID:(NSString *)showID
             completionBlock:(void (^)(NSArray *actors, NSError *error))completionBlock;
