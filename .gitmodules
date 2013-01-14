@@ -1,9 +1,9 @@
-[submodule "APIClient/Vendor/AFNetworking"]
-	path = APIClient/Vendor/AFNetworking
+[submodule "Vendor/AFNetworking"]
+	path = Vendor/AFNetworking
 	url = git://github.com/AFNetworking/AFNetworking.git
-[submodule "APIClient/Vendor/TBXML"]
-	path = APIClient/Vendor/TBXML
+[submodule "Vendor/TBXML"]
+	path = Vendor/TBXML
 	url = git://github.com/71squared/TBXML.git
-[submodule "APIClient/Vendor/zipzap"]
-	path = APIClient/Vendor/zipzap
+[submodule "Vendor/zipzap"]
+	path = Vendor/zipzap
 	url = git://github.com/pixelglow/zipzap.git
