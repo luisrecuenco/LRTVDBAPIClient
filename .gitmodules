@@ -1,9 +1,9 @@
-[submodule "LRTVDBApi/Vendor/AFNetworking"]
-	path = LRTVDBApi/Vendor/AFNetworking
+[submodule "APIClient/Vendor/AFNetworking"]
+	path = APIClient/Vendor/AFNetworking
 	url = git://github.com/AFNetworking/AFNetworking.git
-[submodule "LRTVDBApi/Vendor/TBXML"]
-	path = LRTVDBApi/Vendor/TBXML
+[submodule "APIClient/Vendor/TBXML"]
+	path = APIClient/Vendor/TBXML
 	url = git://github.com/71squared/TBXML.git
-[submodule "LRTVDBApi/Vendor/zipzap"]
-	path = LRTVDBApi/Vendor/zipzap
+[submodule "APIClient/Vendor/zipzap"]
+	path = APIClient/Vendor/zipzap
 	url = git://github.com/pixelglow/zipzap.git
