@@ -25,9 +25,8 @@
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBAPIClient.h"
 #import "LRTVDBAPIClient+Private.h"
-#import "NSString+LRTVDBAdditions.h"
 #import "LRTVDBEpisode.h"
-#import "LRTVDBArtwork.h"
+#import "LRTVDBImage.h"
 #import "LRTVDBActor.h"
 #import "TBXML.h"
 
@@ -83,19 +82,17 @@ static NSString *const kXMLActorTagName = @"Actor";
     return episodes;
 }
 
-- (NSArray *)artworksFromDictionary:(NSDictionary *)dictionary
+- (NSArray *)imagesFromDictionary:(NSDictionary *)dictionary
 {
-    NSArray *artworks = @[];
+    NSArray *images = @[];
     
     if ([dictionary[kXMLBannersTagName] respondsToSelector:@selector(objectForKey:)])
     {
-        NSArray *artworksArrayOfDictionaries = LRTVDBAPICheckArray(dictionary[kXMLBannersTagName][kXMLBannerTagName]);
-        artworks = [[self class] artworksFromArray:artworksArrayOfDictionaries];
-        
-        NSParameterAssert(artworks != nil);
+        NSArray *imagesArrayOfDictionaries = LRTVDBAPICheckArray(dictionary[kXMLBannersTagName][kXMLBannerTagName]);
+        images = [[self class] imagesFromArray:imagesArrayOfDictionaries];
     }
     
-    return artworks;
+    return images;
 }
 
 - (NSArray *)actorsFromDictionary:(NSDictionary *)dictionary
@@ -105,9 +102,7 @@ static NSString *const kXMLActorTagName = @"Actor";
     if ([dictionary[kXMLActorsTagName] respondsToSelector:@selector(objectForKey:)])
     {
         NSArray *actorsArrayOfDictionaries = LRTVDBAPICheckArray(dictionary[kXMLActorsTagName][kXMLActorTagName]);
-        actors = [[self class] actorsFromArray:actorsArrayOfDictionaries];
-        
-        NSParameterAssert(actors != nil);
+        actors = [[self class] actorsFromArray:actorsArrayOfDictionaries];        
     }
 
     return actors;
@@ -197,11 +192,11 @@ typedef LRBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
                   }];
 }
 
-+ (NSArray *)artworksFromArray:(NSArray *)artworks
++ (NSArray *)imagesFromArray:(NSArray *)images
 {
-    return [self objectsFromArray:artworks
-                  objectTypeBlock:^(NSDictionary *artworkDictionary){
-                      return [LRTVDBArtwork artworkWithDictionary:artworkDictionary];
+    return [self objectsFromArray:images
+                  objectTypeBlock:^(NSDictionary *imageDictionary){
+                      return [LRTVDBImage imageWithDictionary:imageDictionary];
                   }];
 }
 
@@ -216,7 +211,7 @@ typedef LRBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 static id LRTVDBAPICheckEmptyString(id obj)
 {
     BOOL emptyString = [obj isKindOfClass:[NSString class]] &&
-                       [NSString isEmptyString:obj];
+                       [(NSString *)obj length] == 0;
     
     return emptyString ? nil : obj;
 }
@@ -251,7 +246,7 @@ static NSArray *LRTVDBAPICheckArray(id obj)
         
         if (showsWithLanguageDuplicates.count == 0) return;
         
-        LRTVDBShow *firstShow = showsWithLanguageDuplicates.firstObject;
+        LRTVDBShow *firstShow = [showsWithLanguageDuplicates firstObject];
         
         // Get shows subset with that ID = firstShow.ID
         NSIndexSet *indexSet = [showsWithLanguageDuplicates indexesOfObjectsPassingTest:^BOOL(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
@@ -260,7 +255,7 @@ static NSArray *LRTVDBAPICheckArray(id obj)
         
         NSArray *sameIdShows = [showsWithLanguageDuplicates objectsAtIndexes:indexSet];
         
-        __block LRTVDBShow *correctShow = sameIdShows.firstObject;
+        __block LRTVDBShow *correctShow = [sameIdShows firstObject];
         
         [sameIdShows enumerateObjectsUsingBlock:^(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
             

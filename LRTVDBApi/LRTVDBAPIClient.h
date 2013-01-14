@@ -38,10 +38,10 @@
 @property (nonatomic, copy) NSString *apiKey;
 
 /**
- The default language to be used in the API calls. 
+ The default language to be used in the API calls.
  @discussion The supported TVDB languages  can be seen in LRTVDBLanguages() method
  or in the URL shown below. If no language provided (or the language provided is
- not available for theTVDB API), the device default language will be used. If 
+ not available for theTVDB API), the device default language will be used. If
  the latter is not available for theTVDB API either, the default TVDB language
  (English) will be used.
  @see http://www.thetvdb.com/api/74204F775D9D3C87/languages.xml
@@ -75,8 +75,8 @@
  - bannerURL
  
  In order to retrieve more information about the show,
- showsWithIDs:includeEpisodes:includeArtworksAndActors:completionBlock:
- or updateShows:updateEpisodes:updateArtworks:updateActors:completionBlock:
+ showsWithIDs:includeEpisodes:includeImages:includeActors:completionBlock:
+ or updateShows:updateEpisodes:updateImages:updateActors:completionBlock:
  methods can be used.
  */
 - (void)showsWithName:(NSString *)showName
@@ -86,7 +86,7 @@
  Retrieves full information about the provided shows.
  @param showsIDs Array with the ids of the shows.
  @param includeEpisodes Flag used to retrieve the show episodes.
- @param includeArtworks Flag used to retrieve the show artworks.
+ @param includeImages Flag used to retrieve the show images.
  @param includeActors Flag used to retrieve the show actors.
  @param completionBlock A block object to be executed upon the completion of the request
  containing an array of sorted LRTVDBShow instances (the same order as the ones in
@@ -95,7 +95,7 @@
  */
 - (void)showsWithIDs:(NSArray *)showsIDs
      includeEpisodes:(BOOL)includeEpisodes
-     includeArtworks:(BOOL)includeArtworks
+       includeImages:(BOOL)includeImages
        includeActors:(BOOL)includeActors
      completionBlock:(void (^)(NSArray *shows, NSDictionary *errorsDictionary))completionBlock;
 
@@ -124,13 +124,13 @@
                 completionBlock:(void (^)(LRTVDBEpisode *episode, NSError *error))completionBlock;
 
 /**
- Retrieves artwork information about the provided show.
+ Retrieves images information about the provided show.
  @param showID ID of the show.
  @param completionBlock A block object to be executed upon the completion of the request
- containing an array of sorted LRTVDBArtwork instances and an error if any problem arises.
+ containing an array of sorted LRTVDBImage instances and an error if any problem arises.
  */
-- (void)artworksForShowWithID:(NSString *)showID
-              completionBlock:(void (^)(NSArray *artworks, NSError *error))completionBlock;
+- (void)imagesForShowWithID:(NSString *)showID
+            completionBlock:(void (^)(NSArray *images, NSError *error))completionBlock;
 
 /**
  Retrieves actors information about the provided show.
@@ -147,7 +147,7 @@
  @param checkIfNeeded if YES, checks if the show needs to be updated
  since the last update (changed by refreshLastUpdateTimestamp).
  @param updateEpisodes Flag used to update the show episodes.
- @param updateArtworks Flag used to update the show artworks.
+ @param updateImages Flag used to update the show images.
  @param updateActors Flag used to update the show actors.
  @param completionBlock A block object to be executed upon the completion of the request
  containing a BOOL indicating the operation success (every show update went ok) or failure
@@ -156,7 +156,7 @@
 - (void)updateShows:(NSArray *)showsToUpdate
       checkIfNeeded:(BOOL)checkIfNeeded
      updateEpisodes:(BOOL)updateEpisodes
-     updateArtworks:(BOOL)updateArtworks
+       updateImages:(BOOL)updateImages
        updateActors:(BOOL)updateActors
     completionBlock:(void (^)(BOOL finished))completionBlock;
 
@@ -190,13 +190,13 @@
 /**
  Refreshes the last update timestamp.
  @remarks A normal use case for this method would be using it after
- updateShows:checkIfNeeded:updateEpisodes:updateArtworks:updateActors:completionBlock:.
+ updateShows:checkIfNeeded:updateEpisodes:updateImages:updateActors:completionBlock:.
  */
 - (void)refreshLastUpdateTimestamp;
 
 /**
  @return theTVDB show URL (http://thetvdb.com/?tab=series&id=seriesID&lid=languageID).
  */
-NSString *LRTVDBURLForShow(LRTVDBShow *show);
+NSURL *LRTVDBURLForShow(LRTVDBShow *show);
 
 @end

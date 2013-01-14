@@ -28,6 +28,6 @@
  Removes time information from the NSDate object receiver.
  @return A new NSDate object removing the time information from the receiver.
  */
-- (NSDate *)dateByIgnoringTime;
+- (instancetype)dateByIgnoringTime;
 
 @end

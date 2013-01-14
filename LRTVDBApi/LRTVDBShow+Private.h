@@ -28,7 +28,7 @@
  Methods to manage relationships.
  */
 - (void)addEpisodes:(NSArray *)episodes;
-- (void)addArtworks:(NSArray *)artworks;
+- (void)addImages:(NSArray *)images;
 - (void)addActors:(NSArray *)actors;
 
 /**
@@ -36,7 +36,7 @@
  */
 - (void)updateWithShow:(LRTVDBShow *)updatedShow
         updateEpisodes:(BOOL)updateEpisodes
-        updateArtworks:(BOOL)updateArtworks
+          updateImages:(BOOL)updateImages
           updateActors:(BOOL)updateActors;
 
 @end

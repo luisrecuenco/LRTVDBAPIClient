@@ -24,7 +24,7 @@
 
 @implementation NSDate (LRTVDBAdditions)
 
-- (NSDate *)dateByIgnoringTime
+- (instancetype)dateByIgnoringTime
 {
     static NSCalendar *calendar = nil;
     static NSInteger secondsFromGMT = 0;

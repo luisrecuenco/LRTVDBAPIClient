@@ -30,7 +30,6 @@
 #import "ZZArchiveEntry.h"
 #import "LRTVDBAPIParser.h"
 #import "LRTVDBAPIClient+Private.h"
-#import "NSString+LRTVDBAdditions.h"
 
 #if !__has_feature(objc_arc)
 #error "LRTVDBAPI requires ARC support."
@@ -47,12 +46,12 @@
 /** TVDB Base URL */
 static NSString *const kLRTVDBAPIBaseURLString = @"http://www.thetvdb.com/api/";
 
-/** Updates user defaults key */
+/** Updates User Defaults Key */
 static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
 @interface LRTVDBAPIClient()
 {
-   __strong NSString *_language;
+    __strong NSString *_language;
 }
 
 @property (nonatomic) NSTimeInterval lastUpdated;
@@ -85,7 +84,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         _queue = dispatch_queue_create("com.LRTVDBAPI.LRTVDBAPIClientQueue", NULL);
         _lastUpdated = [[NSUserDefaults standardUserDefaults] doubleForKey:kLastUpdatedDefaultsKey];
-
+        
         if (_lastUpdated == 0)
         {
             [self refreshLastUpdateTimestamp];
@@ -100,16 +99,16 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 - (void)showsWithName:(NSString *)showName
       completionBlock:(void (^)(NSArray *shows, NSError *error))completionBlock
 {
-    if ([NSString isEmptyString:showName])
+    NSString *trimmedShowName = [showName stringByTrimmingCharactersInSet:
+                                 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    if ([trimmedShowName length] == 0)
     {
         dispatch_async(self.queue, ^{
             completionBlock(@[], nil);
         });
         return;
     }
-    
-    NSString *trimmedShowName = [showName stringByTrimmingCharactersInSet:
-                                 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
     // The url should include language=all. There are some tv shows that are only
     // in the original language (different from english). Imagine that we are
@@ -147,7 +146,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
 - (void)showsWithIDs:(NSArray *)showsIDs
      includeEpisodes:(BOOL)includeEpisodes
-     includeArtworks:(BOOL)includeArtworks
+       includeImages:(BOOL)includeImages
        includeActors:(BOOL)includeActors
      completionBlock:(void (^)(NSArray *shows, NSDictionary *errorsDictionary))completionBlock
 {
@@ -199,7 +198,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         [self showWithID:showID
                 language:self.language
          includeEpisodes:includeEpisodes
-         includeArtworks:includeArtworks
+           includeImages:includeImages
            includeActors:includeActors
          completionBlock:^(LRTVDBShow *show, NSError *error) {
              finishShowBlock(showID, show, error);
@@ -270,6 +269,8 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                   forShowWithID:(NSString *)showID
                 completionBlock:(void (^)(LRTVDBEpisode *episode, NSError *error))completionBlock
 {
+    NSParameterAssert(seasonNumber && episodeNumber && showID);
+    
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/default/%@/%@/%@.xml", self.apiKey, showID, seasonNumber, episodeNumber, self.language];
     
     LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
@@ -283,7 +284,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             NSArray *episodes = [[LRTVDBAPIParser parser] episodesFromDictionary:episodesDictionary];
             
             // We know there's only on episode in the array.
-            completionBlock(episodes.firstObject, nil);
+            completionBlock([episodes firstObject], nil);
         });
     };
     
@@ -299,11 +300,13 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
 }
 
-#pragma mark - Artworks
+#pragma mark - Images
 
-- (void)artworksForShowWithID:(NSString *)showID
-              completionBlock:(void (^)(NSArray *artworks, NSError *error))completionBlock
+- (void)imagesForShowWithID:(NSString *)showID
+            completionBlock:(void (^)(NSArray *images, NSError *error))completionBlock
 {
+    NSParameterAssert(showID);
+    
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/banners.xml", self.apiKey, showID];
     
     LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
@@ -312,11 +315,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         dispatch_async(self.queue, ^{
             
-            NSDictionary *artworkDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, artworkDictionary);
-            NSArray *artworks = [[LRTVDBAPIParser parser] artworksFromDictionary:artworkDictionary];
+            NSDictionary *imagesDictionary = [responseObject toDictionary];
+            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, imagesDictionary);
+            NSArray *images = [[LRTVDBAPIParser parser] imagesFromDictionary:imagesDictionary];
             
-            completionBlock(artworks, nil);
+            completionBlock(images, nil);
         });
     };
     
@@ -337,6 +340,8 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 - (void)actorsForShowWithID:(NSString *)showID
             completionBlock:(void (^)(NSArray *actors, NSError *error))completionBlock
 {
+    NSParameterAssert(showID);
+    
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/actors.xml", self.apiKey, showID];
     
     LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
@@ -370,7 +375,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 - (void)updateShows:(NSArray *)showsToUpdate
       checkIfNeeded:(BOOL)checkIfNeeded
      updateEpisodes:(BOOL)updateEpisodes
-     updateArtworks:(BOOL)updateArtworks
+       updateImages:(BOOL)updateImages
        updateActors:(BOOL)updateActors
     completionBlock:(void (^)(BOOL finished))completionBlock
 {
@@ -389,7 +394,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             completionBlock(YES);
             return;
         }
-
+        
         __block BOOL updateFinishedOk = YES;
         __block int numerOfUpdatedShows = 0;
         
@@ -397,7 +402,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             [showToUpdate updateWithShow:updatedShow
                           updateEpisodes:updateEpisodes
-                          updateArtworks:updateArtworks
+                            updateImages:updateImages
                             updateActors:updateActors];
             
             if (updateFinishedOk)
@@ -432,7 +437,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             [self showWithID:show.showID
                     language:correctLanguage
              includeEpisodes:updateEpisodes
-             includeArtworks:updateArtworks
+               includeImages:updateImages
                includeActors:updateActors
              completionBlock:^(LRTVDBShow *updatedShow, NSError *error) {
                  updateShowBlock(show, updatedShow, error);
@@ -510,7 +515,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                 }];
         }
     };
-
+    
     if (checkIfNeeded)
     {
         NSMutableArray *validEpisodesToUpdate = [NSMutableArray array];
@@ -602,15 +607,17 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
 /**
  Creates a LRTVDBShow by downloading the zip file containing the
- series data, artwork data and actors data.
+ series data, images data and actors data.
  */
 - (void)showWithID:(NSString *)showID
           language:(NSString *)language
    includeEpisodes:(BOOL)includeEpisodes
-   includeArtworks:(BOOL)includeArtworks
+     includeImages:(BOOL)includeImages
      includeActors:(BOOL)includeActors
    completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
 {
+    NSParameterAssert(showID);
+    
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.zip", self.apiKey, showID, language ?: self.language];
     
     LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
@@ -622,24 +629,24 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             ZZArchive *oldArchive = [ZZArchive archiveWithData:responseObject];
             
             ZZArchiveEntry *firstArchiveEntry = oldArchive.entries[0]; // series XML info
-            ZZArchiveEntry *secondArchiveEntry = oldArchive.entries[1]; // artwork XML info
+            ZZArchiveEntry *secondArchiveEntry = oldArchive.entries[1]; // images XML info
             ZZArchiveEntry *thirdArchiveEntry = oldArchive.entries[2]; // actors XML info
             
             NSDictionary *seriesDictionary = [firstArchiveEntry.data toDictionary];
             
             LRLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
             
-            LRTVDBShow *show = [[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary].firstObject;
+            LRTVDBShow *show = [[[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary] firstObject];
             
             if (includeEpisodes)
             {
                 [show addEpisodes:[[LRTVDBAPIParser parser] episodesFromDictionary:seriesDictionary]];
             }
             
-            if (includeArtworks)
+            if (includeImages)
             {
-                NSDictionary *artworksDictionary = [secondArchiveEntry.data toDictionary];
-                [show addArtworks:[[LRTVDBAPIParser parser] artworksFromDictionary:artworksDictionary]];
+                NSDictionary *imagesDictionary = [secondArchiveEntry.data toDictionary];
+                [show addImages:[[LRTVDBAPIParser parser] imagesFromDictionary:imagesDictionary]];
             }
             
             if (includeActors)
@@ -668,6 +675,8 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
              language:(NSString *)language
       completionBlock:(void (^)(LRTVDBEpisode *episode, NSError *error))completionBlock
 {
+    NSParameterAssert(episodeID);
+    
     NSString *relativePath = [NSString stringWithFormat:@"%@/episodes/%@/%@.xml", self.apiKey, episodeID, language ?: self.language];
     
     LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
@@ -681,7 +690,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             NSArray *episodes = [[LRTVDBAPIParser parser] episodesFromDictionary:episodesDictionary];
             
             // We know there's only on episode in the array.
-            completionBlock(episodes.firstObject, nil);
+            completionBlock([episodes firstObject], nil);
         });
     };
     
@@ -722,7 +731,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
 - (NSString *)preferredLanguage
 {
-    NSString *preferredLanguage = [NSLocale preferredLanguages].firstObject;
+    NSString *preferredLanguage = [[NSLocale preferredLanguages] firstObject];
     
     if ([LRTVDBLanguages() containsObject:preferredLanguage])
     {
@@ -735,10 +744,10 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 }
 
 /**
- @return A newly-initialized NSArray containing the supported TVDB API languages.
+ @return NSArray containing the supported TVDB API languages.
  @discussion TVDB languages are very unlikely to change. That's the reason not to
  make this method asynchronous and make the logic around language handling quite
- more complex. The ideal solution would be getting the languages from the 
+ more complex. The ideal solution would be getting the languages from the
  following URL: http://www.thetvdb.com/api/74204F775D9D3C87/languages.xml
  */
 static NSArray *LRTVDBLanguages(void)
@@ -754,7 +763,8 @@ static NSArray *LRTVDBLanguages(void)
 
 /**
  @return NSDictionary @{ languageCode : languageID } used to build the
- show URL (http://thetvdb.com/?tab=series&id=seriesID&lid=languageID).
+ show URL.
+ @see LRTVDBURLForShow(show) method.
  */
 static NSDictionary *LRTVDBLanguageCodes(void)
 {
@@ -796,9 +806,13 @@ static NSDictionary *LRTVDBLanguageCodes(void)
 /** TVDB show URL */
 static NSString *const kLRTVDBAPIShowURLString = @"http://thetvdb.com/?tab=series&id=%@&lid=%@";
 
-NSString *LRTVDBURLForShow(LRTVDBShow *show)
+NSURL *LRTVDBURLForShow(LRTVDBShow *show)
 {
-    return [NSString stringWithFormat:kLRTVDBAPIShowURLString, show.showID, LRTVDBLanguageCodes()[show.language]];
+    NSCParameterAssert(show);
+    
+    NSString *urlString = [NSString stringWithFormat:kLRTVDBAPIShowURLString,
+                           show.showID, LRTVDBLanguageCodes()[show.language]];
+    return [NSURL URLWithString:urlString];
 }
 
 #pragma mark - API Key

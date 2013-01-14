@@ -25,14 +25,14 @@
 @interface NSArray (LRTVDBAdditions)
 
 /**
- First object in the receiver array (nil if empty).
+ @return First object in the receiver array (nil if empty).
  */
-@property (nonatomic, readonly) id firstObject;
+- (id)firstObject;
 
 /**
  Removes duplicates from receiver array without losing the order.
  @return A new NSArray without duplicates and mantaining the order.
  */
-- (NSArray *)arrayByRemovingDuplicates;
+- (instancetype)arrayByRemovingDuplicates;
 
 @end

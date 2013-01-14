@@ -27,16 +27,16 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 {
     NSNumber *firstActorSortOrder = firstActor.sortOrder ? : @(NSIntegerMax);
     NSNumber *secondActorSortOrder = secondActor.sortOrder ? : @(NSIntegerMax);
-
+    
     return [firstActorSortOrder compare:secondActorSortOrder];
 };
 
 @interface LRTVDBActor ()
 
-@property (nonatomic, strong) NSURL *artworkURL;
+@property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSNumber *sortOrder;
 
-@property (nonatomic, copy) NSString *artworkURLString;
+@property (nonatomic, copy) NSString *imageURLString;
 @property (nonatomic, copy) NSString *sortOrderString;
 
 @end
@@ -52,10 +52,10 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 #pragma mark - Custom Setters
 
-- (void)setArtworkURLString:(NSString *)artworkURLString
+- (void)setImageURLString:(NSString *)imageURLString
 {
-    _artworkURLString = artworkURLString;
-    self.artworkURL = LRTVDBArtworkURLForPath(_artworkURLString);
+    _imageURLString = imageURLString;
+    self.imageURL = LRTVDBImageURLForPath(_imageURLString);
 }
 
 - (void)setSortOrderString:(NSString *)sortOrderString
@@ -70,7 +70,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 {
     return @{ @"Name" : @"name",
               @"Role": @"role",
-              @"Image": @"artworkURLString",
+              @"Image": @"imageURLString",
               @"SortOrder": @"sortOrderString",
               @"id" : @"actorID"
             };
@@ -80,8 +80,6 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 - (BOOL)isEqual:(id)object
 {
-    NSParameterAssert([object isKindOfClass:[LRTVDBActor class]]);
-    
     if (![object isKindOfClass:[LRTVDBActor class]])
     {
         return NO;
@@ -106,7 +104,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"\nName: %@\nRole: %@\nArtwork: %@\nActor ID: %@\nSort order: %@\n", self.name, self.role, self.artworkURL, self.actorID, self.sortOrder];
+    return [NSString stringWithFormat:@"\nName: %@\nRole: %@\nImage: %@\nActor ID: %@\nSort order: %@\n", self.name, self.role, self.imageURL, self.actorID, self.sortOrder];
 }
 
 @end

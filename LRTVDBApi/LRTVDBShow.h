@@ -36,7 +36,7 @@ extern NSComparator LRTVDBShowComparator;
 extern const struct LRTVDBShowAttributes
 {
     __unsafe_unretained NSString *episodes;
-    __unsafe_unretained NSString *artworks;
+    __unsafe_unretained NSString *images;
     __unsafe_unretained NSString *actors;
 } LRTVDBShowAttributes;
 
@@ -73,7 +73,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 /**
  Example: http:/www.thetvdb.com/banners/graphical/82066-g38.jpg
- @see LRTVDBArtwork for more info.
+ @see LRTVDBImage for more info.
  */
 @property (nonatomic, strong, readonly) NSURL *bannerURL;
 
@@ -102,13 +102,13 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 /**
  Example: http:/www.thetvdb.com/banners/posters/82066-53.jpg
- @see LRTVDBArtwork for more info.
+ @see LRTVDBImage for more info.
  */
 @property (nonatomic, strong, readonly) NSURL *posterURL;
 
 /**
  Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg
- @see LRTVDBArtwork for more info.
+ @see LRTVDBImage for more info.
  */
 @property (nonatomic, strong, readonly) NSURL *fanartURL;
 
@@ -124,16 +124,16 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, strong, readonly) NSNumber *daysToNextEpisode;
 @property (nonatomic, strong, readonly) NSNumber *numberOfSeasons;
 
-/** Ordered set of LRTVDBArtwork objects. */
-@property (nonatomic, copy, readonly) NSArray *artworks;
+/** Ordered set of LRTVDBImage objects. */
+@property (nonatomic, copy, readonly) NSArray *images;
 
 /**
- @see LRTVDBArtwork class to see an example of the different artwork types.
+ @see LRTVDBImage class to see an example of the different image types.
  */
-@property (nonatomic, copy, readonly) NSArray *fanartArtworks;
-@property (nonatomic, copy, readonly) NSArray *posterArtworks;
-@property (nonatomic, copy, readonly) NSArray *seasonArtworks;
-@property (nonatomic, copy, readonly) NSArray *bannerArtworks;
+@property (nonatomic, copy, readonly) NSArray *fanartImages;
+@property (nonatomic, copy, readonly) NSArray *posterImages;
+@property (nonatomic, copy, readonly) NSArray *seasonImages;
+@property (nonatomic, copy, readonly) NSArray *bannerImages;
 
 /** Array of LRTVDBActor instances. */
 @property (nonatomic, copy, readonly) NSArray *actors;
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
  in the corresponding lazy getters without caching anything. Thus,
  [NSDate date] would be different and so would be last and
  next episode. As this values are very common to be shown in tableViews,
- it's not a good idea to compute them every time while the user is scrolling due 
+ it's not a good idea to compute them every time while the user is scrolling due
  to performance-wise reasons (even if this time is not that big).
  So, if this values need to be updated/refreshed, this method clears the cache
  and updates them based on the new [NSDate date] value.

@@ -1,4 +1,4 @@
-// LRTVDBArtwork.h
+// LRTVDBImage.h
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -23,20 +23,20 @@
 #import "LRBaseModel.h"
 
 /**
- Artwork comparison block.
+ Image comparison block.
  */
-extern NSComparator LRTVDBArtworkComparator;
+extern NSComparator LRTVDBImageComparator;
 
-typedef NS_ENUM(NSInteger, LRTVDBArtworkType)
+typedef NS_ENUM(NSInteger, LRTVDBImageType)
 {
-    LRTVDBArtworkTypeUnknown,
-    LRTVDBArtworkTypeFanart, /** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
-    LRTVDBArtworkTypePoster, /** Example: http:/www.thetvdb.com/banners/posters/82066-53.jpg. */
-    LRTVDBArtworkTypeSeason, /** Example: http:/www.thetvdb.com/banners/seasons/82066-4-6.jpg. */
-    LRTVDBArtworkTypeBanner, /** Example: http:/www.thetvdb.com/banners/graphical/82066-g38.jpg. */
+    LRTVDBImageTypeUnknown,
+    LRTVDBImageTypeFanart, /** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
+    LRTVDBImageTypePoster, /** Example: http:/www.thetvdb.com/banners/posters/82066-53.jpg. */
+    LRTVDBImageTypeSeason, /** Example: http:/www.thetvdb.com/banners/seasons/82066-4-6.jpg. */
+    LRTVDBImageTypeBanner, /** Example: http:/www.thetvdb.com/banners/graphical/82066-g38.jpg. */
 };
 
-@interface LRTVDBArtwork : LRBaseModel
+@interface LRTVDBImage : LRBaseModel
 
 /** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
 @property (nonatomic, strong, readonly) NSURL *url;
@@ -47,12 +47,12 @@ typedef NS_ENUM(NSInteger, LRTVDBArtworkType)
 @property (nonatomic, strong, readonly) NSNumber *rating;
 @property (nonatomic, strong, readonly) NSNumber *ratingCount;
 
-@property (nonatomic, readonly) LRTVDBArtworkType type;
+@property (nonatomic, readonly) LRTVDBImageType type;
 
 /**
- Creates a new artwork.
+ Creates a new image.
  @see LRBaseModel initializer for more info.
  */
-+ (instancetype)artworkWithDictionary:(NSDictionary *)dictionary;
++ (instancetype)imageWithDictionary:(NSDictionary *)dictionary;
 
 @end

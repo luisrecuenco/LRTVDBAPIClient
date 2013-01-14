@@ -20,18 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/** TVDB artwork base URL */
-static NSString *const kLRTVDBAPIArtworkBaseURLString = @"http://www.thetvdb.com/banners/";
+/** TVDB image base URL */
+static NSString *const kLRTVDBAPIImageBaseURLString = @"http://www.thetvdb.com/banners/";
 
 /**
- Provides the correct artwork URL based on the relative path
+ Provides the correct image URL based on the relative path
  provided in theTVDB XML response.
- @param path The relative path of the artwork.
- @return A newly-initialized NSURL object with the correct artwork URL.
+ @param path The relative path of the image.
+ @return A newly-initialized NSURL object with the correct image URL.
  */
-NS_INLINE NSURL *LRTVDBArtworkURLForPath(NSString *path)
+NS_INLINE NSURL *LRTVDBImageURLForPath(NSString *path)
 {    
-    NSString *urlString = [kLRTVDBAPIArtworkBaseURLString stringByAppendingPathComponent:path];
+    NSString *urlString = [kLRTVDBAPIImageBaseURLString stringByAppendingPathComponent:path];
     return [NSURL URLWithString:urlString];
 }
 

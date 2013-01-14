@@ -28,7 +28,7 @@
 
 - (NSArray *)showsFromDictionary:(NSDictionary *)dictionary;
 - (NSArray *)episodesFromDictionary:(NSDictionary *)dictionary;
-- (NSArray *)artworksFromDictionary:(NSDictionary *)dictionary;
+- (NSArray *)imagesFromDictionary:(NSDictionary *)dictionary;
 - (NSArray *)actorsFromDictionary:(NSDictionary *)dictionary;
 
 - (NSArray *)showsIDsFromData:(NSData *)data;

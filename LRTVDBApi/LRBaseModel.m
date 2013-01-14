@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #import "LRBaseModel.h"
-#import "NSString+LRTVDBAdditions.h"
 
 @implementation LRBaseModel
 
@@ -29,7 +28,7 @@
 {
     if ([self correctDictionary:dictionary])
     {
-       return [[self alloc] initWithDictionary:dictionary];
+        return [[self alloc] initWithDictionary:dictionary];
     }
     else
     {
@@ -74,25 +73,18 @@
     NSMutableDictionary *validMappings = [NSMutableDictionary dictionary];
     
     [keyedValues enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        
         NSString *objectKey = self.mappings[key];
-        if (objectKey)
+
+        BOOL isEmpty = [(NSString *)obj length] == 0;
+        
+        if (objectKey && !isEmpty)
         {
             validMappings[objectKey] = obj;
         }
     }];
     
     [super setValuesForKeysWithDictionary:validMappings];
-}
-
-- (void)setValue:(id)value forKey:(NSString *)key
-{
-    // String check is already done in correctDictionary: method. Let's check
-    // for emptiness as it's preferred to get nil rather than an empty string for a
-    // NSString property.
-    if (![NSString isEmptyString:value])
-    {
-        [super setValue:value forKey:key];
-    }
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key

@@ -36,7 +36,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     NSNumber *secondEpisodeSeasonNumber = secondEpisode.seasonNumber ? : @(NSIntegerMax);
     
     NSComparisonResult comparisonResult = [firstEpisodeSeasonNumber compare:secondEpisodeSeasonNumber];
-        
+    
     if (comparisonResult == NSOrderedSame)
     {
         NSNumber *firstEpisodeEpisodeNumber = firstEpisode.episodeNumber ? : @(NSIntegerMax);
@@ -63,7 +63,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 @property (nonatomic, strong) NSNumber *seasonNumber;
 @property (nonatomic, strong) NSNumber *rating;
 @property (nonatomic, strong) NSNumber *ratingCount;
-@property (nonatomic, strong) NSURL *artworkURL;
+@property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSDate *airedDate;
 
 @property (nonatomic, copy) NSString *episodeNumberString;
@@ -71,7 +71,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 @property (nonatomic, copy) NSString *ratingString;
 @property (nonatomic, copy) NSString *ratingCountString;
 @property (nonatomic, copy) NSString *airedDateString;
-@property (nonatomic, copy) NSString *artworkURLString;
+@property (nonatomic, copy) NSString *imageURLString;
 
 /** Writer 1|Writer 2... */
 @property (nonatomic, copy) NSString *writersList;
@@ -126,7 +126,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     self.ratingCountString = updatedEpisode.ratingCountString;
     self.airedDateString = updatedEpisode.airedDateString;
     self.overview = updatedEpisode.overview;
-    self.artworkURLString = updatedEpisode.artworkURLString;
+    self.imageURLString = updatedEpisode.imageURLString;
     self.imdbID = updatedEpisode.imdbID;
     self.language = updatedEpisode.language;
     self.showID = updatedEpisode.showID;
@@ -174,13 +174,13 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 - (void)setAiredDateString:(NSString *)airedDateString
 {
     _airedDateString = airedDateString;
-    self.airedDate = _airedDateString.dateValue;
+    self.airedDate = [_airedDateString dateValue];
 }
 
-- (void)setArtworkURLString:(NSString *)artworkURLString
+- (void)setImageURLString:(NSString *)imageURLString
 {
-    _artworkURLString = artworkURLString;
-    self.artworkURL = LRTVDBArtworkURLForPath(_artworkURLString);
+    _imageURLString = imageURLString;
+    self.imageURL = LRTVDBImageURLForPath(_imageURLString);
 }
 
 - (void)setWritersList:(NSString *)writersList
@@ -213,7 +213,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
               @"RatingCount" : @"ratingCountString",
               @"FirstAired" : @"airedDateString",
               @"Overview" : @"overview",
-              @"filename" : @"artworkURLString",
+              @"filename" : @"imageURLString",
               @"IMDB_ID" : @"imdbID",
               @"Language" : @"language",
               @"seriesid" : @"showID",
@@ -227,8 +227,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (BOOL)isEqual:(id)object
 {
-    NSParameterAssert([object isKindOfClass:[LRTVDBEpisode class]]);
-    
     if (![object isKindOfClass:[LRTVDBEpisode class]])
     {
         return NO;

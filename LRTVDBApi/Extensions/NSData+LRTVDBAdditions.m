@@ -36,7 +36,7 @@
 
 #pragma mark - Private
 
-- (NSMutableDictionary*)dictionaryWithTBXMLElement:(TBXMLElement *)element
+- (NSDictionary *)dictionaryWithTBXMLElement:(TBXMLElement *)element
 {
     if (!element) return nil;
     

@@ -36,7 +36,7 @@
     return [dateFormatter dateFromString:self];
 }
 
-- (NSString *)unescapeHTMLEntities
+- (instancetype)unescapeHTMLEntities
 {
     NSDictionary *htmlEntities = @{ @"&quot;" : @"\"",
                                     @"&apos;" : @"\"",
@@ -49,7 +49,7 @@
     [htmlEntities enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         unescapedString = [unescapedString stringByReplacingOccurrencesOfString:key withString:obj];
     }];
-
+    
     return unescapedString;
 }
 
@@ -70,19 +70,6 @@
     }
     
     return [copiedSelf componentsSeparatedByString:kSeparator];
-}
-
-+ (BOOL)isEmptyString:(NSString *)string
-{
-    BOOL empty = ((NSNull *)string == [NSNull null]) || (string == nil);
-    
-    if (empty == NO)
-    {
-        NSString *trimmedString = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        empty = trimmedString.length == 0;
-    }
-    
-    return empty;
 }
 
 @end

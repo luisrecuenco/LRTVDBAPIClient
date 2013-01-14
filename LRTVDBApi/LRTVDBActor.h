@@ -38,7 +38,7 @@ extern NSComparator LRTVDBActorComparator;
 @property (nonatomic, copy, readonly) NSString *role;
 
 /** Example: http:/www.thetvdb.com/banners/actors/77049.jpg. */
-@property (nonatomic, strong, readonly) NSURL *artworkURL;
+@property (nonatomic, strong, readonly) NSURL *imageURL;
 
 /** Number to be used when sorting different actors, i.e, 0 -> most important actor. */
 @property (nonatomic, strong, readonly) NSNumber *sortOrder;
