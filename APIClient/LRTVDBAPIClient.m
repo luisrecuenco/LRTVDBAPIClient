@@ -447,18 +447,13 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     if (checkIfNeeded)
     {
-        NSMutableArray *validShowsToUpdate = [NSMutableArray array];
-        
         [self showsIDsToUpdateWithCompletionBlock:^(NSArray *showsIDs, NSError *error) {
             
-            for (LRTVDBShow *show in showsToUpdate)
-            {
-                if ([showsIDs containsObject:show.showID])
-                {
-                    [validShowsToUpdate addObject:show];
-                }
-            }
+            NSIndexSet *indexSet = [showsToUpdate indexesOfObjectsPassingTest:^BOOL(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
+                return [showsIDs containsObject:show.showID];
+            }];
             
+            NSArray *validShowsToUpdate = [showsToUpdate objectsAtIndexes:indexSet];
             block(validShowsToUpdate);
         }];
     }
@@ -518,18 +513,13 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     if (checkIfNeeded)
     {
-        NSMutableArray *validEpisodesToUpdate = [NSMutableArray array];
-        
         [self episodesIDsToUpdateWithCompletionBlock:^(NSArray *episodesIDs, NSError *error) {
             
-            for (LRTVDBEpisode *episode in episodesToUpdate)
-            {
-                if ([episodesIDs containsObject:episode.episodeID])
-                {
-                    [validEpisodesToUpdate addObject:episode];
-                }
-            }
+            NSIndexSet *indexSet = [episodesToUpdate indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+                return [episodesIDs containsObject:episode.episodeID];
+            }];
             
+            NSArray *validEpisodesToUpdate = [episodesToUpdate objectsAtIndexes:indexSet];
             block(validEpisodesToUpdate);
         }];
     }
@@ -606,8 +596,8 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 #pragma mark - Private
 
 /**
- Creates a LRTVDBShow by downloading the zip file containing the
- series data, images data and actors data.
+ Creates a LRTVDBShow by downloading the zip or xml file containing the
+ series, images and actors data.
  */
 - (void)showWithID:(NSString *)showID
           language:(NSString *)language
@@ -618,6 +608,41 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSParameterAssert(showID);
     
+    BOOL shouldUseZippedVersion = [self shouldUseZippedVersionBasedOnEpisodes:includeEpisodes
+                                                                       images:includeImages
+                                                                       actors:includeActors];
+    
+    if (shouldUseZippedVersion)
+    {
+        [self zipVersionOfShowWithID:showID
+                            language:language
+                     includeEpisodes:includeEpisodes
+                       includeImages:includeImages
+                       includeActors:includeActors
+                     completionBlock:completionBlock];
+    }
+    else
+    {
+        [self xmlVersionOfShowWithID:showID
+                            language:language
+                     includeEpisodes:includeEpisodes
+                     completionBlock:completionBlock];
+    }
+}
+
+/**
+ Creates a LRTVDBShow by downloading the zip file containing the
+ series, images and actors data.
+ */
+- (void)zipVersionOfShowWithID:(NSString *)showID
+                      language:(NSString *)language
+               includeEpisodes:(BOOL)includeEpisodes
+                 includeImages:(BOOL)includeImages
+                 includeActors:(BOOL)includeActors
+               completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
+{
+    NSParameterAssert(showID);
+
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.zip", self.apiKey, showID, language ?: self.language];
     
     LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
@@ -669,6 +694,76 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
+}
+
+/**
+ Creates a LRTVDBShow by downloading the xml file containing only
+ series data (nothing about images or actors).
+ */
+- (void)xmlVersionOfShowWithID:(NSString *)showID
+                      language:(NSString *)language
+               includeEpisodes:(BOOL)includeEpisodes
+               completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
+{
+    NSParameterAssert(showID);
+
+    NSString *relativePath = nil;
+    
+    if (includeEpisodes)
+    {
+        relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.xml", self.apiKey, showID, language ?: self.language];
+    }
+    else
+    {
+        relativePath = [NSString stringWithFormat:@"%@/series/%@/%@.xml", self.apiKey, showID, language ?: self.language];
+    }
+    
+    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    
+    void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        dispatch_async(self.queue, ^{
+            
+            NSDictionary *seriesDictionary = [responseObject toDictionary];
+            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
+            LRTVDBShow *show = [[[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary] firstObject];
+            
+            if (includeEpisodes)
+            {
+                [show addEpisodes:[[LRTVDBAPIParser parser] episodesFromDictionary:seriesDictionary]];
+            }
+            
+            completionBlock(show, nil);
+        });
+    };
+    
+    void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        
+        dispatch_async(self.queue, ^{
+            completionBlock(nil, error);
+        });
+    };
+    
+    [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
+}
+
+- (BOOL)shouldUseZippedVersionBasedOnEpisodes:(BOOL)episodes
+                                       images:(BOOL)images
+                                       actors:(BOOL)actors
+{
+    // From http://thetvdb.com/wiki/index.php/Programmers_API:
+    // "Please avoid making more API calls than are necessary to retrieve the information you need.
+    // Each series has a zipped XML file that contains all of the series and episode data for that
+    // series. If your program has the technical capability of handling these files, please make an
+    // attempt to use them since they'll be mirrored by more servers and will reduce bandwidth for
+    // both the server and clients".
+    
+    // Use zipped version if:
+    // 1 - images = YES || actors = YES (Two request would be done to meet the requirements).
+    // 2 - episodes = YES (most of the times, this means that the xml file is bigger than the zip file).
+    return episodes || images || actors;
 }
 
 - (void)episodeWithID:(NSString *)episodeID
