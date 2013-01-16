@@ -24,7 +24,7 @@
 #import "LRTVDBAPIClient+Private.h"
 #import "NSString+LRTVDBAdditions.h"
 #import "NSArray+LRTVDBAdditions.h"
-#import "LRTVDBShow.h"
+#import "LRTVDBShow+Private.h"
 
 NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
 {
@@ -108,6 +108,13 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 - (BOOL)isCorrect
 {
     return self.episodeID && self.title && self.seasonNumber && self.episodeNumber;
+}
+
+#pragma mark - Has episode been seen?
+
+- (BOOL)hasBeenSeen
+{
+    return [self.airedDate compare:self.show.episodeSeenMarkerDate] < NSOrderedDescending;
 }
 
 #pragma mark - Update episode

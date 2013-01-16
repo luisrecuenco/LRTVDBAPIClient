@@ -166,4 +166,9 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
  */
 - (void)refreshEpisodesInfomation;
 
+/**
+ Marks an episode (and the previous ones) as seen.
+ */
+- (void)markEpisodeAsSeen:(LRTVDBEpisode *)episode;
+
 @end

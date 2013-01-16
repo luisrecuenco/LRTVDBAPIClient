@@ -24,6 +24,8 @@
 
 @interface LRTVDBShow (Private)
 
+@property (nonatomic, strong, readonly) NSDate *episodeSeenMarkerDate;
+
 /**
  Methods to manage relationships.
  */

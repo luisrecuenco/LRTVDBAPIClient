@@ -57,10 +57,11 @@ extern NSComparator LRTVDBEpisodeComparator;
 @property (nonatomic, copy, readonly) NSArray *directors;
 @property (nonatomic, copy, readonly) NSArray *guestStars;
 
+@property (nonatomic, readonly, getter = hasAlreadyAired) BOOL alreadyAired;
+@property (nonatomic, readonly, getter = hasBeenSeen) BOOL seen;
+
 /** Weak reference to the show. */
 @property (nonatomic, weak) LRTVDBShow *show;
-
-@property (nonatomic, readonly, getter=hasAlreadyAired) BOOL alreadyAired;
 
 /**
  Creates a new episode.
