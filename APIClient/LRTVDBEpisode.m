@@ -100,6 +100,13 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     return [self compare:self.show.lastEpisode] <= NSOrderedSame;
 }
 
+#pragma mark - Has episode been seen?
+
+- (BOOL)hasBeenSeen
+{
+    return [self.airedDate compare:self.show.episodeSeenMarkerDate] < NSOrderedDescending;
+}
+
 #pragma mark - Is Episode correct?
 
 /**
@@ -108,13 +115,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 - (BOOL)isCorrect
 {
     return self.episodeID && self.title && self.seasonNumber && self.episodeNumber;
-}
-
-#pragma mark - Has episode been seen?
-
-- (BOOL)hasBeenSeen
-{
-    return [self.airedDate compare:self.show.episodeSeenMarkerDate] < NSOrderedDescending;
 }
 
 #pragma mark - Update episode
