@@ -231,17 +231,10 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)addEpisodes:(NSArray *)episodes
 {
-    // Filter not valid episodes
-    NSIndexSet *indexSet = [episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
-        return episode.isCorrect;
-    }];
-    
-    NSArray *validEpisodes = [episodes objectsAtIndexes:indexSet];
-    
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.episodes];
         
-        _episodes = [self mergeObjects:validEpisodes
+        _episodes = [self mergeObjects:episodes
                            withObjects:_episodes
                        comparisonBlock:LRTVDBEpisodeComparator];
         

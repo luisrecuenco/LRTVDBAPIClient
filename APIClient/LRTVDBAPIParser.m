@@ -25,7 +25,7 @@
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBAPIClient.h"
 #import "LRTVDBAPIClient+Private.h"
-#import "LRTVDBEpisode.h"
+#import "LRTVDBEpisode+Private.h"
 #import "LRTVDBImage.h"
 #import "LRTVDBActor.h"
 #import "TBXML.h"
@@ -68,15 +68,22 @@ static NSString *const kXMLActorTagName = @"Actor";
     {
         NSArray *episodesArrayOfDictionaries = LRTVDBAPICheckArray(dictionary[kXMLDataTagName][kXMLEpisodesTagName]);
         episodes = [[self class] episodesFromArray:episodesArrayOfDictionaries];
-        
-        if ([LRTVDBAPIClient sharedClient].includeSpecials == NO)
-        {
-            NSIndexSet *indexSet = [episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
-                return [episode.seasonNumber compare:@(0)] == NSOrderedDescending;
-            }];
+                
+        // Filter not valid and special episodes
+        NSIndexSet *indexSet = [episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
             
-            episodes = [episodes objectsAtIndexes:indexSet];
-        }
+            if ([LRTVDBAPIClient sharedClient].includeSpecials == NO)
+            {
+                return episode.isCorrect && [episode.seasonNumber compare:@(0)] == NSOrderedDescending;
+            }
+            else
+            {
+                return episode.isCorrect;
+            }
+        }];
+        
+        episodes = [episodes objectsAtIndexes:indexSet];
+        
     }
     
     return episodes;
