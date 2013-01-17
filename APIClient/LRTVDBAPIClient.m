@@ -32,7 +32,7 @@
 #import "LRTVDBAPIClient+Private.h"
 
 #if !__has_feature(objc_arc)
-#error "LRTVDBAPI requires ARC support."
+#error "LRTVDBAPIClient requires ARC support."
 #endif
 
 #if DEBUG
@@ -82,7 +82,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         [self registerHTTPOperationClass:[AFHTTPRequestOperation class]];
         [self setDefaultHeader:@"Accept" value:@"application/xml"];
         
-        _queue = dispatch_queue_create("com.LRTVDBAPI.LRTVDBAPIClientQueue", NULL);
+        _queue = dispatch_queue_create("com.LRTVDBAPIClient.LRTVDBAPIClientQueue", NULL);
         _lastUpdated = [[NSUserDefaults standardUserDefaults] doubleForKey:kLastUpdatedDefaultsKey];
         
         if (_lastUpdated == 0)

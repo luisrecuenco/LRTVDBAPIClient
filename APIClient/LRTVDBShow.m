@@ -204,7 +204,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     
     if (self)
     {
-        _syncQueue = dispatch_queue_create("com.LRTVDBAPI.LRTVDBShowQueue", NULL);
+        _syncQueue = dispatch_queue_create("com.LRTVDBAPIClient.LRTVDBShowQueue", NULL);
     }
     
     return self;
