@@ -69,6 +69,7 @@
 /** Update Shows tests */
 - (void)testUpdateShowsBasicChecks;
 - (void)testUpdateShowsLanguage;
+- (void)testUpdateShowsKVO;
 
 /** Update Episodes tests */
 - (void)testUpdateEpisodeBasicChecks;

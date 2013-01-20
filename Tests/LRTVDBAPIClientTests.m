@@ -585,7 +585,7 @@
     [show setValue:@"82066" forKey:@"showID"];
     
     [self updateShows:@[show]
-        updateEpisode:YES
+       updateEpisodes:YES
          updateImages:YES
          updateActors:YES
       completionBlock:^(BOOL finished) {
@@ -616,12 +616,57 @@
     [LRTVDBAPIClient sharedClient].language = @"es";
     
     [self updateShows:@[show]
-        updateEpisode:NO
+       updateEpisodes:NO
          updateImages:NO
          updateActors:NO completionBlock:^(BOOL finished) {
              
              STAssertEqualObjects(show.language, @"es", @"Language must be Spanish");
          }];
+}
+
+static BOOL sEpisodesKVONotified = NO;
+static BOOL sImageKVONotified = NO;
+static BOOL sActorsKVONotified = NO;
+
+- (void)testUpdateShowsKVO
+{    
+    LRTVDBShow *show = [[LRTVDBShow alloc] init];
+    [show setValue:@"82066" forKey:@"showID"];
+    
+    [show addObserver:self
+           forKeyPath:LRTVDBShowAttributes.episodes
+              options:0
+              context:NULL];
+    
+    [show addObserver:self
+           forKeyPath:LRTVDBShowAttributes.images
+              options:0
+              context:NULL];
+    
+    [show addObserver:self
+           forKeyPath:LRTVDBShowAttributes.actors
+              options:0
+              context:NULL];
+    
+    sEpisodesKVONotified = sImageKVONotified = sActorsKVONotified = NO;
+
+    [self updateShows:@[show]
+       updateEpisodes:YES
+         updateImages:YES
+         updateActors:YES
+      completionBlock:^(BOOL finished) {
+          
+          STAssertTrue(sEpisodesKVONotified, @"Episode KVO should have been notified");
+          STAssertTrue(sImageKVONotified, @"Image KVO should have been notified");
+          STAssertTrue(sActorsKVONotified, @"Actors KVO should have been notified");
+          
+          [show removeObserver:self
+                    forKeyPath:LRTVDBShowAttributes.episodes];
+          [show removeObserver:self
+                    forKeyPath:LRTVDBShowAttributes.images];
+          [show removeObserver:self
+                    forKeyPath:LRTVDBShowAttributes.actors];
+      }];
 }
 
 #pragma mark - Update Episodes
@@ -806,7 +851,7 @@
 }
 
 - (void)updateShows:(NSArray *)showsToUpdate
-      updateEpisode:(BOOL)updateEpisodes
+     updateEpisodes:(BOOL)updateEpisodes
        updateImages:(BOOL)updateImages
        updateActors:(BOOL)updateActors
     completionBlock:(void (^) (BOOL finished))completionBlock
@@ -999,6 +1044,16 @@
         STAssertNotNil(actor.imageURL, @"Image URL can't be nil");
         STAssertNotNil(actor.sortOrder, @"Sort Order can't be nil");
     }
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath
+                       ofObject:(id)object
+                         change:(NSDictionary *)change
+                        context:(void *)context
+{
+    sEpisodesKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.episodes];
+    sImageKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.images];
+    sActorsKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.actors];
 }
 
 @end
