@@ -198,18 +198,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     return [self baseModelObjectWithDictionary:dictionary];
 }
 
-- (id)initWithDictionary:(NSDictionary *)dictionary
-{
-    self = [super initWithDictionary:dictionary];
-    
-    if (self)
-    {
-        _syncQueue = dispatch_queue_create("com.LRTVDBAPIClient.LRTVDBShowQueue", NULL);
-    }
-    
-    return self;
-}
-
 - (void)dealloc
 {
     if (_syncQueue != NULL)
@@ -450,6 +438,18 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
         [self didChangeValueForKey:LRTVDBShowAttributes.actors];
     });
 };
+
+#pragma mark - Sync Queue
+
+- (dispatch_queue_t)syncQueue
+{
+    if (_syncQueue == NULL)
+    {
+        _syncQueue = dispatch_queue_create("com.LRTVDBAPIClient.LRTVDBShowQueue", NULL);
+    }
+    
+    return _syncQueue;
+}
 
 #pragma mark - Update show
 
