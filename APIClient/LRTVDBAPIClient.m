@@ -137,7 +137,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
+            completionBlock(@[], error);
         });
     };
     
@@ -153,7 +153,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     if (showsIDs.count == 0)
     {
         dispatch_async(self.queue, ^{
-            completionBlock(@[], nil);
+            completionBlock(@[], @{});
         });
         return;
     }
@@ -214,7 +214,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     if (episodesIDs.count == 0)
     {
         dispatch_async(self.queue, ^{
-            completionBlock(@[], nil);
+            completionBlock(@[], @{});
         });
         return;
     }
@@ -328,7 +328,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
+            completionBlock(@[], error);
         });
     };
     
@@ -363,7 +363,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
+            completionBlock(@[], error);
         });
     };
     
@@ -551,7 +551,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
+            completionBlock(@[], error);
         });
     };
     
@@ -580,7 +580,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
+            completionBlock(@[], error);
         });
     };
     
