@@ -353,6 +353,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)markEpisodeAsSeen:(LRTVDBEpisode *)episode
 {
+    NSAssert(episode.show == self, @"Wrong episode");
+    
     self.episodeSeenMarkerDate = episode.airedDate;
 }
 
