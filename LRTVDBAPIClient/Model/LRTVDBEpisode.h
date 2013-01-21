@@ -47,8 +47,10 @@ extern NSComparator LRTVDBEpisodeComparator;
 /** Example: http:/www.thetvdb.com/banners/episodes/82066/2948641.jpg. */
 @property (nonatomic, strong, readonly) NSURL *imageURL;
 
-/** Example: http://www.imdb.com/title/imdbID ( http://www.imdb.com/title/tt1635958/ ) */
 @property (nonatomic, copy, readonly) NSString *imdbID;
+
+/** Example: http://www.imdb.com/title/tt1635958/ */
+@property (nonatomic, readonly) NSURL *imdbURL;
 
 @property (nonatomic, copy, readonly) NSString *language;
 @property (nonatomic, copy, readonly) NSString *showID;

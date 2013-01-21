@@ -66,8 +66,10 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 /** Date in which the show was first aired. */
 @property (nonatomic, strong, readonly) NSDate *premiereDate;
 
-/** Example: http://www.imdb.com/title/imdbID (http://www.imdb.com/title/tt1119644/) */
 @property (nonatomic, copy, readonly) NSString *imdbID;
+
+/** Example: http://www.imdb.com/title/tt1119644/ */
+@property (nonatomic, readonly) NSURL *imdbURL;
 
 @property (nonatomic, copy, readonly) NSString *language;
 

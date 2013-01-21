@@ -117,6 +117,16 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     return self.episodeID && self.title && self.seasonNumber && self.episodeNumber;
 }
 
+#pragma mark - IMDB URL
+
+- (NSURL *)imdbURL
+{
+    if (!self.imdbID) return nil;
+    
+    return [NSURL URLWithString:[NSString stringWithFormat:
+                                 @"http://www.imdb.com/title/%@/", self.imdbID]];
+}
+
 #pragma mark - Update episode
 
 - (void)updateWithEpisode:(LRTVDBEpisode *)updatedEpisode;

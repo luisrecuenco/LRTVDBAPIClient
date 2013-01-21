@@ -252,6 +252,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
         NSDate *fromDate = [[NSDate date] dateByIgnoringTime];
         
         void (^block)(LRTVDBEpisode *, NSUInteger, BOOL *) = ^(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+            
             NSDate *toDate = [episode.airedDate dateByIgnoringTime];
             
             if ([toDate compare:fromDate] == NSOrderedAscending)
@@ -273,7 +274,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     // Next episode
     NSUInteger nextEpisodeIndex = [_episodes indexOfObject:self.lastEpisode] + 1;
     BOOL notValidNextEpisode = nextEpisodeIndex >= _episodes.count ||
-    [_episodes[nextEpisodeIndex] airedDate] == nil;
+                               [_episodes[nextEpisodeIndex] airedDate] == nil;
     self.nextEpisode = notValidNextEpisode ? nil : (_episodes)[nextEpisodeIndex];
     
     // Days to next episode
@@ -449,6 +450,16 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
     
     return _syncQueue;
+}
+
+#pragma mark - IMDB URL
+
+- (NSURL *)imdbURL
+{
+    if (!self.imdbID) return nil;
+    
+    return [NSURL URLWithString:[NSString stringWithFormat:
+                                 @"http://www.imdb.com/title/%@/", self.imdbID]];
 }
 
 #pragma mark - Update show
