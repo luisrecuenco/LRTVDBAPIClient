@@ -35,6 +35,10 @@
 #error "LRTVDBAPIClient requires ARC support."
 #endif
 
+#ifndef NS_BLOCKS_AVAILABLE
+#error "LRTVDBAPIClient requires blocks."
+#endif
+
 #if DEBUG
 #define LRLog(s,...) NSLog( @"\n\n------------------------------------- DEBUG -------------------------------------\n\t<%p %@:(%d)>\n\n\t%@\n---------------------------------------------------------------------------------\n\n", self, \
 [[NSString stringWithUTF8String:__FUNCTION__] lastPathComponent], __LINE__, \
