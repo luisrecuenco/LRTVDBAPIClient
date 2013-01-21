@@ -70,6 +70,4 @@
 
 + (instancetype)baseModelObjectWithDictionary:(NSDictionary *)dictionary;
 
-- (id)initWithDictionary:(NSDictionary *)dictionary;
-
 @end
