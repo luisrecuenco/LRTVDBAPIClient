@@ -54,7 +54,7 @@ static NSString *const kXMLActorTagName = @"Actor";
     {
         NSArray *showsArrayOfDictionaries = LRTVDBAPICheckArray(dictionary[kXMLDataTagName][kXMLSeriesTagName]);
         NSArray *showsWithLanguageDuplicates = [[self class] showsFromArray:showsArrayOfDictionaries];
-        showsWithoutLanguageDuplicates = [self removeLanguageDuplicatesFromShows:showsWithLanguageDuplicates];
+        showsWithoutLanguageDuplicates = [[self class] removeLanguageDuplicatesFromShows:showsWithLanguageDuplicates];
     }
     
     return showsWithoutLanguageDuplicates;
@@ -215,37 +215,7 @@ typedef LRBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
                   }];
 }
 
-static id LRTVDBAPICheckEmptyString(id obj)
-{
-    BOOL emptyString = [obj isKindOfClass:[NSString class]] &&
-                       [(NSString *)obj length] == 0;
-    
-    return emptyString ? nil : obj;
-}
-
-static NSArray *LRTVDBAPICheckArray(id obj)
-{
-    if (LRTVDBAPICheckEmptyString(obj) == nil)
-    {
-        return nil;
-    }
-    else if ([obj isKindOfClass:[NSDictionary class]])
-    {
-        return @[obj];
-    }
-    else if ([obj isKindOfClass:[NSArray class]])
-    {
-        return obj;
-    }
-    else
-    {
-        [NSException raise:NSInternalInconsistencyException
-                    format:@"Oops! What objects is sending the API!?"];
-        return nil;
-    }
-}
-
-- (NSArray *)removeLanguageDuplicatesFromShows:(NSArray *)showsWithLanguageDuplicates
++ (NSArray *)removeLanguageDuplicatesFromShows:(NSArray *)showsWithLanguageDuplicates
 {
     NSMutableArray *showsWithoutLanguageDuplicates = [NSMutableArray array];
     
@@ -286,6 +256,36 @@ static NSArray *LRTVDBAPICheckArray(id obj)
     removeLanguageDuplicatesBlock([showsWithLanguageDuplicates mutableCopy]);
     
     return [showsWithoutLanguageDuplicates copy];
+}
+
+static id LRTVDBAPICheckEmptyString(id obj)
+{
+    BOOL emptyString = [obj isKindOfClass:[NSString class]] &&
+    [(NSString *)obj length] == 0;
+    
+    return emptyString ? nil : obj;
+}
+
+static NSArray *LRTVDBAPICheckArray(id obj)
+{
+    if (LRTVDBAPICheckEmptyString(obj) == nil)
+    {
+        return nil;
+    }
+    else if ([obj isKindOfClass:[NSDictionary class]])
+    {
+        return @[obj];
+    }
+    else if ([obj isKindOfClass:[NSArray class]])
+    {
+        return obj;
+    }
+    else
+    {
+        [NSException raise:NSInternalInconsistencyException
+                    format:@"Oops! What objects is sending the API!?"];
+        return nil;
+    }
 }
 
 @end
