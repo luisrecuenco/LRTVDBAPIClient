@@ -1,4 +1,4 @@
-// LRBaseModel.h
+// LRTVDBBaseModel.h
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,21 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma mark - LRBaseModel Protocol definition
+#pragma mark - LRTVDBBaseModelSerializableProtocol
 
-@protocol LRBaseModelProtocol <NSObject>
+@protocol LRTVDBBaseModelSerializableProtocol <NSObject>
+
++ (id<LRTVDBBaseModelSerializableProtocol>)deserialize:(NSDictionary *)dictionary;
+- (NSDictionary *)serialize;
+
+@end
+
+#pragma mark - LRTVDBBaseModelMappingsProtocol
+
+@protocol LRTVDBBaseModelMappingsProtocol <NSObject>
 
 /**
  Dictionary with the correct mappings (@{ key : propertyName }).
- @see initWithDictionary: documentation.
+ @see baseModelObjectWithDictionary: documentation.
  */
 @property (nonatomic, readonly) NSDictionary *mappings;
 
 @end
 
-#pragma mark - LRBaseModel Interface definition
+#pragma mark - LRTVDBBaseModel Interface definition
 
-@interface LRBaseModel : NSObject <LRBaseModelProtocol>
+@interface LRTVDBBaseModel : NSObject <LRTVDBBaseModelMappingsProtocol, LRTVDBBaseModelSerializableProtocol>
 
 /**
  Creates a new object via KVC.
@@ -56,7 +65,7 @@
  
  object: property 'awesomeKey'
  
- The object class (sublcass of LRBaseModel) must have:
+ The object class (sublcass of LRTVDBBaseModel) must have:
  
  - (NSDictionary *)mappings
  {
@@ -65,9 +74,9 @@
  
  Thus, we'll have a property 'awesomeKey' whose value is 'value'.
  
- @return A new LRBaseModel object.
+ @return A new LRTVDBBaseModel object.
  */
 
-+ (instancetype)baseModelObjectWithDictionary:(NSDictionary *)dictionary;
++ (instancetype)tvdbBaseModelWithDictionary:(NSDictionary *)dictionary;
 
 @end

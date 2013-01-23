@@ -22,6 +22,7 @@
 
 #import "LRTVDBActor.h"
 #import "LRTVDBAPIClient+Private.h"
+#import "LRTVDBBaseModel+Private.h"
 
 NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {
@@ -47,7 +48,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 + (instancetype)actorWithDictionary:(NSDictionary *)dictionary
 {
-    return [self baseModelObjectWithDictionary:dictionary];
+    return [self tvdbBaseModelWithDictionary:dictionary];
 }
 
 #pragma mark - Custom Setters
@@ -64,7 +65,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
     self.sortOrder = @(_sortOrderString.integerValue);
 }
 
-#pragma mark - LRBaseModelProtocol
+#pragma mark - LRTVDBBaseModelMappingsProtocol
 
 - (NSDictionary *)mappings
 {
@@ -74,6 +75,18 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
               @"SortOrder": @"sortOrderString",
               @"id" : @"actorID"
             };
+}
+
+#pragma mark - LRTVDBBaseModelSerializableProtocol
+
++ (LRTVDBActor *)deserialize:(NSDictionary *)dictionary
+{
+    return [self actorWithDictionary:dictionary];
+}
+
+- (NSDictionary *)serialize
+{
+    return self.persistenceDictionary;
 }
 
 #pragma mark - Equality methods

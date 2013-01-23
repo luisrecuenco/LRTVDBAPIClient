@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRBaseModel.h"
+#import "LRTVDBBaseModel.h"
 
 /**
  Image comparison block.
@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, LRTVDBImageType)
     LRTVDBImageTypeBanner, /** Example: http:/www.thetvdb.com/banners/graphical/82066-g38.jpg. */
 };
 
-@interface LRTVDBImage : LRBaseModel
+@interface LRTVDBImage : LRTVDBBaseModel
 
 /** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
 @property (nonatomic, strong, readonly) NSURL *url;
@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, LRTVDBImageType)
 
 /**
  Creates a new image.
- @see LRBaseModel initializer for more info.
+ @see LRTVDBBaseModel initializer for more info.
  */
 + (instancetype)imageWithDictionary:(NSDictionary *)dictionary;
 

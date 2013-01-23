@@ -1,4 +1,4 @@
-// LRBaseModel.m
+// LRTVDBBaseModel.m
 //
 // Copyright (c) 2012 Luis Recuenco
 //
@@ -20,11 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRBaseModel.h"
+#import "LRTVDBBaseModel.h"
 
-@implementation LRBaseModel
+@interface LRTVDBBaseModel ()
 
-+ (instancetype)baseModelObjectWithDictionary:(NSDictionary *)dictionary
+@property (nonatomic, strong) NSDictionary *persistenceDictionary;
+
+@end
+
+@implementation LRTVDBBaseModel
+
++ (instancetype)tvdbBaseModelWithDictionary:(NSDictionary *)dictionary
 {
     if ([self correctDictionary:dictionary])
     {
@@ -40,6 +46,8 @@
 {
     if (self = [super init])
     {
+        _persistenceDictionary = dictionary;
+        
         // Property - key mapping via KVC
         [self setValuesForKeysWithDictionary:dictionary];
     }
@@ -93,12 +101,30 @@
     [super setValue:value forUndefinedKey:key];
 }
 
-#pragma mark - LRBaseModelProtocol
+#pragma mark - LRTVDBBaseModelMappingsProtocol
 
 - (NSDictionary *)mappings
 {
     [NSException raise:NSInternalInconsistencyException
 				format:@"%@: Subclasses must override this method and provide the necessary mappings", NSStringFromSelector(_cmd)];
+    
+    return nil;
+}
+
+#pragma mark - LRTVDBBaseModelSerializableProtocol
+
++ (id<LRTVDBBaseModelSerializableProtocol>)deserialize:(NSDictionary *)dictionary
+{
+    [NSException raise:NSInternalInconsistencyException
+				format:@"%@: Subclasses must override this method", NSStringFromSelector(_cmd)];
+    
+    return nil;
+}
+
+- (NSDictionary *)serialize
+{
+    [NSException raise:NSInternalInconsistencyException
+				format:@"%@: Subclasses must override this method", NSStringFromSelector(_cmd)];
     
     return nil;
 }

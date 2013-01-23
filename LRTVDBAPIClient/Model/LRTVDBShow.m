@@ -28,6 +28,7 @@
 #import "LRTVDBAPIClient+Private.h"
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBEpisode+Private.h"
+#import "LRTVDBBaseModel+Private.h"
 
 #if TARGET_OS_IPHONE
 // iOS
@@ -195,7 +196,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 + (instancetype)showWithDictionary:(NSDictionary *)dictionary
 {
-    return [self baseModelObjectWithDictionary:dictionary];
+    return [self tvdbBaseModelWithDictionary:dictionary];
 }
 
 - (void)dealloc
@@ -494,7 +495,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.premiereDateString = updatedShow.premiereDateString;
     self.ratingString = updatedShow.ratingString;
     self.ratingCountString = updatedShow.ratingCountString;
-    
+    self.persistenceDictionary = updatedShow.persistenceDictionary;
+
     // Updates relationship info.
     
     if (updateEpisodes)
@@ -635,7 +637,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
 }
 
-#pragma mark - LRBaseModelProtocol
+#pragma mark - LRTVDBBaseModelMappingsProtocol
 
 - (NSDictionary *)mappings
 {
@@ -660,6 +662,135 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
               @"Rating" : @"ratingString",
               @"RatingCount" : @"ratingCountString"
             };
+}
+
+#pragma mark - LRTVDBBaseModelSerializableProtocol
+
+static NSString *const kShowEpisodesKey = @"kShowEpisodesKey";
+static NSString *const kShowImagesKey = @"kShowImagesKey";
+static NSString *const kShowActorsksKey = @"kShowActorsksKey";
+
++ (LRTVDBShow *)deserialize:(NSDictionary *)dictionary
+{
+    NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
+    
+    NSArray *episodesDictionaries = [mutableDictionary objectForKey:kShowEpisodesKey];
+    NSArray *imagesDictionaries = [mutableDictionary objectForKey:kShowImagesKey];
+    NSArray *actorsDictionaries = [mutableDictionary objectForKey:kShowActorsksKey];
+    
+    [mutableDictionary removeObjectForKey:kShowEpisodesKey];
+    [mutableDictionary removeObjectForKey:kShowImagesKey];
+    [mutableDictionary removeObjectForKey:kShowActorsksKey];
+    
+    LRTVDBShow *show = [self showWithDictionary:mutableDictionary];
+    
+    NSMutableArray *episodes = [NSMutableArray array];
+    NSMutableArray *images = [NSMutableArray array];
+    NSMutableArray *actors = [NSMutableArray array];
+    
+    for (NSDictionary *episodeDictionary in episodesDictionaries)
+    {
+        [episodes addObject:[LRTVDBEpisode deserialize:episodeDictionary]];
+    }
+    
+    for (NSDictionary *imageDictionary in imagesDictionaries)
+    {
+        [images addObject:[LRTVDBImage deserialize:imageDictionary]];
+    }
+    
+    for (NSDictionary *actorDictionary in actorsDictionaries)
+    {
+        [actors addObject:[LRTVDBActor deserialize:actorDictionary]];
+    }
+    
+    [show addEpisodes:episodes];
+    [show addImages:images];
+    [show addActors:actors];
+    
+    return show;
+}
+
+- (NSDictionary *)serialize
+{
+    NSMutableDictionary *mutableDictionary = [self.persistenceDictionary mutableCopy];
+    
+    [mutableDictionary setObject:[self serializeEpisodes:self.episodes] forKey:kShowEpisodesKey];
+    [mutableDictionary setObject:[self serializeImages:self.images] forKey:kShowImagesKey];
+    [mutableDictionary setObject:[self serializeActors:self.actors] forKey:kShowActorsksKey];
+    
+    return [mutableDictionary copy];
+}
+
+- (NSArray *)deserializeEpisodes:(NSArray *)episodes
+{
+    NSMutableArray *deserializedEpisodes = [NSMutableArray arrayWithCapacity:[episodes count]];
+    
+    for (NSDictionary *dictionary in episodes)
+    {
+        [deserializedEpisodes addObject:[LRTVDBEpisode deserialize:dictionary]];
+    }
+    
+    return [deserializedEpisodes copy];
+}
+
+- (NSArray *)serializeEpisodes:(NSArray *)episodes
+{
+    NSMutableArray *serializedEpisodes = [NSMutableArray arrayWithCapacity:[episodes count]];
+    
+    for (LRTVDBEpisode *episode in episodes)
+    {
+        [serializedEpisodes addObject:[episode serialize]];
+    }
+    
+    return [serializedEpisodes copy];
+}
+
+- (NSArray *)deserializeImages:(NSArray *)images
+{
+    NSMutableArray *deserializedImages = [NSMutableArray arrayWithCapacity:[images count]];
+    
+    for (NSDictionary *dictionary in images)
+    {
+        [deserializedImages addObject:[LRTVDBImage deserialize:dictionary]];
+    }
+    
+    return [deserializedImages copy];
+}
+
+- (NSArray *)serializeImages:(NSArray *)images
+{
+    NSMutableArray *serializedImages = [NSMutableArray arrayWithCapacity:[images count]];
+    
+    for (LRTVDBImage *image in images)
+    {
+        [serializedImages addObject:[image serialize]];
+    }
+    
+    return [serializedImages copy];
+}
+
+- (NSArray *)deserializeActors:(NSArray *)actors
+{
+    NSMutableArray *deserializedActors = [NSMutableArray arrayWithCapacity:[actors count]];
+    
+    for (NSDictionary *dictionary in actors)
+    {
+        [deserializedActors addObject:[LRTVDBActor deserialize:dictionary]];
+    }
+    
+    return [deserializedActors copy];
+}
+
+- (NSArray *)serializeActors:(NSArray *)actors
+{
+    NSMutableArray *serializedActors = [NSMutableArray arrayWithCapacity:[actors count]];
+    
+    for (LRTVDBActor *actor in actors)
+    {
+        [serializedActors addObject:[actor serialize]];
+    }
+    
+    return [serializedActors copy];
 }
 
 #pragma mark - Equality methods

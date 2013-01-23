@@ -22,6 +22,7 @@
 
 #import "LRTVDBImage.h"
 #import "LRTVDBAPIClient+Private.h"
+#import "LRTVDBBaseModel+Private.h"
 
 NSComparator LRTVDBImageComparator = ^NSComparisonResult(LRTVDBImage *firstImage, LRTVDBImage *secondImage)
 {
@@ -83,7 +84,7 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
 
 + (instancetype)imageWithDictionary:(NSDictionary *)dictionary
 {
-    return [self baseModelObjectWithDictionary:dictionary];
+    return [self tvdbBaseModelWithDictionary:dictionary];
 }
 
 #pragma mark - Custom Setters
@@ -138,7 +139,7 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
     }
 }
 
-#pragma mark - LRBaseModelProtocol
+#pragma mark - LRTVDBBaseModelMappingsProtocol
 
 - (NSDictionary *)mappings
 {
@@ -148,6 +149,18 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
               @"RatingCount": @"ratingCountString",
               @"BannerType" : @"typeString"
             };
+}
+
+#pragma mark - LRTVDBBaseModelSerializableProtocol
+
++ (LRTVDBImage *)deserialize:(NSDictionary *)dictionary
+{
+    return [self imageWithDictionary:dictionary];
+}
+
+- (NSDictionary *)serialize
+{
+    return self.persistenceDictionary;
 }
 
 #pragma mark - Equality methods

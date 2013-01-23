@@ -25,6 +25,7 @@
 #import "NSString+LRTVDBAdditions.h"
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBShow+Private.h"
+#import "LRTVDBBaseModel+Private.h"
 
 NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
 {
@@ -90,7 +91,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 + (instancetype)episodeWithDictionary:(NSDictionary *)dictionary
 {
-    return [self baseModelObjectWithDictionary:dictionary];
+    return [self tvdbBaseModelWithDictionary:dictionary];
 }
 
 #pragma mark - Has episode already aired ?
@@ -150,6 +151,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     self.writersList = updatedEpisode.writersList;
     self.directorsList = updatedEpisode.directorsList;
     self.guestStarsList = updatedEpisode.guestStarsList;
+    self.persistenceDictionary = updatedEpisode.persistenceDictionary;
 }
 
 #pragma mark - Custom Setters
@@ -218,7 +220,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     self.guestStars = [[_guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
-#pragma mark - LRBaseModelProtocol
+#pragma mark - LRTVDBBaseModelMappingsProtocol
 
 - (NSDictionary *)mappings
 {
@@ -238,6 +240,18 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
               @"Director" : @"directorsList",
               @"GuestStars" : @"guestStarsList"
             };
+}
+
+#pragma mark - LRTVDBBaseModelSerializableProtocol
+
++ (LRTVDBEpisode *)deserialize:(NSDictionary *)dictionary
+{
+    return [self episodeWithDictionary:dictionary];
+}
+
+- (NSDictionary *)serialize
+{
+    return self.persistenceDictionary;
 }
 
 #pragma mark - Equality methods

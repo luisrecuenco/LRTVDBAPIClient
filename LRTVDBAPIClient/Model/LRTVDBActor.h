@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRBaseModel.h"
+#import "LRTVDBBaseModel.h"
 
 /**
  Actor comparison block.
  */
 extern NSComparator LRTVDBActorComparator;
 
-@interface LRTVDBActor : LRBaseModel
+@interface LRTVDBActor : LRTVDBBaseModel
 
 @property (nonatomic, copy, readonly) NSString *actorID;
 
@@ -45,7 +45,7 @@ extern NSComparator LRTVDBActorComparator;
 
 /**
  Creates a new actor.
- @see LRBaseModel initializer for more info.
+ @see LRTVDBBaseModel initializer for more info.
  */
 + (instancetype)actorWithDictionary:(NSDictionary *)dictionary;
 

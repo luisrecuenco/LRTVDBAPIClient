@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRBaseModel.h"
+#import "LRTVDBBaseModel.h"
 
 /**
  Show comparison block.
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 @class LRTVDBEpisode;
 
-@interface LRTVDBShow : LRBaseModel
+@interface LRTVDBShow : LRTVDBBaseModel
 
 /**
  Basic properties, i.e., the ones obtained when retrieving
@@ -142,7 +142,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 /**
  Creates a new show.
- @see LRBaseModel initializer for more info.
+ @see LRTVDBBaseModel initializer for more info.
  */
 + (instancetype)showWithDictionary:(NSDictionary *)dictionary;
 
