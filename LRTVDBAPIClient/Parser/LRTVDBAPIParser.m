@@ -219,7 +219,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 {
     NSMutableArray *showsWithoutLanguageDuplicates = [NSMutableArray array];
     
-    void (^__block removeLanguageDuplicatesBlock)(NSMutableArray *) = ^(NSMutableArray *showsWithLanguageDuplicates){
+    void (^__block removeLanguageDuplicatesBlock)(NSMutableArray *) = [^(NSMutableArray *showsWithLanguageDuplicates){
         
         if (showsWithLanguageDuplicates.count == 0) return;
         
@@ -251,9 +251,12 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
         [showsWithLanguageDuplicates removeObjectsInArray:sameIdShows];
         
         removeLanguageDuplicatesBlock(showsWithLanguageDuplicates);
-    };
+        
+    } copy];
     
     removeLanguageDuplicatesBlock([showsWithLanguageDuplicates mutableCopy]);
+    
+    removeLanguageDuplicatesBlock = nil;
     
     return [showsWithoutLanguageDuplicates copy];
 }
