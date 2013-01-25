@@ -386,7 +386,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     if (showsToUpdate.count == 0)
     {
         dispatch_async(self.queue, ^{
-            completionBlock(YES);
+            if (completionBlock) completionBlock(YES);
         });
         return;
     }
@@ -395,7 +395,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         if (validShowsToUpdate.count == 0)
         {
-            completionBlock(YES);
+            if (completionBlock) completionBlock(YES);
             return;
         }
         
@@ -416,7 +416,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             if (++numerOfUpdatedShows == validShowsToUpdate.count)
             {
-                completionBlock(updateFinishedOk);
+                if (completionBlock) completionBlock(YES);
             }
         };
         
