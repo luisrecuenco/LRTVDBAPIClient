@@ -285,7 +285,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.numberOfSeasons = [_episodes.lastObject seasonNumber];
     
     // Show status
-    if (self.basicStatus == LRTVDBShowStatusEnded)
+    if (self.basicStatus == LRTVDBShowBasicStatusEnded)
     {
         self.status = LRTVDBShowStatusEnded;
     }
@@ -629,11 +629,11 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
     else if ([_basicStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
     {
-        self.basicStatus = LRTVDBShowStatusEnded;
+        self.basicStatus = LRTVDBShowBasicStatusEnded;
     }
     else
     {
-        self.basicStatus = LRTVDBShowStatusUnknown;
+        self.basicStatus = LRTVDBShowBasicStatusUnknown;
     }
 }
 
