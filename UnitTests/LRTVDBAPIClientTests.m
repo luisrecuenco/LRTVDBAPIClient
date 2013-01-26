@@ -1046,10 +1046,10 @@ static BOOL sActorsKVONotified = NO;
     }
 }
 
-- (void) observeValueForKeyPath:(NSString *)keyPath
-                       ofObject:(id)object
-                         change:(NSDictionary *)change
-                        context:(void *)context
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
 {
     sEpisodesKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.episodes];
     sImageKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.images];
