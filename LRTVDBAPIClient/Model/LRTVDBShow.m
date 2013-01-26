@@ -30,26 +30,6 @@
 #import "LRTVDBEpisode+Private.h"
 #import "LRTVDBBaseModel+Private.h"
 
-#if TARGET_OS_IPHONE
-// iOS
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
-// iOS 6
-#define LRDispatchRelease(queue)
-#else
-// iOS 5
-#define LRDispatchRelease(queue) (dispatch_release(queue));
-#endif
-#else
-// Mac OS X
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1080
-// 10.8
-#define LRDispatchRelease(queue)
-#else
-// 10.7
-#define LRDispatchRelease(queue) (dispatch_release(queue));
-#endif
-#endif
-
 const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
     .episodes = @"episodes",
     .images = @"images",
@@ -201,10 +181,12 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)dealloc
 {
+#if !OS_OBJECT_USE_OBJC
     if (_syncQueue != NULL)
     {
-        LRDispatchRelease(_syncQueue);
+        dispatch_release(_syncQueue);
     }
+#endif
 }
 
 #pragma mark - Episodes handling
