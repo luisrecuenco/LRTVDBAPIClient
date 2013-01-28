@@ -74,7 +74,7 @@ static NSString *const kXMLActorTagName = @"Actor";
             
             if ([LRTVDBAPIClient sharedClient].includeSpecials == NO)
             {
-                return episode.isCorrect && [episode.seasonNumber compare:@(0)] == NSOrderedDescending;
+                return episode.isCorrect && episode.seasonNumber.unsignedIntegerValue > 0;
             }
             else
             {

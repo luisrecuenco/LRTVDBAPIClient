@@ -164,8 +164,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSString *genresList; /** |Genre 1|Genre 2|... */
 @property (nonatomic, copy) NSString *actorsNamesList; /** |Actor 1|Actor 2|... */
 
-@property (nonatomic, strong) NSDate *episodeSeenMarkerDate;
-
 @property (nonatomic) dispatch_queue_t syncQueue;
 
 @end
@@ -255,7 +253,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     }
     
     // Next episode
-    NSUInteger nextEpisodeIndex = [_episodes indexOfObject:self.lastEpisode] + 1;
+    NSUInteger nextEpisodeIndex = [_episodes indexOfObjectIdenticalTo:self.lastEpisode] + 1;
     BOOL notValidNextEpisode = nextEpisodeIndex >= _episodes.count ||
                                [_episodes[nextEpisodeIndex] airedDate] == nil;
     self.nextEpisode = notValidNextEpisode ? nil : (_episodes)[nextEpisodeIndex];
@@ -324,21 +322,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 - (NSArray *)episodesForSeason:(NSNumber *)seasonNumber
 {
     return (self.seasonToEpisodesDictionary)[seasonNumber] ? : @[];
-}
-
-- (NSDate *)episodeSeenMarkerDate {    
-    if (_episodeSeenMarkerDate == nil)
-    {
-        _episodeSeenMarkerDate = [NSDate distantPast];
-    }
-    return _episodeSeenMarkerDate;
-}
-
-- (void)markEpisodeAsSeen:(LRTVDBEpisode *)episode
-{
-    NSAssert(episode.show == self, @"Wrong episode");
-    
-    self.episodeSeenMarkerDate = episode.airedDate;
 }
 
 #pragma mark - Images handling

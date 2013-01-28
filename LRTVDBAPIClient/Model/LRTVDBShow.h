@@ -126,6 +126,11 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, strong, readonly) NSNumber *daysToNextEpisode;
 @property (nonatomic, strong, readonly) NSNumber *numberOfSeasons;
 
+/**
+ Last episode that has been seen. 
+ */
+@property (nonatomic, weak) LRTVDBEpisode *lastEpisodeSeen;
+
 /** Ordered set of LRTVDBImage objects. */
 @property (nonatomic, copy, readonly) NSArray *images;
 
@@ -167,10 +172,5 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
  and updates them based on the new [NSDate date] value.
  */
 - (void)refreshEpisodesInfomation;
-
-/**
- Marks an episode (and the previous ones) as seen.
- */
-- (void)markEpisodeAsSeen:(LRTVDBEpisode *)episode;
 
 @end
