@@ -631,6 +631,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 #pragma mark - LRTVDBBaseModelSerializableProtocol
 
+static NSString *const kLastEpisodeSeenKey = @"kLastEpisodeSeenKey";
 static NSString *const kShowEpisodesKey = @"kShowEpisodesKey";
 static NSString *const kShowImagesKey = @"kShowImagesKey";
 static NSString *const kShowActorsksKey = @"kShowActorsksKey";
@@ -639,10 +640,12 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
 {
     NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
     
+    NSString *lastEpisodeSeenID = [mutableDictionary objectForKey:kLastEpisodeSeenKey];
     NSArray *episodesDictionaries = [mutableDictionary objectForKey:kShowEpisodesKey];
     NSArray *imagesDictionaries = [mutableDictionary objectForKey:kShowImagesKey];
     NSArray *actorsDictionaries = [mutableDictionary objectForKey:kShowActorsksKey];
     
+    [mutableDictionary removeObjectForKey:kLastEpisodeSeenKey];
     [mutableDictionary removeObjectForKey:kShowEpisodesKey];
     [mutableDictionary removeObjectForKey:kShowImagesKey];
     [mutableDictionary removeObjectForKey:kShowActorsksKey];
@@ -672,12 +675,29 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
     [show addImages:images];
     [show addActors:actors];
     
+    if (lastEpisodeSeenID)
+    {
+        NSUInteger lastEpisodeSeenIndex = [show.episodes indexOfObjectPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+            return [episode.episodeID isEqualToString:lastEpisodeSeenID];
+        }];
+        
+        if (lastEpisodeSeenIndex != NSNotFound)
+        {
+            show.lastEpisodeSeen = show.episodes[lastEpisodeSeenIndex];
+        }
+    }
+    
     return show;
 }
 
 - (NSDictionary *)serialize
 {
     NSMutableDictionary *mutableDictionary = [self.persistenceDictionary mutableCopy];
+    
+    if (self.lastEpisodeSeen.episodeID)
+    {
+        [mutableDictionary setObject:self.lastEpisodeSeen.episodeID forKey:kLastEpisodeSeenKey];
+    }
     
     [mutableDictionary setObject:[self serializeEpisodes:self.episodes] forKey:kShowEpisodesKey];
     [mutableDictionary setObject:[self serializeImages:self.images] forKey:kShowImagesKey];
