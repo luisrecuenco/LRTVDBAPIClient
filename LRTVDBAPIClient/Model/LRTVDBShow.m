@@ -640,10 +640,10 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
 {
     NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
     
-    NSString *lastEpisodeSeenID = [mutableDictionary objectForKey:kLastEpisodeSeenKey];
-    NSArray *episodesDictionaries = [mutableDictionary objectForKey:kShowEpisodesKey];
-    NSArray *imagesDictionaries = [mutableDictionary objectForKey:kShowImagesKey];
-    NSArray *actorsDictionaries = [mutableDictionary objectForKey:kShowActorsksKey];
+    NSString *lastEpisodeSeenID = mutableDictionary[kLastEpisodeSeenKey];
+    NSArray *episodesDictionaries = mutableDictionary[kShowEpisodesKey];
+    NSArray *imagesDictionaries = mutableDictionary[kShowImagesKey];
+    NSArray *actorsDictionaries = mutableDictionary[kShowActorsksKey];
     
     [mutableDictionary removeObjectForKey:kLastEpisodeSeenKey];
     [mutableDictionary removeObjectForKey:kShowEpisodesKey];
@@ -696,12 +696,12 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
     
     if (self.lastEpisodeSeen.episodeID)
     {
-        [mutableDictionary setObject:self.lastEpisodeSeen.episodeID forKey:kLastEpisodeSeenKey];
+        mutableDictionary[kLastEpisodeSeenKey] = self.lastEpisodeSeen.episodeID;
     }
     
-    [mutableDictionary setObject:[self serializeEpisodes:self.episodes] forKey:kShowEpisodesKey];
-    [mutableDictionary setObject:[self serializeImages:self.images] forKey:kShowImagesKey];
-    [mutableDictionary setObject:[self serializeActors:self.actors] forKey:kShowActorsksKey];
+    mutableDictionary[kShowEpisodesKey] = [self serializeEpisodes:self.episodes];
+    mutableDictionary[kShowImagesKey] = [self serializeImages:self.images];
+    mutableDictionary[kShowActorsksKey] = [self serializeActors:self.actors];
     
     return [mutableDictionary copy];
 }
