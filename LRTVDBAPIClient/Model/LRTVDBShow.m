@@ -203,9 +203,23 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.episodes];
         
+        LRTVDBEpisode *lastEpisodeSeen = self.lastEpisodeSeen;
+
         _episodes = [self mergeObjects:episodes
                            withObjects:_episodes
                        comparisonBlock:LRTVDBEpisodeComparator];
+        
+        if (lastEpisodeSeen)
+        {
+            NSUInteger lastEpisodeSeenIndex = [_episodes indexOfObjectPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+                return [episode.episodeID isEqualToString:lastEpisodeSeen.episodeID];
+            }];
+            
+            if (lastEpisodeSeenIndex != NSNotFound)
+            {
+                self.lastEpisodeSeen = _episodes[lastEpisodeSeenIndex];
+            }
+        }
         
         // Assign weak reference to the show.
         for (LRTVDBEpisode *episode in _episodes)
@@ -652,28 +666,26 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
     
     LRTVDBShow *show = [self showWithDictionary:mutableDictionary];
     
-    NSMutableArray *episodes = [NSMutableArray array];
-    NSMutableArray *images = [NSMutableArray array];
-    NSMutableArray *actors = [NSMutableArray array];
+    NSArray *episodes = [self deserializeEpisodes:episodesDictionaries];
     
-    for (NSDictionary *episodeDictionary in episodesDictionaries)
+    if (episodes)
     {
-        [episodes addObject:[LRTVDBEpisode deserialize:episodeDictionary]];
+        [show addEpisodes:episodes];
     }
     
-    for (NSDictionary *imageDictionary in imagesDictionaries)
+    NSArray *images = [self deserializeImages:imagesDictionaries];
+
+    if (images)
     {
-        [images addObject:[LRTVDBImage deserialize:imageDictionary]];
+        [show addImages:images];
     }
     
-    for (NSDictionary *actorDictionary in actorsDictionaries)
+    NSArray *actors = [self deserializeActors:actorsDictionaries];
+
+    if (actors)
     {
-        [actors addObject:[LRTVDBActor deserialize:actorDictionary]];
+        [show addActors:actors];
     }
-    
-    [show addEpisodes:episodes];
-    [show addImages:images];
-    [show addActors:actors];
     
     if (lastEpisodeSeenID)
     {
@@ -699,15 +711,34 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
         mutableDictionary[kLastEpisodeSeenKey] = self.lastEpisodeSeen.episodeID;
     }
     
-    mutableDictionary[kShowEpisodesKey] = [self serializeEpisodes:self.episodes];
-    mutableDictionary[kShowImagesKey] = [self serializeImages:self.images];
-    mutableDictionary[kShowActorsksKey] = [self serializeActors:self.actors];
+    NSArray *serializedEpisodes = [self serializeEpisodes:self.episodes];
+    
+    if (serializedEpisodes)
+    {
+        mutableDictionary[kShowEpisodesKey] = serializedEpisodes;
+    }
+    
+    NSArray *serializedImages = [self serializeImages:self.images];
+    
+    if (serializedImages)
+    {
+        mutableDictionary[kShowImagesKey] = serializedImages;
+    }
+    
+    NSArray *serializedActors = [self serializeActors:self.actors];
+    
+    if (serializedActors)
+    {
+        mutableDictionary[kShowActorsksKey] = serializedActors;
+    }
     
     return [mutableDictionary copy];
 }
 
-- (NSArray *)deserializeEpisodes:(NSArray *)episodes
++ (NSArray *)deserializeEpisodes:(NSArray *)episodes
 {
+    if (!episodes) return nil;
+
     NSMutableArray *deserializedEpisodes = [NSMutableArray arrayWithCapacity:[episodes count]];
     
     for (NSDictionary *dictionary in episodes)
@@ -720,6 +751,8 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
 
 - (NSArray *)serializeEpisodes:(NSArray *)episodes
 {
+    if (!episodes) return nil;
+    
     NSMutableArray *serializedEpisodes = [NSMutableArray arrayWithCapacity:[episodes count]];
     
     for (LRTVDBEpisode *episode in episodes)
@@ -730,8 +763,10 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
     return [serializedEpisodes copy];
 }
 
-- (NSArray *)deserializeImages:(NSArray *)images
++ (NSArray *)deserializeImages:(NSArray *)images
 {
+    if (!images) return nil;
+
     NSMutableArray *deserializedImages = [NSMutableArray arrayWithCapacity:[images count]];
     
     for (NSDictionary *dictionary in images)
@@ -744,6 +779,8 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
 
 - (NSArray *)serializeImages:(NSArray *)images
 {
+    if (!images) return nil;
+
     NSMutableArray *serializedImages = [NSMutableArray arrayWithCapacity:[images count]];
     
     for (LRTVDBImage *image in images)
@@ -754,8 +791,10 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
     return [serializedImages copy];
 }
 
-- (NSArray *)deserializeActors:(NSArray *)actors
++ (NSArray *)deserializeActors:(NSArray *)actors
 {
+    if (!actors) return nil;
+
     NSMutableArray *deserializedActors = [NSMutableArray arrayWithCapacity:[actors count]];
     
     for (NSDictionary *dictionary in actors)
@@ -768,6 +807,8 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
 
 - (NSArray *)serializeActors:(NSArray *)actors
 {
+    if (!actors) return nil;
+
     NSMutableArray *serializedActors = [NSMutableArray arrayWithCapacity:[actors count]];
     
     for (LRTVDBActor *actor in actors)

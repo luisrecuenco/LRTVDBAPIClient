@@ -83,7 +83,6 @@ static NSString *const kXMLActorTagName = @"Actor";
         }];
         
         episodes = [episodes objectsAtIndexes:indexSet];
-        
     }
     
     return episodes;
