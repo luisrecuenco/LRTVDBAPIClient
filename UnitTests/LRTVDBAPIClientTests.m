@@ -26,6 +26,7 @@
 #import "LRTVDBEpisode.h"
 #import "LRTVDBImage.h"
 #import "LRTVDBActor.h"
+#import "LRTVDBPersistenceManager.h"
 
 @implementation LRTVDBAPIClientTests
 
@@ -1054,6 +1055,49 @@ static BOOL sActorsKVONotified = NO;
     sEpisodesKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.episodes];
     sImageKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.images];
     sActorsKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.actors];
+}
+
+- (void)testShowsPersistence
+{
+    NSArray *showsIDs = @[@"82066", @"121361"];
+    
+    [self showsWithIDs:showsIDs
+       includeEpisodes:YES
+         includeImages:YES
+         includeActors:YES
+       completionBlock:^(NSArray *shows, NSDictionary *errorsDictionary) {
+           
+           [[LRTVDBPersistenceManager manager] saveShowsInPersistenceStorage:shows];
+           
+           NSArray *persistedShows = [[LRTVDBPersistenceManager manager] showsFromPersistenceStorage];
+           
+           [persistedShows enumerateObjectsUsingBlock:^(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
+               
+               STAssertEqualObjects(show, shows[idx], @"Shows must be the same and in the same order");
+               STAssertTrue([show.episodes count] == [[shows[idx] episodes] count], @"Episodes must be the same");
+               STAssertTrue([show.images count] == [[shows[idx] images] count], @"Images must be the same");
+               STAssertTrue([show.actors count] == [[shows[idx] actors] count], @"Actors must be the same");
+           }];
+       }];
+    
+    [self showsWithIDs:showsIDs
+       includeEpisodes:NO
+         includeImages:NO
+         includeActors:NO
+       completionBlock:^(NSArray *shows, NSDictionary *errorsDictionary) {
+           
+           [[LRTVDBPersistenceManager manager] saveShowsInPersistenceStorage:shows];
+           
+           NSArray *persistedShows = [[LRTVDBPersistenceManager manager] showsFromPersistenceStorage];
+           
+           [persistedShows enumerateObjectsUsingBlock:^(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
+               
+               STAssertEqualObjects(show, shows[idx], @"Shows must be the same and in the same order");
+               STAssertNil(show.episodes, @"Episodes must be nil");
+               STAssertNil(show.images, @"Images must be nil");
+               STAssertNil(show.actors, @"Actors must be nil");
+           }];
+       }];
 }
 
 @end

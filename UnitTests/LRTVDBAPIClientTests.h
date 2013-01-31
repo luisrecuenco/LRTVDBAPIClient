@@ -74,4 +74,7 @@
 /** Update Episodes tests */
 - (void)testUpdateEpisodeBasicChecks;
 
+/** Persistence */
+- (void)testShowsPersistence;
+
 @end
