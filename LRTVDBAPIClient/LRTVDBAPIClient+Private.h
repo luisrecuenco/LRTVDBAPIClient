@@ -30,7 +30,9 @@ static NSString *const kLRTVDBAPIImageBaseURLString = @"http://www.thetvdb.com/b
  @return A newly-initialized NSURL object with the correct image URL.
  */
 NS_INLINE NSURL *LRTVDBImageURLForPath(NSString *path)
-{    
+{
+    if (!path) return nil;
+    
     NSString *urlString = [kLRTVDBAPIImageBaseURLString stringByAppendingPathComponent:path];
     return [NSURL URLWithString:urlString];
 }
