@@ -195,6 +195,37 @@
 - (void)refreshLastUpdateTimestamp;
 
 /**
+ Cancels an ongoing showsWithName request.
+ @param showName The name of the show whose request is wanted to be cancelled.
+ */
+- (void)cancelShowsWithNameRequest:(NSString *)showName;
+
+/**
+ Cancels ongoing showWithID requests.
+ @param showsIDs Array with the ids of the shows whose requests are wanted to be cancelled.
+ @param includeEpisodes, includeImages, includeActors Flags to build the correct request URL to cancel.
+ */
+- (void)cancelShowsWithIDsRequests:(NSArray *)showsIDs
+                   includeEpisodes:(BOOL)includeEpisodes
+                     includeImages:(BOOL)includeImages
+                     includeActors:(BOOL)includeActors;
+
+/**
+ Cancels ongoing updateShow requests.
+ @param showsToCancel Array of LRTVDBShow instances whose update requests are wanted to be cancelled.
+ @param updateEpisodes, updateImages, updateActors Flags to build the correct request URL to cancel.
+ */
+- (void)cancelUpdateOfShowsRequests:(NSArray *)showsToCancel
+                     updateEpisodes:(BOOL)updateEpisodes
+                       updateImages:(BOOL)updateImages
+                       updateActors:(BOOL)updateActors;
+
+/**
+ Cancels every ongoing TVDB API Client request.
+ */
+- (void)cancelAllTVDBAPIClientRequests;
+
+/**
  @return theTVDB show URL (http://thetvdb.com/?tab=series&id=seriesID&lid=languageID).
  */
 NSURL *LRTVDBURLForShow(LRTVDBShow *show);

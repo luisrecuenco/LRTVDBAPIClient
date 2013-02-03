@@ -102,11 +102,10 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
 - (void)showsWithName:(NSString *)showName
       completionBlock:(void (^)(NSArray *shows, NSError *error))completionBlock
-{
-    NSString *trimmedShowName = [showName stringByTrimmingCharactersInSet:
-                                 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
-    if ([trimmedShowName length] == 0)
+{    
+    NSString *relativePath = LRTVDBShowsWithNameRelativePathForShow(showName);
+
+    if (!relativePath)
     {
         dispatch_async(self.queue, ^{
             completionBlock(@[], nil);
@@ -114,14 +113,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         return;
     }
     
-    // The url should include language=all to allow the user to search
-    // for a TV Show in his own language.
-    NSString *relativePath = [NSString stringWithFormat:@"GetSeries.php?seriesname=%@&language=all",
-                              [trimmedShowName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    
     LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
+                
+        if ([operation isCancelled]) return;
         
         dispatch_async(self.queue, ^{
             
@@ -135,6 +131,8 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
+        if ([operation isCancelled]) return;
+
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
@@ -594,6 +592,68 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     [[NSUserDefaults standardUserDefaults] setDouble:_lastUpdated forKey:kLastUpdatedDefaultsKey];
 }
 
+#pragma mark - Cancel requests
+
+- (void)cancelShowsWithNameRequest:(NSString *)showName
+{
+    NSString *relativePath = LRTVDBShowsWithNameRelativePathForShow(showName);
+    
+    [self cancelAllHTTPOperationsWithMethod:@"GET"
+                                       path:relativePath];
+}
+
+- (void)cancelShowsWithIDsRequests:(NSArray *)showsIDs
+                   includeEpisodes:(BOOL)includeEpisodes
+                     includeImages:(BOOL)includeImages
+                     includeActors:(BOOL)includeActors
+{
+    for (NSString *showID in showsIDs)
+    {
+        NSString *relativePath = [self showWithIDRelativePathForShowWithID:showID
+                                                           includeEpisodes:includeEpisodes
+                                                             includeImages:includeImages
+                                                             includeActors:includeActors
+                                                                  language:self.language];
+        
+        [self cancelAllHTTPOperationsWithMethod:@"GET"
+                                           path:relativePath];
+    }
+}
+
+- (void)cancelUpdateOfShowsRequests:(NSArray *)showsToCancel
+                     updateEpisodes:(BOOL)updateEpisodes
+                       updateImages:(BOOL)updateImages
+                       updateActors:(BOOL)updateActors
+{
+    for (LRTVDBShow *show in showsToCancel)
+    {
+        NSString *correctLanguage = nil;
+        
+        if ([show.language isEqualToString:LRTVDBDefaultLanguage()])
+        {
+            correctLanguage = self.language;
+        }
+        else
+        {
+            correctLanguage = show.language;
+        }
+        
+        NSString *relativePath = [self showWithIDRelativePathForShowWithID:show.showID
+                                                           includeEpisodes:updateEpisodes
+                                                             includeImages:updateImages
+                                                             includeActors:updateActors
+                                                                  language:correctLanguage];
+        
+        [self cancelAllHTTPOperationsWithMethod:@"GET"
+                                           path:relativePath];
+    }
+}
+
+- (void)cancelAllTVDBAPIClientRequests
+{
+    [self.operationQueue cancelAllOperations];
+}
+
 #pragma mark - Private
 
 /**
@@ -643,8 +703,12 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
 {
     NSParameterAssert(showID);
-
-    NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.zip", self.apiKey, showID, language ?: self.language];
+    
+    NSString *relativePath = [self showWithIDRelativePathForShowWithID:showID
+                                                       includeEpisodes:includeEpisodes
+                                                         includeImages:includeImages
+                                                         includeActors:includeActors
+                                                              language:language];
     
     LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
@@ -707,17 +771,12 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                completionBlock:(void (^)(LRTVDBShow *show, NSError *error))completionBlock
 {
     NSParameterAssert(showID);
-
-    NSString *relativePath = nil;
     
-    if (includeEpisodes)
-    {
-        relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.xml", self.apiKey, showID, language ?: self.language];
-    }
-    else
-    {
-        relativePath = [NSString stringWithFormat:@"%@/series/%@/%@.xml", self.apiKey, showID, language ?: self.language];
-    }
+    NSString *relativePath = [self showWithIDRelativePathForShowWithID:showID
+                                                       includeEpisodes:includeEpisodes
+                                                         includeImages:NO
+                                                         includeActors:NO
+                                                              language:language];
     
     LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
@@ -895,6 +954,49 @@ static NSDictionary *LRTVDBLanguageCodes(void)
     });
     
     return languageCodes;
+}
+
+#pragma mark - Shows With Name URL
+
+static NSString *LRTVDBShowsWithNameRelativePathForShow(NSString *showName)
+{
+    NSString *trimmedShowName = [showName stringByTrimmingCharactersInSet:
+                                 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    if ([trimmedShowName length] == 0) return nil;
+    
+    // The url should include language=all to allow the user to search
+    // for a TV Show in his own language.
+    return [NSString stringWithFormat:@"GetSeries.php?seriesname=%@&language=all",
+            [trimmedShowName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+}
+
+#pragma mark - Shows With IDs URL
+
+- (NSString *)showWithIDRelativePathForShowWithID:(NSString *)showID
+                                  includeEpisodes:(BOOL)includeEpisodes
+                                    includeImages:(BOOL)includeImages
+                                    includeActors:(BOOL)includeActors
+                                         language:(NSString *)language
+{
+    BOOL shouldUseZippedVersion = [self shouldUseZippedVersionBasedOnEpisodes:includeEpisodes
+                                                                       images:includeImages
+                                                                       actors:includeActors];
+    if (shouldUseZippedVersion)
+    {
+        return [NSString stringWithFormat:@"%@/series/%@/all/%@.zip",
+                self.apiKey, showID, language ?: self.language];
+    }
+    else if (includeEpisodes)
+    {
+        return [NSString stringWithFormat:@"%@/series/%@/all/%@.xml",
+                self.apiKey, showID, language ?: self.language];
+    }
+    else
+    {
+        return [NSString stringWithFormat:@"%@/series/%@/%@.xml",
+                self.apiKey, showID, language ?: self.language];
+    }
 }
 
 #pragma mark - TVDB Show URL
