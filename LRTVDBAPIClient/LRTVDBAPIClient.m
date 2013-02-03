@@ -40,11 +40,11 @@
 #endif
 
 #if DEBUG
-#define LRLog(s,...) NSLog( @"\n\n------------------------------------- DEBUG -------------------------------------\n\t<%p %@:(%d)>\n\n\t%@\n---------------------------------------------------------------------------------\n\n", self, \
+#define LRTVDBAPIClientLog(s,...) NSLog( @"\n\n------------------------------------- DEBUG -------------------------------------\n\t<%p %@:(%d)>\n\n\t%@\n---------------------------------------------------------------------------------\n\n", self, \
 [[NSString stringWithUTF8String:__FUNCTION__] lastPathComponent], __LINE__, \
 [NSString stringWithFormat:(s), ##__VA_ARGS__] )
 #else
-#define LRLog(s,...)
+#define LRTVDBAPIClientLog(s,...)
 #endif
 
 /** TVDB Base URL */
@@ -114,22 +114,19 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         return;
     }
     
-    // The url should include language=all. There are some tv shows that are only
-    // in the original language (different from english). Imagine that we are
-    // searching for a show whose language is spanish (es) and there's no information
-    // in english about it, if we search with language=en, we won't find that tv show
-    // in the xml result.
+    // The url should include language=all to allow the user to search
+    // for a TV Show in his own language.
     NSString *relativePath = [NSString stringWithFormat:@"GetSeries.php?seriesname=%@&language=all",
                               [trimmedShowName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
             NSDictionary *seriesDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
             NSArray *shows = [[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary];
             
             completionBlock(shows, nil);
@@ -138,7 +135,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(@[], error);
@@ -168,7 +165,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     __block int numberOfFinishedShows = 0;
     
-    void (^finishShowBlock)(NSString *, LRTVDBShow *, NSError *) = ^(NSString *showID, LRTVDBShow *show, NSError *error){
+    void (^finishShowBlock)(NSString *, LRTVDBShow *, NSError *) = ^(NSString *showID, LRTVDBShow *show, NSError *error) {
         
         if (error)
         {
@@ -229,7 +226,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     __block int numberOfFinishedEpisodes = 0;
     
-    void (^finishShowBlock)(NSString *, LRTVDBEpisode *, NSError *) = ^(NSString *episodeID, LRTVDBEpisode *episode, NSError *error){
+    void (^finishShowBlock)(NSString *, LRTVDBEpisode *, NSError *) = ^(NSString *episodeID, LRTVDBEpisode *episode, NSError *error) {
         
         if (error)
         {
@@ -277,14 +274,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/default/%@/%@/%@.xml", self.apiKey, showID, seasonNumber, episodeNumber, self.language];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
             NSDictionary *episodesDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
             NSArray *episodes = [[LRTVDBAPIParser parser] episodesFromDictionary:episodesDictionary];
             
             // We know there's only on episode in the array.
@@ -294,7 +291,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(nil, error);
@@ -313,14 +310,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/banners.xml", self.apiKey, showID];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
             NSDictionary *imagesDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, imagesDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, imagesDictionary);
             NSArray *images = [[LRTVDBAPIParser parser] imagesFromDictionary:imagesDictionary];
             
             completionBlock(images, nil);
@@ -329,7 +326,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(@[], error);
@@ -348,14 +345,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/actors.xml", self.apiKey, showID];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
             NSDictionary *actorsDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, actorsDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, actorsDictionary);
             NSArray *actors = [[LRTVDBAPIParser parser] actorsFromDictionary:actorsDictionary];
             
             completionBlock(actors, nil);
@@ -364,7 +361,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(@[], error);
@@ -402,7 +399,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         __block BOOL updateFinishedOk = YES;
         __block int numerOfUpdatedShows = 0;
         
-        void (^updateShowBlock)(LRTVDBShow *, LRTVDBShow *, NSError *) = ^(LRTVDBShow *showToUpdate, LRTVDBShow *updatedShow, NSError *error){
+        void (^updateShowBlock)(LRTVDBShow *, LRTVDBShow *, NSError *) = ^(LRTVDBShow *showToUpdate, LRTVDBShow *updatedShow, NSError *error) {
             
             [showToUpdate updateWithShow:updatedShow
                           updateEpisodes:updateEpisodes
@@ -490,7 +487,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         __block BOOL updateFinishedOk = YES;
         __block int numerOfUpdatedEpisodes = 0;
         
-        void (^updateEpisodeBlock)(LRTVDBEpisode *, LRTVDBEpisode *, NSError *) = ^(LRTVDBEpisode *episodeToUpdate, LRTVDBEpisode *updatedEpisode, NSError *error){
+        void (^updateEpisodeBlock)(LRTVDBEpisode *, LRTVDBEpisode *, NSError *) = ^(LRTVDBEpisode *episodeToUpdate, LRTVDBEpisode *updatedEpisode, NSError *error) {
             
             [episodeToUpdate updateWithEpisode:updatedEpisode];
             
@@ -537,13 +534,13 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSString *relativePath = [NSString stringWithFormat:@"Updates.php?type=series&time=%f", self.lastUpdated];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             NSArray *showsIDs = [[LRTVDBAPIParser parser] showsIDsFromData:responseObject];
             completionBlock(showsIDs, nil);
@@ -552,7 +549,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(@[], error);
@@ -566,13 +563,13 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSString *relativePath = [NSString stringWithFormat:@"Updates.php?type=episode&time=%f", self.lastUpdated];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             NSArray *episodesIDs = [[LRTVDBAPIParser parser] episodesIDsFromData:responseObject];
             completionBlock(episodesIDs, nil);
@@ -581,7 +578,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(@[], error);
@@ -649,7 +646,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
     NSString *relativePath = [NSString stringWithFormat:@"%@/series/%@/all/%@.zip", self.apiKey, showID, language ?: self.language];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -663,7 +660,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             NSDictionary *seriesDictionary = [firstArchiveEntry.data toDictionary];
             
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
             
             LRTVDBShow *show = [[[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary] firstObject];
             
@@ -690,7 +687,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(nil, error);
@@ -722,14 +719,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         relativePath = [NSString stringWithFormat:@"%@/series/%@/%@.xml", self.apiKey, showID, language ?: self.language];
     }
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
             NSDictionary *seriesDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
             LRTVDBShow *show = [[[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary] firstObject];
             
             if (includeEpisodes)
@@ -743,7 +740,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(nil, error);
@@ -778,14 +775,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     NSString *relativePath = [NSString stringWithFormat:@"%@/episodes/%@/%@.xml", self.apiKey, episodeID, language ?: self.language];
     
-    LRLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
+    LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async(self.queue, ^{
             
             NSDictionary *episodesDictionary = [responseObject toDictionary];
-            LRLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
             NSArray *episodes = [[LRTVDBAPIParser parser] episodesFromDictionary:episodesDictionary];
             
             // We know there's only on episode in the array.
@@ -795,7 +792,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^failureBlock)(AFHTTPRequestOperation *, NSError *) = ^(AFHTTPRequestOperation *operation, NSError *error) {
         
-        LRLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
+        LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
         dispatch_async(self.queue, ^{
             completionBlock(nil, error);

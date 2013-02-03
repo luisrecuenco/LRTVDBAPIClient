@@ -35,6 +35,9 @@ extern NSComparator LRTVDBShowComparator;
  */
 extern const struct LRTVDBShowAttributes
 {
+    __unsafe_unretained NSString *fanartURL;
+    __unsafe_unretained NSString *posterURL;
+    __unsafe_unretained NSString *lastEpisode;
     __unsafe_unretained NSString *episodes;
     __unsafe_unretained NSString *images;
     __unsafe_unretained NSString *actors;

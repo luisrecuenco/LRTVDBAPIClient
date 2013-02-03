@@ -185,7 +185,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 + (NSArray *)showsFromArray:(NSArray *)shows
 {
     return [self objectsFromArray:shows
-                  objectTypeBlock:^(NSDictionary *showDictionary){
+                  objectTypeBlock:^(NSDictionary *showDictionary) {
                       return [LRTVDBShow showWithDictionary:showDictionary];
                   }];
 }
@@ -193,7 +193,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 + (NSArray *)episodesFromArray:(NSArray *)episodes
 {
     return [self objectsFromArray:episodes
-                  objectTypeBlock:^(NSDictionary *episodeDictionary){
+                  objectTypeBlock:^(NSDictionary *episodeDictionary) {
                       return [LRTVDBEpisode episodeWithDictionary:episodeDictionary];
                   }];
 }
@@ -201,7 +201,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 + (NSArray *)imagesFromArray:(NSArray *)images
 {
     return [self objectsFromArray:images
-                  objectTypeBlock:^(NSDictionary *imageDictionary){
+                  objectTypeBlock:^(NSDictionary *imageDictionary) {
                       return [LRTVDBImage imageWithDictionary:imageDictionary];
                   }];
 }
@@ -209,7 +209,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 + (NSArray *)actorsFromArray:(NSArray *)actors
 {
     return [self objectsFromArray:actors
-                  objectTypeBlock:^(NSDictionary *actorsDictionary){
+                  objectTypeBlock:^(NSDictionary *actorsDictionary) {
                       return [LRTVDBActor actorWithDictionary:actorsDictionary];
                   }];
 }
@@ -218,7 +218,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 {
     NSMutableArray *showsWithoutLanguageDuplicates = [NSMutableArray array];
     
-    void (^__block removeLanguageDuplicatesBlock)(NSMutableArray *) = [^(NSMutableArray *showsWithLanguageDuplicates){
+    void (^__block removeLanguageDuplicatesBlock)(NSMutableArray *) = [^(NSMutableArray *showsWithLanguageDuplicates) {
         
         if (showsWithLanguageDuplicates.count == 0) return;
         

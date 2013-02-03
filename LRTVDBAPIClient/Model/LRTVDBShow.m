@@ -31,6 +31,9 @@
 #import "LRTVDBBaseModel+Private.h"
 
 const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
+    .fanartURL = @"fanartURL",
+    .posterURL = @"posterURL",
+    .lastEpisode = @"lastEpisode",
     .episodes = @"episodes",
     .images = @"images",
     .actors = @"actors",
