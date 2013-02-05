@@ -30,6 +30,12 @@
 #import "LRTVDBEpisode+Private.h"
 #import "LRTVDBBaseModel+Private.h"
 
+#if OS_OBJECT_USE_OBJC
+#define LRDispatchQueuePropertyModifier strong
+#else
+#define LRDispatchQueuePropertyModifier assign
+#endif
+
 const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
     .fanartURL = @"fanartURL",
     .posterURL = @"posterURL",
@@ -167,7 +173,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSString *genresList; /** |Genre 1|Genre 2|... */
 @property (nonatomic, copy) NSString *actorsNamesList; /** |Actor 1|Actor 2|... */
 
-@property (nonatomic) dispatch_queue_t syncQueue;
+@property (nonatomic, LRDispatchQueuePropertyModifier) dispatch_queue_t syncQueue;
 
 @end
 
@@ -188,6 +194,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
         dispatch_release(_syncQueue);
     }
 #endif
+    _syncQueue = NULL;
 }
 
 #pragma mark - Episodes handling

@@ -47,6 +47,12 @@
 #define LRTVDBAPIClientLog(s,...)
 #endif
 
+#if OS_OBJECT_USE_OBJC
+#define LRDispatchQueuePropertyModifier strong
+#else
+#define LRDispatchQueuePropertyModifier assign
+#endif
+
 /** TVDB Base URL */
 static NSString *const kLRTVDBAPIBaseURLString = @"http://www.thetvdb.com/api/";
 
@@ -59,7 +65,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 }
 
 @property (nonatomic) NSTimeInterval lastUpdated;
-@property (nonatomic) dispatch_queue_t queue;
+@property (nonatomic, LRDispatchQueuePropertyModifier) dispatch_queue_t queue;
 
 @end
 
@@ -609,11 +615,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     for (NSString *showID in showsIDs)
     {
-        NSString *relativePath = [self showWithIDRelativePathForShowWithID:showID
-                                                           includeEpisodes:includeEpisodes
-                                                             includeImages:includeImages
-                                                             includeActors:includeActors
-                                                                  language:self.language];
+        NSString *relativePath = [self relativePathForShowWithID:showID
+                                                 includeEpisodes:includeEpisodes
+                                                   includeImages:includeImages
+                                                   includeActors:includeActors
+                                                        language:self.language];
         
         [self cancelAllHTTPOperationsWithMethod:@"GET"
                                            path:relativePath];
@@ -638,11 +644,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             correctLanguage = show.language;
         }
         
-        NSString *relativePath = [self showWithIDRelativePathForShowWithID:show.showID
-                                                           includeEpisodes:updateEpisodes
-                                                             includeImages:updateImages
-                                                             includeActors:updateActors
-                                                                  language:correctLanguage];
+        NSString *relativePath = [self relativePathForShowWithID:show.showID
+                                                 includeEpisodes:updateEpisodes
+                                                   includeImages:updateImages
+                                                   includeActors:updateActors
+                                                        language:correctLanguage];
         
         [self cancelAllHTTPOperationsWithMethod:@"GET"
                                            path:relativePath];
@@ -704,11 +710,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSParameterAssert(showID);
     
-    NSString *relativePath = [self showWithIDRelativePathForShowWithID:showID
-                                                       includeEpisodes:includeEpisodes
-                                                         includeImages:includeImages
-                                                         includeActors:includeActors
-                                                              language:language];
+    NSString *relativePath = [self relativePathForShowWithID:showID
+                                             includeEpisodes:includeEpisodes
+                                               includeImages:includeImages
+                                               includeActors:includeActors
+                                                    language:language];
     
     LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
@@ -772,11 +778,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     NSParameterAssert(showID);
     
-    NSString *relativePath = [self showWithIDRelativePathForShowWithID:showID
-                                                       includeEpisodes:includeEpisodes
-                                                         includeImages:NO
-                                                         includeActors:NO
-                                                              language:language];
+    NSString *relativePath = [self relativePathForShowWithID:showID
+                                             includeEpisodes:includeEpisodes
+                                               includeImages:NO
+                                               includeActors:NO
+                                                    language:language];
     
     LRTVDBAPIClientLog(@"Retrieving data from URL: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath]);
     
@@ -973,11 +979,11 @@ static NSString *LRTVDBShowsWithNameRelativePathForShow(NSString *showName)
 
 #pragma mark - Shows With IDs URL
 
-- (NSString *)showWithIDRelativePathForShowWithID:(NSString *)showID
-                                  includeEpisodes:(BOOL)includeEpisodes
-                                    includeImages:(BOOL)includeImages
-                                    includeActors:(BOOL)includeActors
-                                         language:(NSString *)language
+- (NSString *)relativePathForShowWithID:(NSString *)showID
+                        includeEpisodes:(BOOL)includeEpisodes
+                          includeImages:(BOOL)includeImages
+                          includeActors:(BOOL)includeActors
+                               language:(NSString *)language
 {
     BOOL shouldUseZippedVersion = [self shouldUseZippedVersionBasedOnEpisodes:includeEpisodes
                                                                        images:includeImages
