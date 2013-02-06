@@ -47,17 +47,13 @@
 #define LRTVDBAPIClientLog(s,...)
 #endif
 
-#if OS_OBJECT_USE_OBJC
-#define LRDispatchQueuePropertyModifier strong
-#else
-#define LRDispatchQueuePropertyModifier assign
-#endif
-
 /** TVDB Base URL */
 static NSString *const kLRTVDBAPIBaseURLString = @"http://www.thetvdb.com/api/";
 
 /** Updates User Defaults Key */
 static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
+
+static dispatch_queue_t sConcurrentGlobalQueue;
 
 @interface LRTVDBAPIClient()
 {
@@ -65,7 +61,6 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 }
 
 @property (nonatomic) NSTimeInterval lastUpdated;
-@property (nonatomic, LRDispatchQueuePropertyModifier) dispatch_queue_t queue;
 
 @end
 
@@ -92,7 +87,6 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         [self registerHTTPOperationClass:[AFHTTPRequestOperation class]];
         [self setDefaultHeader:@"Accept" value:@"application/xml"];
         
-        _queue = dispatch_queue_create("com.LRTVDBAPIClient.LRTVDBAPIClientQueue", NULL);
         _lastUpdated = [[NSUserDefaults standardUserDefaults] doubleForKey:kLastUpdatedDefaultsKey];
         
         if (_lastUpdated == 0)
@@ -104,6 +98,11 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     return self;
 }
 
++ (void)initialize
+{
+    sConcurrentGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0UL);
+}
+
 #pragma mark - Shows
 
 - (void)showsWithName:(NSString *)showName
@@ -113,9 +112,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
     if (!relativePath)
     {
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], nil);
-        });
+        completionBlock(@[], nil);
         return;
     }
     
@@ -125,7 +122,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                 
         if ([operation isCancelled]) return;
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             NSDictionary *seriesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
@@ -141,9 +138,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], error);
-        });
+        completionBlock(@[], error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -157,9 +152,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     if (showsIDs.count == 0)
     {
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], @{});
-        });
+        completionBlock(@[], @{});
         return;
     }
     
@@ -218,9 +211,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     if (episodesIDs.count == 0)
     {
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], @{});
-        });
+        completionBlock(@[], @{});
         return;
     }
     
@@ -282,7 +273,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             NSDictionary *episodesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
@@ -297,9 +288,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
-        });
+        completionBlock(nil, error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -318,7 +307,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             NSDictionary *imagesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, imagesDictionary);
@@ -332,9 +321,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], error);
-        });
+        completionBlock(@[], error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -353,7 +340,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             NSDictionary *actorsDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, actorsDictionary);
@@ -367,9 +354,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], error);
-        });
+        completionBlock(@[], error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -386,9 +371,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     if (showsToUpdate.count == 0)
     {
-        dispatch_async(self.queue, ^{
-            if (completionBlock) completionBlock(YES);
-        });
+        if (completionBlock) completionBlock(YES);
         return;
     }
     
@@ -474,9 +457,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 {
     if (episodesToUpdate.count == 0)
     {
-        dispatch_async(self.queue, ^{
-            completionBlock(YES);
-        });
+        if (completionBlock) completionBlock(YES);
         return;
     }
     
@@ -542,7 +523,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
@@ -555,9 +536,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], error);
-        });
+        completionBlock(@[], error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -571,7 +550,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
@@ -584,9 +563,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(@[], error);
-        });
+        completionBlock(@[], error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -720,7 +697,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             ZZArchive *oldArchive = [ZZArchive archiveWithData:responseObject];
             
@@ -765,9 +742,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
-        });
+        completionBlock(nil, error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -794,7 +769,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             NSDictionary *seriesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
@@ -813,9 +788,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
-        });
+        completionBlock(nil, error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
@@ -850,7 +823,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(self.queue, ^{
+        dispatch_async(sConcurrentGlobalQueue, ^{
             
             NSDictionary *episodesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
@@ -865,9 +838,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         LRTVDBAPIClientLog(@"Error when retrieving data from URL: %@ | error: %@", [kLRTVDBAPIBaseURLString stringByAppendingPathComponent:relativePath], [error localizedDescription]);
         
-        dispatch_async(self.queue, ^{
-            completionBlock(nil, error);
-        });
+        completionBlock(nil, error);
     };
     
     [self getPath:relativePath parameters:nil success:successBlock failure:failureBlock];
