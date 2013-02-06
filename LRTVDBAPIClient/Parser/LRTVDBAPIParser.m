@@ -218,7 +218,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 {
     NSMutableArray *showsWithoutLanguageDuplicates = [NSMutableArray array];
     
-    void (^__block removeLanguageDuplicatesBlock)(NSMutableArray *) = ^(NSMutableArray *showsWithLanguageDuplicates) {
+    void (^__block __weak removeLanguageDuplicatesBlock)(NSMutableArray *) = ^(NSMutableArray *showsWithLanguageDuplicates) {
         
         if (showsWithLanguageDuplicates.count == 0) return;
         
@@ -249,10 +249,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
         [showsWithoutLanguageDuplicates addObject:correctShow];
         [showsWithLanguageDuplicates removeObjectsInArray:sameIdShows];
         
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-retain-cycles"
         removeLanguageDuplicatesBlock(showsWithLanguageDuplicates);
-#pragma clang diagnostic pop
     };
     
     removeLanguageDuplicatesBlock([showsWithLanguageDuplicates mutableCopy]);
