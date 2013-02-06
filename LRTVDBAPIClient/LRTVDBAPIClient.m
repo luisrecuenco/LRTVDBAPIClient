@@ -724,9 +724,15 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             ZZArchive *oldArchive = [ZZArchive archiveWithData:responseObject];
             
-            ZZArchiveEntry *firstArchiveEntry = oldArchive.entries[0]; // series XML info
-            ZZArchiveEntry *secondArchiveEntry = oldArchive.entries[1]; // images XML info
-            ZZArchiveEntry *thirdArchiveEntry = oldArchive.entries[2]; // actors XML info
+            // series XML info
+            ZZArchiveEntry *firstArchiveEntry = [oldArchive.entries count] > 0 ?
+                                                 oldArchive.entries[0] : nil;
+            // images XML info
+            ZZArchiveEntry *secondArchiveEntry = [oldArchive.entries count] > 1 ?
+                                                  oldArchive.entries[1] : nil;
+            // actors XML info
+            ZZArchiveEntry *thirdArchiveEntry = [oldArchive.entries count] > 2 ?
+                                                 oldArchive.entries[2] : nil;
             
             NSDictionary *seriesDictionary = [firstArchiveEntry.data toDictionary];
             
