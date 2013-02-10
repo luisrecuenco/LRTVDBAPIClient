@@ -626,8 +626,11 @@
 }
 
 static BOOL sEpisodesKVONotified = NO;
-static BOOL sImageKVONotified = NO;
+static BOOL sImagesKVONotified = NO;
 static BOOL sActorsKVONotified = NO;
+static BOOL sFanartURLKVONotified = NO;
+static BOOL sPosterURLKVONotified = NO;
+static BOOL sLastEpisodeKVONotified = NO;
 
 - (void)testUpdateShowsKVO
 {    
@@ -649,7 +652,27 @@ static BOOL sActorsKVONotified = NO;
               options:0
               context:NULL];
     
-    sEpisodesKVONotified = sImageKVONotified = sActorsKVONotified = NO;
+    [show addObserver:self
+           forKeyPath:LRTVDBShowAttributes.fanartURL
+              options:0
+              context:NULL];
+    
+    [show addObserver:self
+           forKeyPath:LRTVDBShowAttributes.posterURL
+              options:0
+              context:NULL];
+    
+    [show addObserver:self
+           forKeyPath:LRTVDBShowAttributes.lastEpisode
+              options:0
+              context:NULL];
+    
+    sEpisodesKVONotified =
+    sImagesKVONotified =
+    sActorsKVONotified =
+    sFanartURLKVONotified =
+    sPosterURLKVONotified =
+    sLastEpisodeKVONotified = NO;
 
     [self updateShows:@[show]
        updateEpisodes:YES
@@ -657,16 +680,25 @@ static BOOL sActorsKVONotified = NO;
          updateActors:YES
       completionBlock:^(BOOL finished) {
           
-          STAssertTrue(sEpisodesKVONotified, @"Episode KVO should have been notified");
-          STAssertTrue(sImageKVONotified, @"Image KVO should have been notified");
+          STAssertTrue(sEpisodesKVONotified, @"Episodes KVO should have been notified");
+          STAssertTrue(sImagesKVONotified, @"Images KVO should have been notified");
           STAssertTrue(sActorsKVONotified, @"Actors KVO should have been notified");
-          
+          STAssertTrue(sFanartURLKVONotified, @"Fanart URL KVO should have been notified");
+          STAssertTrue(sPosterURLKVONotified, @"Poster URL KVO should have been notified");
+          STAssertTrue(sLastEpisodeKVONotified, @"Last episode URL KVO should have been notified");
+
           [show removeObserver:self
                     forKeyPath:LRTVDBShowAttributes.episodes];
           [show removeObserver:self
                     forKeyPath:LRTVDBShowAttributes.images];
           [show removeObserver:self
                     forKeyPath:LRTVDBShowAttributes.actors];
+          [show removeObserver:self
+                    forKeyPath:LRTVDBShowAttributes.fanartURL];
+          [show removeObserver:self
+                    forKeyPath:LRTVDBShowAttributes.posterURL];
+          [show removeObserver:self
+                    forKeyPath:LRTVDBShowAttributes.lastEpisode];
       }];
 }
 
@@ -1053,8 +1085,11 @@ static BOOL sActorsKVONotified = NO;
                        context:(void *)context
 {
     sEpisodesKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.episodes];
-    sImageKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.images];
+    sImagesKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.images];
     sActorsKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.actors];
+    sFanartURLKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.fanartURL];
+    sPosterURLKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.posterURL];
+    sLastEpisodeKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.lastEpisode];
 }
 
 - (void)testShowsPersistence
