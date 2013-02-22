@@ -53,8 +53,6 @@ static NSString *const kLRTVDBAPIBaseURLString = @"http://www.thetvdb.com/api/";
 /** Updates User Defaults Key */
 static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
-static dispatch_queue_t sConcurrentGlobalQueue;
-
 @interface LRTVDBAPIClient()
 {
     __strong NSString *_language;
@@ -98,11 +96,6 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     return self;
 }
 
-+ (void)initialize
-{
-    sConcurrentGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0UL);
-}
-
 #pragma mark - Shows
 
 - (void)showsWithName:(NSString *)showName
@@ -122,7 +115,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
                 
         if ([operation isCancelled]) return;
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             NSDictionary *seriesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
@@ -273,7 +266,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             NSDictionary *episodesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
@@ -307,7 +300,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             NSDictionary *imagesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, imagesDictionary);
@@ -340,7 +333,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             NSDictionary *actorsDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, actorsDictionary);
@@ -523,7 +516,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
@@ -550,7 +543,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
@@ -697,7 +690,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             ZZArchive *oldArchive = [ZZArchive archiveWithData:responseObject];
             
@@ -769,7 +762,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             NSDictionary *seriesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
@@ -823,7 +816,7 @@ static dispatch_queue_t sConcurrentGlobalQueue;
     
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        dispatch_async(sConcurrentGlobalQueue, ^{
+        dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
             NSDictionary *episodesDictionary = [responseObject toDictionary];
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
@@ -1007,6 +1000,20 @@ static NSString *const kLRTVDBDefaultAPIKey = @"0629B785CE550C8D";
         _apiKey = [kLRTVDBDefaultAPIKey copy];
     }
     return _apiKey;
+}
+
+#pragma mark - Shared Concurrent Queue
+
++ (dispatch_queue_t)lr_sharedConcurrentQueue
+{
+    static dispatch_queue_t sConcurrentQueue = NULL;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sConcurrentQueue = dispatch_queue_create("com.LRTVDBAPIClient.LRTVDBAPIClientConcurrentQueue", DISPATCH_QUEUE_CONCURRENT);
+    });
+    
+    return sConcurrentQueue;
 }
 
 @end
