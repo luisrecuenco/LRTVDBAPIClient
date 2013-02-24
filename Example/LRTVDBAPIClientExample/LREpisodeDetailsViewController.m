@@ -44,6 +44,11 @@
     self.title = self.episode.title;
     [self.episodeImageView setImageWithURL:self.episode.imageURL];
     self.episodeOverviewTextView.text = self.episode.overview ?: @"No information available";
+    
+    if (![UIActivityViewController class]) // iOS 5
+    {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
 }
 
 - (IBAction)share:(id)sender
@@ -58,9 +63,8 @@
     
     NSArray *activityItems = [NSArray arrayWithObjects:message, image, nil];
     
-    // Display the view controller
-    UIActivityViewController *activityController = [[UIActivityViewController alloc]
-                                                    initWithActivityItems:activityItems applicationActivities:nil];
+    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:activityItems
+                                                                                     applicationActivities:nil];
     
     activityController.excludedActivityTypes = @[UIActivityTypeAssignToContact,
                                                  UIActivityTypeMessage,
@@ -72,7 +76,10 @@
     
     [self presentViewController:activityController
                        animated:YES
-                     completion:NULL];
+                     completion:^{
+                         // excludedActivityTypes is surprisingly leaking if not set to nil.
+                         activityController.excludedActivityTypes = nil;
+                     }];
 }
 
 - (void)dealloc
