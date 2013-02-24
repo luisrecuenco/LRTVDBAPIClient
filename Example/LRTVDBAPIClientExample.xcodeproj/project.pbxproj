@@ -1,0 +1,946 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3309806F16D9BA6100D264CE /* LRImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3309806416D9BA6100D264CE /* LRImageCache.m */; };
+		3309807016D9BA6100D264CE /* LRImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3309806616D9BA6100D264CE /* LRImageManager.m */; };
+		3309807116D9BA6100D264CE /* LRImageOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3309806816D9BA6100D264CE /* LRImageOperation.m */; };
+		3309807216D9BA6100D264CE /* LRImagePresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3309806A16D9BA6100D264CE /* LRImagePresenter.m */; };
+		3309807316D9BA6100D264CE /* UIImage+LRImageManagerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3309806C16D9BA6100D264CE /* UIImage+LRImageManagerAdditions.m */; };
+		3309807416D9BA6100D264CE /* UIImageView+LRNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3309806E16D9BA6100D264CE /* UIImageView+LRNetworking.m */; };
+		3319622616A8C49100135491 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3366811B167EADF500163DFF /* MobileCoreServices.framework */; };
+		3319622716A8C49700135491 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33668119167EADE400163DFF /* SystemConfiguration.framework */; };
+		331D325416BE8BC000D5ED80 /* AFNetworkActivityIndicatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 331D325316BE8BBF00D5ED80 /* AFNetworkActivityIndicatorManager.m */; };
+		332E450B16ACD4ED002650B2 /* LRTVDBShowStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 332E450A16ACD4EB002650B2 /* LRTVDBShowStorage.m */; };
+		33445B051671E26C00A48097 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33445B041671E26C00A48097 /* QuartzCore.framework */; };
+		3359EECF16ACBF6B00492CF2 /* NSArray+LRTVDBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EEC816ACBF6B00492CF2 /* NSArray+LRTVDBAdditions.m */; };
+		3359EED016ACBF6B00492CF2 /* NSData+LRTVDBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EECA16ACBF6B00492CF2 /* NSData+LRTVDBAdditions.m */; };
+		3359EED116ACBF6B00492CF2 /* NSDate+LRTVDBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EECC16ACBF6B00492CF2 /* NSDate+LRTVDBAdditions.m */; };
+		3359EED216ACBF6B00492CF2 /* NSString+LRTVDBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EECE16ACBF6B00492CF2 /* NSString+LRTVDBAdditions.m */; };
+		3359EEDF16ACBF7E00492CF2 /* LRTVDBBaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EED416ACBF7E00492CF2 /* LRTVDBBaseModel.m */; };
+		3359EEE016ACBF7E00492CF2 /* LRTVDBActor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EED616ACBF7E00492CF2 /* LRTVDBActor.m */; };
+		3359EEE116ACBF7E00492CF2 /* LRTVDBEpisode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EED816ACBF7E00492CF2 /* LRTVDBEpisode.m */; };
+		3359EEE216ACBF7E00492CF2 /* LRTVDBImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EEDB16ACBF7E00492CF2 /* LRTVDBImage.m */; };
+		3359EEE316ACBF7E00492CF2 /* LRTVDBShow.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EEDD16ACBF7E00492CF2 /* LRTVDBShow.m */; };
+		3359EEE716ACBF9100492CF2 /* LRTVDBAPIParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EEE616ACBF9100492CF2 /* LRTVDBAPIParser.m */; };
+		3359EEEB16ACBFA600492CF2 /* LRTVDBAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3359EEE916ACBFA600492CF2 /* LRTVDBAPIClient.m */; };
+		335F365416AF765200454886 /* LRAddShowsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 335F365316AF765100454886 /* LRAddShowsViewController.m */; };
+		335F365716AF7C1200454886 /* LRTVDBAddShowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 335F365616AF7C1100454886 /* LRTVDBAddShowCell.m */; };
+		3366811A167EADE500163DFF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33668119167EADE400163DFF /* SystemConfiguration.framework */; };
+		3366811C167EADF500163DFF /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3366811B167EADF500163DFF /* MobileCoreServices.framework */; };
+		33A7658E16A3997000370289 /* ZZArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 33A7657116A3997000370289 /* ZZArchive.mm */; };
+		33A7658F16A3997000370289 /* ZZArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7657316A3997000370289 /* ZZArchiveEntry.m */; };
+		33A7659016A3997000370289 /* ZZDataChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7657816A3997000370289 /* ZZDataChannel.m */; };
+		33A7659116A3997000370289 /* ZZDataChannelOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7657A16A3997000370289 /* ZZDataChannelOutput.m */; };
+		33A7659216A3997000370289 /* ZZDeflateOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7657C16A3997000370289 /* ZZDeflateOutputStream.m */; };
+		33A7659316A3997000370289 /* ZZFileChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7657E16A3997000370289 /* ZZFileChannel.m */; };
+		33A7659416A3997000370289 /* ZZFileChannelOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7658016A3997000370289 /* ZZFileChannelOutput.m */; };
+		33A7659516A3997000370289 /* ZZInflateInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7658316A3997000370289 /* ZZInflateInputStream.m */; };
+		33A7659616A3997000370289 /* ZZNewArchiveEntry.mm in Sources */ = {isa = PBXBuildFile; fileRef = 33A7658516A3997000370289 /* ZZNewArchiveEntry.mm */; };
+		33A7659716A3997000370289 /* ZZNewArchiveEntryWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 33A7658716A3997000370289 /* ZZNewArchiveEntryWriter.mm */; };
+		33A7659816A3997000370289 /* ZZOldArchiveEntry.mm in Sources */ = {isa = PBXBuildFile; fileRef = 33A7658916A3997000370289 /* ZZOldArchiveEntry.mm */; };
+		33A7659916A3997000370289 /* ZZOldArchiveEntryWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 33A7658B16A3997000370289 /* ZZOldArchiveEntryWriter.mm */; };
+		33A7659A16A3997000370289 /* ZZStoreOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7658D16A3997000370289 /* ZZStoreOutputStream.m */; };
+		33A765A516A3999F00370289 /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7659C16A3999F00370289 /* AFHTTPClient.m */; };
+		33A765A616A3999F00370289 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A7659E16A3999F00370289 /* AFHTTPRequestOperation.m */; };
+		33A765A816A3999F00370289 /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A765A216A3999F00370289 /* AFURLConnectionOperation.m */; };
+		33A765AB16A399FA00370289 /* TBXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A765AA16A399FA00370289 /* TBXML.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		33AD061416506C8900061E2B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33AD061316506C8900061E2B /* UIKit.framework */; };
+		33AD061616506C8900061E2B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33AD061516506C8900061E2B /* Foundation.framework */; };
+		33AD061816506C8900061E2B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33AD061716506C8900061E2B /* CoreGraphics.framework */; };
+		33AD061E16506C8900061E2B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33AD061C16506C8900061E2B /* InfoPlist.strings */; };
+		33AD062016506C8900061E2B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 33AD061F16506C8900061E2B /* main.m */; };
+		33AD062616506C8900061E2B /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 33AD062516506C8900061E2B /* Default.png */; };
+		33AD062816506C8900061E2B /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 33AD062716506C8900061E2B /* Default@2x.png */; };
+		33AD062A16506C8900061E2B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 33AD062916506C8900061E2B /* Default-568h@2x.png */; };
+		33C5F01B16508FA8009A9C4F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33C5F01A16508FA8009A9C4F /* libz.dylib */; };
+		33CA217D16B4341C00BC1808 /* LRShowDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33CA217C16B4341C00BC1808 /* LRShowDetailsViewController.m */; };
+		33D5C00B16B58801006AD6B1 /* PosterPlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 33D5C00916B58801006AD6B1 /* PosterPlaceholder.png */; };
+		33D5C00C16B58801006AD6B1 /* PosterPlaceholder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 33D5C00A16B58801006AD6B1 /* PosterPlaceholder@2x.png */; };
+		33D5C01216B58CF7006AD6B1 /* LRUIBeautifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 33D5C01116B58CF6006AD6B1 /* LRUIBeautifier.m */; };
+		33D5C01716B5FA12006AD6B1 /* LRTVDBPersistenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 33D5C01616B5FA12006AD6B1 /* LRTVDBPersistenceManager.m */; };
+		33F17C2116B543DD00C5DE01 /* LRSwitchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 33F17C2016B543DC00C5DE01 /* LRSwitchButton.m */; };
+		33FBF3FD16A8BDB700473052 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33FBF3FB16A8BDB700473052 /* MainStoryboard.storyboard */; };
+		33FBF40B16A8BDD000473052 /* LRAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 33FBF40016A8BDD000473052 /* LRAppDelegate.m */; };
+		33FBF40C16A8BDD000473052 /* LREpisodeDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33FBF40216A8BDD000473052 /* LREpisodeDetailsViewController.m */; };
+		33FBF40D16A8BDD000473052 /* LRShowEpisodesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33FBF40416A8BDD000473052 /* LRShowEpisodesViewController.m */; };
+		33FBF40E16A8BDD000473052 /* LRShowsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33FBF40616A8BDD000473052 /* LRShowsViewController.m */; };
+		33FBF40F16A8BDD000473052 /* LRTVDBEpisodeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 33FBF40816A8BDD000473052 /* LRTVDBEpisodeCell.m */; };
+		33FBF41016A8BDD000473052 /* LRTVDBShowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 33FBF40A16A8BDD000473052 /* LRTVDBShowCell.m */; };
+		33FBF41816A8BF0D00473052 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33FBF41716A8BF0D00473052 /* SenTestingKit.framework */; };
+		33FBF41916A8BF0D00473052 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33AD061316506C8900061E2B /* UIKit.framework */; };
+		33FBF41A16A8BF0D00473052 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33AD061516506C8900061E2B /* Foundation.framework */; };
+		33FBF42016A8BF0D00473052 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33FBF41E16A8BF0D00473052 /* InfoPlist.strings */; };
+		33FBF42A16A8BF6400473052 /* LRTVDBAPIClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 33FBF42916A8BF6400473052 /* LRTVDBAPIClientTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		33FBF43716A8C22700473052 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 33AD060616506C8900061E2B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 33AD060E16506C8900061E2B;
+			remoteInfo = LRTVDBAPIClientExample;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3309806316D9BA6100D264CE /* LRImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRImageCache.h; path = ../../Vendor/LRImageManager/LRImageManager/LRImageCache.h; sourceTree = "<group>"; };
+		3309806416D9BA6100D264CE /* LRImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRImageCache.m; path = ../../Vendor/LRImageManager/LRImageManager/LRImageCache.m; sourceTree = "<group>"; };
+		3309806516D9BA6100D264CE /* LRImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRImageManager.h; path = ../../Vendor/LRImageManager/LRImageManager/LRImageManager.h; sourceTree = "<group>"; };
+		3309806616D9BA6100D264CE /* LRImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRImageManager.m; path = ../../Vendor/LRImageManager/LRImageManager/LRImageManager.m; sourceTree = "<group>"; };
+		3309806716D9BA6100D264CE /* LRImageOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRImageOperation.h; path = ../../Vendor/LRImageManager/LRImageManager/LRImageOperation.h; sourceTree = "<group>"; };
+		3309806816D9BA6100D264CE /* LRImageOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRImageOperation.m; path = ../../Vendor/LRImageManager/LRImageManager/LRImageOperation.m; sourceTree = "<group>"; };
+		3309806916D9BA6100D264CE /* LRImagePresenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRImagePresenter.h; path = ../../Vendor/LRImageManager/LRImageManager/LRImagePresenter.h; sourceTree = "<group>"; };
+		3309806A16D9BA6100D264CE /* LRImagePresenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRImagePresenter.m; path = ../../Vendor/LRImageManager/LRImageManager/LRImagePresenter.m; sourceTree = "<group>"; };
+		3309806B16D9BA6100D264CE /* UIImage+LRImageManagerAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+LRImageManagerAdditions.h"; path = "../../Vendor/LRImageManager/LRImageManager/UIImage+LRImageManagerAdditions.h"; sourceTree = "<group>"; };
+		3309806C16D9BA6100D264CE /* UIImage+LRImageManagerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+LRImageManagerAdditions.m"; path = "../../Vendor/LRImageManager/LRImageManager/UIImage+LRImageManagerAdditions.m"; sourceTree = "<group>"; };
+		3309806D16D9BA6100D264CE /* UIImageView+LRNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImageView+LRNetworking.h"; path = "../../Vendor/LRImageManager/LRImageManager/UIImageView+LRNetworking.h"; sourceTree = "<group>"; };
+		3309806E16D9BA6100D264CE /* UIImageView+LRNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+LRNetworking.m"; path = "../../Vendor/LRImageManager/LRImageManager/UIImageView+LRNetworking.m"; sourceTree = "<group>"; };
+		331D325216BE8BBF00D5ED80 /* AFNetworkActivityIndicatorManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFNetworkActivityIndicatorManager.h; path = ../../Vendor/AFNetworking/AFNetworking/AFNetworkActivityIndicatorManager.h; sourceTree = "<group>"; };
+		331D325316BE8BBF00D5ED80 /* AFNetworkActivityIndicatorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFNetworkActivityIndicatorManager.m; path = ../../Vendor/AFNetworking/AFNetworking/AFNetworkActivityIndicatorManager.m; sourceTree = "<group>"; };
+		332E450916ACD4EA002650B2 /* LRTVDBShowStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRTVDBShowStorage.h; sourceTree = "<group>"; };
+		332E450A16ACD4EB002650B2 /* LRTVDBShowStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRTVDBShowStorage.m; sourceTree = "<group>"; };
+		33445B041671E26C00A48097 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		3359EEC716ACBF6B00492CF2 /* NSArray+LRTVDBAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSArray+LRTVDBAdditions.h"; path = "../../LRTVDBAPIClient/Categories/NSArray+LRTVDBAdditions.h"; sourceTree = "<group>"; };
+		3359EEC816ACBF6B00492CF2 /* NSArray+LRTVDBAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSArray+LRTVDBAdditions.m"; path = "../../LRTVDBAPIClient/Categories/NSArray+LRTVDBAdditions.m"; sourceTree = "<group>"; };
+		3359EEC916ACBF6B00492CF2 /* NSData+LRTVDBAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+LRTVDBAdditions.h"; path = "../../LRTVDBAPIClient/Categories/NSData+LRTVDBAdditions.h"; sourceTree = "<group>"; };
+		3359EECA16ACBF6B00492CF2 /* NSData+LRTVDBAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+LRTVDBAdditions.m"; path = "../../LRTVDBAPIClient/Categories/NSData+LRTVDBAdditions.m"; sourceTree = "<group>"; };
+		3359EECB16ACBF6B00492CF2 /* NSDate+LRTVDBAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDate+LRTVDBAdditions.h"; path = "../../LRTVDBAPIClient/Categories/NSDate+LRTVDBAdditions.h"; sourceTree = "<group>"; };
+		3359EECC16ACBF6B00492CF2 /* NSDate+LRTVDBAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDate+LRTVDBAdditions.m"; path = "../../LRTVDBAPIClient/Categories/NSDate+LRTVDBAdditions.m"; sourceTree = "<group>"; };
+		3359EECD16ACBF6B00492CF2 /* NSString+LRTVDBAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+LRTVDBAdditions.h"; path = "../../LRTVDBAPIClient/Categories/NSString+LRTVDBAdditions.h"; sourceTree = "<group>"; };
+		3359EECE16ACBF6B00492CF2 /* NSString+LRTVDBAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+LRTVDBAdditions.m"; path = "../../LRTVDBAPIClient/Categories/NSString+LRTVDBAdditions.m"; sourceTree = "<group>"; };
+		3359EED316ACBF7E00492CF2 /* LRTVDBBaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBBaseModel.h; path = ../../LRTVDBAPIClient/Model/LRTVDBBaseModel.h; sourceTree = "<group>"; };
+		3359EED416ACBF7E00492CF2 /* LRTVDBBaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBBaseModel.m; path = ../../LRTVDBAPIClient/Model/LRTVDBBaseModel.m; sourceTree = "<group>"; };
+		3359EED516ACBF7E00492CF2 /* LRTVDBActor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBActor.h; path = ../../LRTVDBAPIClient/Model/LRTVDBActor.h; sourceTree = "<group>"; };
+		3359EED616ACBF7E00492CF2 /* LRTVDBActor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBActor.m; path = ../../LRTVDBAPIClient/Model/LRTVDBActor.m; sourceTree = "<group>"; };
+		3359EED716ACBF7E00492CF2 /* LRTVDBEpisode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBEpisode.h; path = ../../LRTVDBAPIClient/Model/LRTVDBEpisode.h; sourceTree = "<group>"; };
+		3359EED816ACBF7E00492CF2 /* LRTVDBEpisode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBEpisode.m; path = ../../LRTVDBAPIClient/Model/LRTVDBEpisode.m; sourceTree = "<group>"; };
+		3359EED916ACBF7E00492CF2 /* LRTVDBEpisode+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "LRTVDBEpisode+Private.h"; path = "../../LRTVDBAPIClient/Model/LRTVDBEpisode+Private.h"; sourceTree = "<group>"; };
+		3359EEDA16ACBF7E00492CF2 /* LRTVDBImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBImage.h; path = ../../LRTVDBAPIClient/Model/LRTVDBImage.h; sourceTree = "<group>"; };
+		3359EEDB16ACBF7E00492CF2 /* LRTVDBImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBImage.m; path = ../../LRTVDBAPIClient/Model/LRTVDBImage.m; sourceTree = "<group>"; };
+		3359EEDC16ACBF7E00492CF2 /* LRTVDBShow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBShow.h; path = ../../LRTVDBAPIClient/Model/LRTVDBShow.h; sourceTree = "<group>"; };
+		3359EEDD16ACBF7E00492CF2 /* LRTVDBShow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBShow.m; path = ../../LRTVDBAPIClient/Model/LRTVDBShow.m; sourceTree = "<group>"; };
+		3359EEDE16ACBF7E00492CF2 /* LRTVDBShow+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "LRTVDBShow+Private.h"; path = "../../LRTVDBAPIClient/Model/LRTVDBShow+Private.h"; sourceTree = "<group>"; };
+		3359EEE516ACBF9100492CF2 /* LRTVDBAPIParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBAPIParser.h; path = ../../LRTVDBAPIClient/Parser/LRTVDBAPIParser.h; sourceTree = "<group>"; };
+		3359EEE616ACBF9100492CF2 /* LRTVDBAPIParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBAPIParser.m; path = ../../LRTVDBAPIClient/Parser/LRTVDBAPIParser.m; sourceTree = "<group>"; };
+		3359EEE816ACBFA600492CF2 /* LRTVDBAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBAPIClient.h; path = ../../LRTVDBAPIClient/LRTVDBAPIClient.h; sourceTree = "<group>"; };
+		3359EEE916ACBFA600492CF2 /* LRTVDBAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBAPIClient.m; path = ../../LRTVDBAPIClient/LRTVDBAPIClient.m; sourceTree = "<group>"; };
+		3359EEEA16ACBFA600492CF2 /* LRTVDBAPIClient+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "LRTVDBAPIClient+Private.h"; path = "../../LRTVDBAPIClient/LRTVDBAPIClient+Private.h"; sourceTree = "<group>"; };
+		335F365116AF5A3000454886 /* LRTVDBBaseModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "LRTVDBBaseModel+Private.h"; path = "../../LRTVDBAPIClient/Model/LRTVDBBaseModel+Private.h"; sourceTree = "<group>"; };
+		335F365216AF765000454886 /* LRAddShowsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRAddShowsViewController.h; sourceTree = "<group>"; };
+		335F365316AF765100454886 /* LRAddShowsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRAddShowsViewController.m; sourceTree = "<group>"; };
+		335F365516AF7C1000454886 /* LRTVDBAddShowCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRTVDBAddShowCell.h; sourceTree = "<group>"; };
+		335F365616AF7C1100454886 /* LRTVDBAddShowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRTVDBAddShowCell.m; sourceTree = "<group>"; };
+		33668119167EADE400163DFF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		3366811B167EADF500163DFF /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		33A7656F16A3997000370289 /* zipzap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zipzap.h; sourceTree = "<group>"; };
+		33A7657016A3997000370289 /* ZZArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZArchive.h; sourceTree = "<group>"; };
+		33A7657116A3997000370289 /* ZZArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZZArchive.mm; sourceTree = "<group>"; };
+		33A7657216A3997000370289 /* ZZArchiveEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZArchiveEntry.h; sourceTree = "<group>"; };
+		33A7657316A3997000370289 /* ZZArchiveEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZArchiveEntry.m; sourceTree = "<group>"; };
+		33A7657416A3997000370289 /* ZZArchiveEntryWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZArchiveEntryWriter.h; sourceTree = "<group>"; };
+		33A7657516A3997000370289 /* ZZChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZChannel.h; sourceTree = "<group>"; };
+		33A7657616A3997000370289 /* ZZChannelOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZChannelOutput.h; sourceTree = "<group>"; };
+		33A7657716A3997000370289 /* ZZDataChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZDataChannel.h; sourceTree = "<group>"; };
+		33A7657816A3997000370289 /* ZZDataChannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZDataChannel.m; sourceTree = "<group>"; };
+		33A7657916A3997000370289 /* ZZDataChannelOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZDataChannelOutput.h; sourceTree = "<group>"; };
+		33A7657A16A3997000370289 /* ZZDataChannelOutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZDataChannelOutput.m; sourceTree = "<group>"; };
+		33A7657B16A3997000370289 /* ZZDeflateOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZDeflateOutputStream.h; sourceTree = "<group>"; };
+		33A7657C16A3997000370289 /* ZZDeflateOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZDeflateOutputStream.m; sourceTree = "<group>"; };
+		33A7657D16A3997000370289 /* ZZFileChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZFileChannel.h; sourceTree = "<group>"; };
+		33A7657E16A3997000370289 /* ZZFileChannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZFileChannel.m; sourceTree = "<group>"; };
+		33A7657F16A3997000370289 /* ZZFileChannelOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZFileChannelOutput.h; sourceTree = "<group>"; };
+		33A7658016A3997000370289 /* ZZFileChannelOutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZFileChannelOutput.m; sourceTree = "<group>"; };
+		33A7658116A3997000370289 /* ZZHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZHeaders.h; sourceTree = "<group>"; };
+		33A7658216A3997000370289 /* ZZInflateInputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZInflateInputStream.h; sourceTree = "<group>"; };
+		33A7658316A3997000370289 /* ZZInflateInputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZInflateInputStream.m; sourceTree = "<group>"; };
+		33A7658416A3997000370289 /* ZZNewArchiveEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZNewArchiveEntry.h; sourceTree = "<group>"; };
+		33A7658516A3997000370289 /* ZZNewArchiveEntry.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZZNewArchiveEntry.mm; sourceTree = "<group>"; };
+		33A7658616A3997000370289 /* ZZNewArchiveEntryWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZNewArchiveEntryWriter.h; sourceTree = "<group>"; };
+		33A7658716A3997000370289 /* ZZNewArchiveEntryWriter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZZNewArchiveEntryWriter.mm; sourceTree = "<group>"; };
+		33A7658816A3997000370289 /* ZZOldArchiveEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZOldArchiveEntry.h; sourceTree = "<group>"; };
+		33A7658916A3997000370289 /* ZZOldArchiveEntry.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZZOldArchiveEntry.mm; sourceTree = "<group>"; };
+		33A7658A16A3997000370289 /* ZZOldArchiveEntryWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZOldArchiveEntryWriter.h; sourceTree = "<group>"; };
+		33A7658B16A3997000370289 /* ZZOldArchiveEntryWriter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZZOldArchiveEntryWriter.mm; sourceTree = "<group>"; };
+		33A7658C16A3997000370289 /* ZZStoreOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZStoreOutputStream.h; sourceTree = "<group>"; };
+		33A7658D16A3997000370289 /* ZZStoreOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZStoreOutputStream.m; sourceTree = "<group>"; };
+		33A7659B16A3999F00370289 /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFHTTPClient.h; path = ../../Vendor/AFNetworking/AFNetworking/AFHTTPClient.h; sourceTree = "<group>"; };
+		33A7659C16A3999F00370289 /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFHTTPClient.m; path = ../../Vendor/AFNetworking/AFNetworking/AFHTTPClient.m; sourceTree = "<group>"; };
+		33A7659D16A3999F00370289 /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFHTTPRequestOperation.h; path = ../../Vendor/AFNetworking/AFNetworking/AFHTTPRequestOperation.h; sourceTree = "<group>"; };
+		33A7659E16A3999F00370289 /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFHTTPRequestOperation.m; path = ../../Vendor/AFNetworking/AFNetworking/AFHTTPRequestOperation.m; sourceTree = "<group>"; };
+		33A765A116A3999F00370289 /* AFURLConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFURLConnectionOperation.h; path = ../../Vendor/AFNetworking/AFNetworking/AFURLConnectionOperation.h; sourceTree = "<group>"; };
+		33A765A216A3999F00370289 /* AFURLConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFURLConnectionOperation.m; path = ../../Vendor/AFNetworking/AFNetworking/AFURLConnectionOperation.m; sourceTree = "<group>"; };
+		33A765AA16A399FA00370289 /* TBXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TBXML.m; path = "../../Vendor/TBXML/TBXML-Code/TBXML.m"; sourceTree = "<group>"; };
+		33A765AC16A39A0500370289 /* TBXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TBXML.h; path = "../../Vendor/TBXML/TBXML-Headers/TBXML.h"; sourceTree = "<group>"; };
+		33AD060F16506C8900061E2B /* LRTVDBAPIClientExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LRTVDBAPIClientExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		33AD061316506C8900061E2B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		33AD061516506C8900061E2B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		33AD061716506C8900061E2B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		33AD061B16506C8900061E2B /* LRTVDBAPIClientExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LRTVDBAPIClientExample-Info.plist"; sourceTree = "<group>"; };
+		33AD061D16506C8900061E2B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		33AD061F16506C8900061E2B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		33AD062516506C8900061E2B /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		33AD062716506C8900061E2B /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		33AD062916506C8900061E2B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		33B24AD416A8BAB6006BC3E2 /* LRTVDBAPIClientExample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LRTVDBAPIClientExample-Prefix.pch"; sourceTree = "<group>"; };
+		33C5F01A16508FA8009A9C4F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		33CA217B16B4341C00BC1808 /* LRShowDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRShowDetailsViewController.h; sourceTree = "<group>"; };
+		33CA217C16B4341C00BC1808 /* LRShowDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRShowDetailsViewController.m; sourceTree = "<group>"; };
+		33D5C00916B58801006AD6B1 /* PosterPlaceholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PosterPlaceholder.png; sourceTree = "<group>"; };
+		33D5C00A16B58801006AD6B1 /* PosterPlaceholder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PosterPlaceholder@2x.png"; sourceTree = "<group>"; };
+		33D5C01016B58CF6006AD6B1 /* LRUIBeautifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRUIBeautifier.h; sourceTree = "<group>"; };
+		33D5C01116B58CF6006AD6B1 /* LRUIBeautifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRUIBeautifier.m; sourceTree = "<group>"; };
+		33D5C01516B5FA12006AD6B1 /* LRTVDBPersistenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBPersistenceManager.h; path = ../../LRTVDBAPIClient/PersistenceManager/LRTVDBPersistenceManager.h; sourceTree = "<group>"; };
+		33D5C01616B5FA12006AD6B1 /* LRTVDBPersistenceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBPersistenceManager.m; path = ../../LRTVDBAPIClient/PersistenceManager/LRTVDBPersistenceManager.m; sourceTree = "<group>"; };
+		33F17C1F16B543DC00C5DE01 /* LRSwitchButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRSwitchButton.h; sourceTree = "<group>"; };
+		33F17C2016B543DC00C5DE01 /* LRSwitchButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRSwitchButton.m; sourceTree = "<group>"; };
+		33FBF3FC16A8BDB700473052 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
+		33FBF3FF16A8BDD000473052 /* LRAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRAppDelegate.h; sourceTree = "<group>"; };
+		33FBF40016A8BDD000473052 /* LRAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRAppDelegate.m; sourceTree = "<group>"; };
+		33FBF40116A8BDD000473052 /* LREpisodeDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LREpisodeDetailsViewController.h; sourceTree = "<group>"; };
+		33FBF40216A8BDD000473052 /* LREpisodeDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LREpisodeDetailsViewController.m; sourceTree = "<group>"; };
+		33FBF40316A8BDD000473052 /* LRShowEpisodesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRShowEpisodesViewController.h; sourceTree = "<group>"; };
+		33FBF40416A8BDD000473052 /* LRShowEpisodesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRShowEpisodesViewController.m; sourceTree = "<group>"; };
+		33FBF40516A8BDD000473052 /* LRShowsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRShowsViewController.h; sourceTree = "<group>"; };
+		33FBF40616A8BDD000473052 /* LRShowsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRShowsViewController.m; sourceTree = "<group>"; };
+		33FBF40716A8BDD000473052 /* LRTVDBEpisodeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRTVDBEpisodeCell.h; sourceTree = "<group>"; };
+		33FBF40816A8BDD000473052 /* LRTVDBEpisodeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRTVDBEpisodeCell.m; sourceTree = "<group>"; };
+		33FBF40916A8BDD000473052 /* LRTVDBShowCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LRTVDBShowCell.h; sourceTree = "<group>"; };
+		33FBF40A16A8BDD000473052 /* LRTVDBShowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LRTVDBShowCell.m; sourceTree = "<group>"; };
+		33FBF41616A8BF0D00473052 /* LRTVDBAPIClientTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LRTVDBAPIClientTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		33FBF41716A8BF0D00473052 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		33FBF41D16A8BF0D00473052 /* LRTVDBAPIClientTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LRTVDBAPIClientTests-Info.plist"; sourceTree = "<group>"; };
+		33FBF41F16A8BF0D00473052 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		33FBF42416A8BF0D00473052 /* LRTVDBAPIClientTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LRTVDBAPIClientTests-Prefix.pch"; sourceTree = "<group>"; };
+		33FBF42816A8BF6400473052 /* LRTVDBAPIClientTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTVDBAPIClientTests.h; path = ../../UnitTests/LRTVDBAPIClientTests.h; sourceTree = "<group>"; };
+		33FBF42916A8BF6400473052 /* LRTVDBAPIClientTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTVDBAPIClientTests.m; path = ../../UnitTests/LRTVDBAPIClientTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		33AD060C16506C8900061E2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3366811C167EADF500163DFF /* MobileCoreServices.framework in Frameworks */,
+				3366811A167EADE500163DFF /* SystemConfiguration.framework in Frameworks */,
+				33445B051671E26C00A48097 /* QuartzCore.framework in Frameworks */,
+				33C5F01B16508FA8009A9C4F /* libz.dylib in Frameworks */,
+				33AD061416506C8900061E2B /* UIKit.framework in Frameworks */,
+				33AD061616506C8900061E2B /* Foundation.framework in Frameworks */,
+				33AD061816506C8900061E2B /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		33FBF41216A8BF0D00473052 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3319622716A8C49700135491 /* SystemConfiguration.framework in Frameworks */,
+				3319622616A8C49100135491 /* MobileCoreServices.framework in Frameworks */,
+				33FBF41816A8BF0D00473052 /* SenTestingKit.framework in Frameworks */,
+				33FBF41916A8BF0D00473052 /* UIKit.framework in Frameworks */,
+				33FBF41A16A8BF0D00473052 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3303A8B21650826A0094119B /* LRTVDBAPIClient */ = {
+			isa = PBXGroup;
+			children = (
+				3359EEE816ACBFA600492CF2 /* LRTVDBAPIClient.h */,
+				3359EEE916ACBFA600492CF2 /* LRTVDBAPIClient.m */,
+				3359EEEA16ACBFA600492CF2 /* LRTVDBAPIClient+Private.h */,
+			);
+			name = LRTVDBAPIClient;
+			sourceTree = "<group>";
+		};
+		3359EEE416ACBF8300492CF2 /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				3359EEE516ACBF9100492CF2 /* LRTVDBAPIParser.h */,
+				3359EEE616ACBF9100492CF2 /* LRTVDBAPIParser.m */,
+			);
+			name = Parser;
+			sourceTree = "<group>";
+		};
+		335D1D9E16B1F18500231A59 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				335F365516AF7C1000454886 /* LRTVDBAddShowCell.h */,
+				335F365616AF7C1100454886 /* LRTVDBAddShowCell.m */,
+				33FBF40916A8BDD000473052 /* LRTVDBShowCell.h */,
+				33FBF40A16A8BDD000473052 /* LRTVDBShowCell.m */,
+				33FBF40716A8BDD000473052 /* LRTVDBEpisodeCell.h */,
+				33FBF40816A8BDD000473052 /* LRTVDBEpisodeCell.m */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		3388CB3216B1FE7300F8D2AB /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				335F365216AF765000454886 /* LRAddShowsViewController.h */,
+				335F365316AF765100454886 /* LRAddShowsViewController.m */,
+				33FBF40116A8BDD000473052 /* LREpisodeDetailsViewController.h */,
+				33FBF40216A8BDD000473052 /* LREpisodeDetailsViewController.m */,
+				33FBF40316A8BDD000473052 /* LRShowEpisodesViewController.h */,
+				33FBF40416A8BDD000473052 /* LRShowEpisodesViewController.m */,
+				33FBF40516A8BDD000473052 /* LRShowsViewController.h */,
+				33FBF40616A8BDD000473052 /* LRShowsViewController.m */,
+				33CA217B16B4341C00BC1808 /* LRShowDetailsViewController.h */,
+				33CA217C16B4341C00BC1808 /* LRShowDetailsViewController.m */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		33A15DCB166D7865004C5CF2 /* LRTVDBAPIClient */ = {
+			isa = PBXGroup;
+			children = (
+				33D5C01416B5F9B9006AD6B1 /* PersistenceManager */,
+				33FEC84E16A6348B00E836D7 /* Categories */,
+				3359EEE416ACBF8300492CF2 /* Parser */,
+				33C5EFD116508E43009A9C4F /* Model */,
+				3303A8B21650826A0094119B /* LRTVDBAPIClient */,
+			);
+			name = LRTVDBAPIClient;
+			sourceTree = "<group>";
+		};
+		33AD060416506C8900061E2B = {
+			isa = PBXGroup;
+			children = (
+				33AD061916506C8900061E2B /* LRTVDBAPIClientExample */,
+				33FBF41B16A8BF0D00473052 /* LRTVDBAPIClientTests */,
+				33AD061216506C8900061E2B /* Frameworks */,
+				33AD061016506C8900061E2B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		33AD061016506C8900061E2B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				33AD060F16506C8900061E2B /* LRTVDBAPIClientExample.app */,
+				33FBF41616A8BF0D00473052 /* LRTVDBAPIClientTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		33AD061216506C8900061E2B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3366811B167EADF500163DFF /* MobileCoreServices.framework */,
+				33668119167EADE400163DFF /* SystemConfiguration.framework */,
+				33C5F01A16508FA8009A9C4F /* libz.dylib */,
+				33445B041671E26C00A48097 /* QuartzCore.framework */,
+				33AD061316506C8900061E2B /* UIKit.framework */,
+				33AD061516506C8900061E2B /* Foundation.framework */,
+				33AD061716506C8900061E2B /* CoreGraphics.framework */,
+				33FBF41716A8BF0D00473052 /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		33AD061916506C8900061E2B /* LRTVDBAPIClientExample */ = {
+			isa = PBXGroup;
+			children = (
+				33D5C00E16B58CD3006AD6B1 /* UI Stuff */,
+				335D1D9E16B1F18500231A59 /* Cells */,
+				33D5C01816B60671006AD6B1 /* Show Storage */,
+				3388CB3216B1FE7300F8D2AB /* View Controllers */,
+				33FBF3FF16A8BDD000473052 /* LRAppDelegate.h */,
+				33FBF40016A8BDD000473052 /* LRAppDelegate.m */,
+				33FBF3FB16A8BDB700473052 /* MainStoryboard.storyboard */,
+				33E7748A16506F9F00569B17 /* Vendor */,
+				33A15DCB166D7865004C5CF2 /* LRTVDBAPIClient */,
+				33AD061A16506C8900061E2B /* Supporting Files */,
+			);
+			path = LRTVDBAPIClientExample;
+			sourceTree = "<group>";
+		};
+		33AD061A16506C8900061E2B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				33D5C00916B58801006AD6B1 /* PosterPlaceholder.png */,
+				33D5C00A16B58801006AD6B1 /* PosterPlaceholder@2x.png */,
+				33B24AD416A8BAB6006BC3E2 /* LRTVDBAPIClientExample-Prefix.pch */,
+				33AD061B16506C8900061E2B /* LRTVDBAPIClientExample-Info.plist */,
+				33AD061C16506C8900061E2B /* InfoPlist.strings */,
+				33AD061F16506C8900061E2B /* main.m */,
+				33AD062516506C8900061E2B /* Default.png */,
+				33AD062716506C8900061E2B /* Default@2x.png */,
+				33AD062916506C8900061E2B /* Default-568h@2x.png */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		33C5EF7C16508BF6009A9C4F /* TBXML */ = {
+			isa = PBXGroup;
+			children = (
+				33A765AC16A39A0500370289 /* TBXML.h */,
+				33A765AA16A399FA00370289 /* TBXML.m */,
+			);
+			name = TBXML;
+			sourceTree = "<group>";
+		};
+		33C5EF8316508C88009A9C4F /* AFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				33A7659B16A3999F00370289 /* AFHTTPClient.h */,
+				33A7659C16A3999F00370289 /* AFHTTPClient.m */,
+				33A7659D16A3999F00370289 /* AFHTTPRequestOperation.h */,
+				33A7659E16A3999F00370289 /* AFHTTPRequestOperation.m */,
+				33A765A116A3999F00370289 /* AFURLConnectionOperation.h */,
+				33A765A216A3999F00370289 /* AFURLConnectionOperation.m */,
+				331D325216BE8BBF00D5ED80 /* AFNetworkActivityIndicatorManager.h */,
+				331D325316BE8BBF00D5ED80 /* AFNetworkActivityIndicatorManager.m */,
+			);
+			name = AFNetworking;
+			sourceTree = "<group>";
+		};
+		33C5EFBA16508E11009A9C4F /* zipzap */ = {
+			isa = PBXGroup;
+			children = (
+				33A7656F16A3997000370289 /* zipzap.h */,
+				33A7657016A3997000370289 /* ZZArchive.h */,
+				33A7657116A3997000370289 /* ZZArchive.mm */,
+				33A7657216A3997000370289 /* ZZArchiveEntry.h */,
+				33A7657316A3997000370289 /* ZZArchiveEntry.m */,
+				33A7657416A3997000370289 /* ZZArchiveEntryWriter.h */,
+				33A7657516A3997000370289 /* ZZChannel.h */,
+				33A7657616A3997000370289 /* ZZChannelOutput.h */,
+				33A7657716A3997000370289 /* ZZDataChannel.h */,
+				33A7657816A3997000370289 /* ZZDataChannel.m */,
+				33A7657916A3997000370289 /* ZZDataChannelOutput.h */,
+				33A7657A16A3997000370289 /* ZZDataChannelOutput.m */,
+				33A7657B16A3997000370289 /* ZZDeflateOutputStream.h */,
+				33A7657C16A3997000370289 /* ZZDeflateOutputStream.m */,
+				33A7657D16A3997000370289 /* ZZFileChannel.h */,
+				33A7657E16A3997000370289 /* ZZFileChannel.m */,
+				33A7657F16A3997000370289 /* ZZFileChannelOutput.h */,
+				33A7658016A3997000370289 /* ZZFileChannelOutput.m */,
+				33A7658116A3997000370289 /* ZZHeaders.h */,
+				33A7658216A3997000370289 /* ZZInflateInputStream.h */,
+				33A7658316A3997000370289 /* ZZInflateInputStream.m */,
+				33A7658416A3997000370289 /* ZZNewArchiveEntry.h */,
+				33A7658516A3997000370289 /* ZZNewArchiveEntry.mm */,
+				33A7658616A3997000370289 /* ZZNewArchiveEntryWriter.h */,
+				33A7658716A3997000370289 /* ZZNewArchiveEntryWriter.mm */,
+				33A7658816A3997000370289 /* ZZOldArchiveEntry.h */,
+				33A7658916A3997000370289 /* ZZOldArchiveEntry.mm */,
+				33A7658A16A3997000370289 /* ZZOldArchiveEntryWriter.h */,
+				33A7658B16A3997000370289 /* ZZOldArchiveEntryWriter.mm */,
+				33A7658C16A3997000370289 /* ZZStoreOutputStream.h */,
+				33A7658D16A3997000370289 /* ZZStoreOutputStream.m */,
+			);
+			name = zipzap;
+			path = ../../Vendor/zipzap/zipzap;
+			sourceTree = "<group>";
+		};
+		33C5EFD116508E43009A9C4F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				3359EED316ACBF7E00492CF2 /* LRTVDBBaseModel.h */,
+				335F365116AF5A3000454886 /* LRTVDBBaseModel+Private.h */,
+				3359EED416ACBF7E00492CF2 /* LRTVDBBaseModel.m */,
+				3359EED516ACBF7E00492CF2 /* LRTVDBActor.h */,
+				3359EED616ACBF7E00492CF2 /* LRTVDBActor.m */,
+				3359EED716ACBF7E00492CF2 /* LRTVDBEpisode.h */,
+				3359EED816ACBF7E00492CF2 /* LRTVDBEpisode.m */,
+				3359EED916ACBF7E00492CF2 /* LRTVDBEpisode+Private.h */,
+				3359EEDA16ACBF7E00492CF2 /* LRTVDBImage.h */,
+				3359EEDB16ACBF7E00492CF2 /* LRTVDBImage.m */,
+				3359EEDC16ACBF7E00492CF2 /* LRTVDBShow.h */,
+				3359EEDD16ACBF7E00492CF2 /* LRTVDBShow.m */,
+				3359EEDE16ACBF7E00492CF2 /* LRTVDBShow+Private.h */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		33D5C00E16B58CD3006AD6B1 /* UI Stuff */ = {
+			isa = PBXGroup;
+			children = (
+				33D5C00F16B58CDF006AD6B1 /* UI Beautifier */,
+				33D5C01316B5B793006AD6B1 /* Custom Button */,
+			);
+			name = "UI Stuff";
+			sourceTree = "<group>";
+		};
+		33D5C00F16B58CDF006AD6B1 /* UI Beautifier */ = {
+			isa = PBXGroup;
+			children = (
+				33D5C01016B58CF6006AD6B1 /* LRUIBeautifier.h */,
+				33D5C01116B58CF6006AD6B1 /* LRUIBeautifier.m */,
+			);
+			name = "UI Beautifier";
+			sourceTree = "<group>";
+		};
+		33D5C01316B5B793006AD6B1 /* Custom Button */ = {
+			isa = PBXGroup;
+			children = (
+				33F17C1F16B543DC00C5DE01 /* LRSwitchButton.h */,
+				33F17C2016B543DC00C5DE01 /* LRSwitchButton.m */,
+			);
+			name = "Custom Button";
+			sourceTree = "<group>";
+		};
+		33D5C01416B5F9B9006AD6B1 /* PersistenceManager */ = {
+			isa = PBXGroup;
+			children = (
+				33D5C01516B5FA12006AD6B1 /* LRTVDBPersistenceManager.h */,
+				33D5C01616B5FA12006AD6B1 /* LRTVDBPersistenceManager.m */,
+			);
+			name = PersistenceManager;
+			sourceTree = "<group>";
+		};
+		33D5C01816B60671006AD6B1 /* Show Storage */ = {
+			isa = PBXGroup;
+			children = (
+				332E450916ACD4EA002650B2 /* LRTVDBShowStorage.h */,
+				332E450A16ACD4EB002650B2 /* LRTVDBShowStorage.m */,
+			);
+			name = "Show Storage";
+			sourceTree = "<group>";
+		};
+		33E7748A16506F9F00569B17 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				33C5EF8316508C88009A9C4F /* AFNetworking */,
+				33E9EBA516BE83620097E148 /* Image Client */,
+				33C5EFBA16508E11009A9C4F /* zipzap */,
+				33C5EF7C16508BF6009A9C4F /* TBXML */,
+			);
+			name = Vendor;
+			sourceTree = "<group>";
+		};
+		33E9EBA516BE83620097E148 /* Image Client */ = {
+			isa = PBXGroup;
+			children = (
+				3309806B16D9BA6100D264CE /* UIImage+LRImageManagerAdditions.h */,
+				3309806C16D9BA6100D264CE /* UIImage+LRImageManagerAdditions.m */,
+				3309806D16D9BA6100D264CE /* UIImageView+LRNetworking.h */,
+				3309806E16D9BA6100D264CE /* UIImageView+LRNetworking.m */,
+				3309806316D9BA6100D264CE /* LRImageCache.h */,
+				3309806416D9BA6100D264CE /* LRImageCache.m */,
+				3309806916D9BA6100D264CE /* LRImagePresenter.h */,
+				3309806A16D9BA6100D264CE /* LRImagePresenter.m */,
+				3309806716D9BA6100D264CE /* LRImageOperation.h */,
+				3309806816D9BA6100D264CE /* LRImageOperation.m */,
+				3309806516D9BA6100D264CE /* LRImageManager.h */,
+				3309806616D9BA6100D264CE /* LRImageManager.m */,
+			);
+			name = "Image Client";
+			sourceTree = "<group>";
+		};
+		33FBF41B16A8BF0D00473052 /* LRTVDBAPIClientTests */ = {
+			isa = PBXGroup;
+			children = (
+				33FBF42816A8BF6400473052 /* LRTVDBAPIClientTests.h */,
+				33FBF42916A8BF6400473052 /* LRTVDBAPIClientTests.m */,
+				33FBF41C16A8BF0D00473052 /* Supporting Files */,
+			);
+			path = LRTVDBAPIClientTests;
+			sourceTree = "<group>";
+		};
+		33FBF41C16A8BF0D00473052 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				33FBF41D16A8BF0D00473052 /* LRTVDBAPIClientTests-Info.plist */,
+				33FBF41E16A8BF0D00473052 /* InfoPlist.strings */,
+				33FBF42416A8BF0D00473052 /* LRTVDBAPIClientTests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		33FEC84E16A6348B00E836D7 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				3359EEC716ACBF6B00492CF2 /* NSArray+LRTVDBAdditions.h */,
+				3359EEC816ACBF6B00492CF2 /* NSArray+LRTVDBAdditions.m */,
+				3359EEC916ACBF6B00492CF2 /* NSData+LRTVDBAdditions.h */,
+				3359EECA16ACBF6B00492CF2 /* NSData+LRTVDBAdditions.m */,
+				3359EECB16ACBF6B00492CF2 /* NSDate+LRTVDBAdditions.h */,
+				3359EECC16ACBF6B00492CF2 /* NSDate+LRTVDBAdditions.m */,
+				3359EECD16ACBF6B00492CF2 /* NSString+LRTVDBAdditions.h */,
+				3359EECE16ACBF6B00492CF2 /* NSString+LRTVDBAdditions.m */,
+			);
+			name = Categories;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		33AD060E16506C8900061E2B /* LRTVDBAPIClientExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 33AD063316506C8900061E2B /* Build configuration list for PBXNativeTarget "LRTVDBAPIClientExample" */;
+			buildPhases = (
+				33AD060B16506C8900061E2B /* Sources */,
+				33AD060C16506C8900061E2B /* Frameworks */,
+				33AD060D16506C8900061E2B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LRTVDBAPIClientExample;
+			productName = LRTVDBAPIClientExample;
+			productReference = 33AD060F16506C8900061E2B /* LRTVDBAPIClientExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+		33FBF41516A8BF0D00473052 /* LRTVDBAPIClientTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 33FBF42516A8BF0D00473052 /* Build configuration list for PBXNativeTarget "LRTVDBAPIClientTests" */;
+			buildPhases = (
+				33FBF41116A8BF0D00473052 /* Sources */,
+				33FBF41216A8BF0D00473052 /* Frameworks */,
+				33FBF41316A8BF0D00473052 /* Resources */,
+				33FBF41416A8BF0D00473052 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				33FBF43816A8C22700473052 /* PBXTargetDependency */,
+			);
+			name = LRTVDBAPIClientTests;
+			productName = LRTVDBAPIClientTests;
+			productReference = 33FBF41616A8BF0D00473052 /* LRTVDBAPIClientTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		33AD060616506C8900061E2B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = LR;
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = "Luis Recuenco";
+			};
+			buildConfigurationList = 33AD060916506C8900061E2B /* Build configuration list for PBXProject "LRTVDBAPIClientExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 33AD060416506C8900061E2B;
+			productRefGroup = 33AD061016506C8900061E2B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				33AD060E16506C8900061E2B /* LRTVDBAPIClientExample */,
+				33FBF41516A8BF0D00473052 /* LRTVDBAPIClientTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		33AD060D16506C8900061E2B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				33AD061E16506C8900061E2B /* InfoPlist.strings in Resources */,
+				33AD062616506C8900061E2B /* Default.png in Resources */,
+				33AD062816506C8900061E2B /* Default@2x.png in Resources */,
+				33AD062A16506C8900061E2B /* Default-568h@2x.png in Resources */,
+				33FBF3FD16A8BDB700473052 /* MainStoryboard.storyboard in Resources */,
+				33D5C00B16B58801006AD6B1 /* PosterPlaceholder.png in Resources */,
+				33D5C00C16B58801006AD6B1 /* PosterPlaceholder@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		33FBF41316A8BF0D00473052 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				33FBF42016A8BF0D00473052 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		33FBF41416A8BF0D00473052 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		33AD060B16506C8900061E2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				33AD062016506C8900061E2B /* main.m in Sources */,
+				33A7658E16A3997000370289 /* ZZArchive.mm in Sources */,
+				33A7658F16A3997000370289 /* ZZArchiveEntry.m in Sources */,
+				33A7659016A3997000370289 /* ZZDataChannel.m in Sources */,
+				33A7659116A3997000370289 /* ZZDataChannelOutput.m in Sources */,
+				33A7659216A3997000370289 /* ZZDeflateOutputStream.m in Sources */,
+				33A7659316A3997000370289 /* ZZFileChannel.m in Sources */,
+				33A7659416A3997000370289 /* ZZFileChannelOutput.m in Sources */,
+				33A7659516A3997000370289 /* ZZInflateInputStream.m in Sources */,
+				33A7659616A3997000370289 /* ZZNewArchiveEntry.mm in Sources */,
+				33A7659716A3997000370289 /* ZZNewArchiveEntryWriter.mm in Sources */,
+				33A7659816A3997000370289 /* ZZOldArchiveEntry.mm in Sources */,
+				33A7659916A3997000370289 /* ZZOldArchiveEntryWriter.mm in Sources */,
+				33A7659A16A3997000370289 /* ZZStoreOutputStream.m in Sources */,
+				33A765A516A3999F00370289 /* AFHTTPClient.m in Sources */,
+				33A765A616A3999F00370289 /* AFHTTPRequestOperation.m in Sources */,
+				33A765A816A3999F00370289 /* AFURLConnectionOperation.m in Sources */,
+				33A765AB16A399FA00370289 /* TBXML.m in Sources */,
+				33FBF40B16A8BDD000473052 /* LRAppDelegate.m in Sources */,
+				33FBF40C16A8BDD000473052 /* LREpisodeDetailsViewController.m in Sources */,
+				33FBF40D16A8BDD000473052 /* LRShowEpisodesViewController.m in Sources */,
+				33FBF40E16A8BDD000473052 /* LRShowsViewController.m in Sources */,
+				33FBF40F16A8BDD000473052 /* LRTVDBEpisodeCell.m in Sources */,
+				33FBF41016A8BDD000473052 /* LRTVDBShowCell.m in Sources */,
+				3359EECF16ACBF6B00492CF2 /* NSArray+LRTVDBAdditions.m in Sources */,
+				3359EED016ACBF6B00492CF2 /* NSData+LRTVDBAdditions.m in Sources */,
+				3359EED116ACBF6B00492CF2 /* NSDate+LRTVDBAdditions.m in Sources */,
+				3359EED216ACBF6B00492CF2 /* NSString+LRTVDBAdditions.m in Sources */,
+				3359EEDF16ACBF7E00492CF2 /* LRTVDBBaseModel.m in Sources */,
+				3359EEE016ACBF7E00492CF2 /* LRTVDBActor.m in Sources */,
+				3359EEE116ACBF7E00492CF2 /* LRTVDBEpisode.m in Sources */,
+				3359EEE216ACBF7E00492CF2 /* LRTVDBImage.m in Sources */,
+				3359EEE316ACBF7E00492CF2 /* LRTVDBShow.m in Sources */,
+				3359EEE716ACBF9100492CF2 /* LRTVDBAPIParser.m in Sources */,
+				3359EEEB16ACBFA600492CF2 /* LRTVDBAPIClient.m in Sources */,
+				332E450B16ACD4ED002650B2 /* LRTVDBShowStorage.m in Sources */,
+				335F365416AF765200454886 /* LRAddShowsViewController.m in Sources */,
+				335F365716AF7C1200454886 /* LRTVDBAddShowCell.m in Sources */,
+				33CA217D16B4341C00BC1808 /* LRShowDetailsViewController.m in Sources */,
+				33F17C2116B543DD00C5DE01 /* LRSwitchButton.m in Sources */,
+				33D5C01216B58CF7006AD6B1 /* LRUIBeautifier.m in Sources */,
+				33D5C01716B5FA12006AD6B1 /* LRTVDBPersistenceManager.m in Sources */,
+				331D325416BE8BC000D5ED80 /* AFNetworkActivityIndicatorManager.m in Sources */,
+				3309806F16D9BA6100D264CE /* LRImageCache.m in Sources */,
+				3309807016D9BA6100D264CE /* LRImageManager.m in Sources */,
+				3309807116D9BA6100D264CE /* LRImageOperation.m in Sources */,
+				3309807216D9BA6100D264CE /* LRImagePresenter.m in Sources */,
+				3309807316D9BA6100D264CE /* UIImage+LRImageManagerAdditions.m in Sources */,
+				3309807416D9BA6100D264CE /* UIImageView+LRNetworking.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		33FBF41116A8BF0D00473052 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				33FBF42A16A8BF6400473052 /* LRTVDBAPIClientTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		33FBF43816A8C22700473052 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 33AD060E16506C8900061E2B /* LRTVDBAPIClientExample */;
+			targetProxy = 33FBF43716A8C22700473052 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		33AD061C16506C8900061E2B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				33AD061D16506C8900061E2B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		33FBF3FB16A8BDB700473052 /* MainStoryboard.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				33FBF3FC16A8BDB700473052 /* en */,
+			);
+			name = MainStoryboard.storyboard;
+			sourceTree = "<group>";
+		};
+		33FBF41E16A8BF0D00473052 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				33FBF41F16A8BF0D00473052 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		33AD063116506C8900061E2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Luis Recuenco (46TT5D57H6)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = YES;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1D6D1EC6-3C9B-4C00-A584-D00B1E47A3AF";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		33AD063216506C8900061E2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Luis Recuenco (46TT5D57H6)";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1D6D1EC6-3C9B-4C00-A584-D00B1E47A3AF";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		33AD063416506C8900061E2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LRTVDBAPIClientExample/LRTVDBAPIClientExample-Prefix.pch";
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				INFOPLIST_FILE = "LRTVDBAPIClientExample/LRTVDBAPIClientExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)/usr/lib/system\"",
+				);
+				PRODUCT_NAME = LRTVDBAPIClientExample;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		33AD063516506C8900061E2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LRTVDBAPIClientExample/LRTVDBAPIClientExample-Prefix.pch";
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				INFOPLIST_FILE = "LRTVDBAPIClientExample/LRTVDBAPIClientExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)/usr/lib/system\"",
+				);
+				PRODUCT_NAME = LRTVDBAPIClientExample;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		33FBF42616A8BF0D00473052 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LRTVDBAPIClientExample.app/LRTVDBAPIClientExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LRTVDBAPIClientTests/LRTVDBAPIClientTests-Prefix.pch";
+				INFOPLIST_FILE = "LRTVDBAPIClientTests/LRTVDBAPIClientTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		33FBF42716A8BF0D00473052 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LRTVDBAPIClientExample.app/LRTVDBAPIClientExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LRTVDBAPIClientTests/LRTVDBAPIClientTests-Prefix.pch";
+				INFOPLIST_FILE = "LRTVDBAPIClientTests/LRTVDBAPIClientTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		33AD060916506C8900061E2B /* Build configuration list for PBXProject "LRTVDBAPIClientExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				33AD063116506C8900061E2B /* Debug */,
+				33AD063216506C8900061E2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		33AD063316506C8900061E2B /* Build configuration list for PBXNativeTarget "LRTVDBAPIClientExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				33AD063416506C8900061E2B /* Debug */,
+				33AD063516506C8900061E2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		33FBF42516A8BF0D00473052 /* Build configuration list for PBXNativeTarget "LRTVDBAPIClientTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				33FBF42616A8BF0D00473052 /* Debug */,
+				33FBF42716A8BF0D00473052 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 33AD060616506C8900061E2B /* Project object */;
+}

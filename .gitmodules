@@ -7,3 +7,6 @@
 [submodule "Vendor/zipzap"]
 	path = Vendor/zipzap
 	url = git://github.com/pixelglow/zipzap.git
+[submodule "Vendor/LRImageManager"]
+	path = Vendor/LRImageManager
+	url = git://github.com/luisrecuenco/LRImageManager.git
