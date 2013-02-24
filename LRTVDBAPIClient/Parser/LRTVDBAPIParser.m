@@ -218,7 +218,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 {
     NSMutableArray *showsWithoutLanguageDuplicates = [NSMutableArray array];
     
-    void (^__block __weak removeLanguageDuplicatesBlock)(NSMutableArray *) = ^(NSMutableArray *showsWithLanguageDuplicates) {
+    void (^__block __unsafe_unretained removeLanguageDuplicatesBlock)(NSMutableArray *) = ^(NSMutableArray *showsWithLanguageDuplicates) {
         
         if (showsWithLanguageDuplicates.count == 0) return;
         
@@ -262,7 +262,7 @@ typedef LRTVDBBaseModel *(^LRBaseModelDictionaryBlock)(NSDictionary *);
 static id LRTVDBAPICheckEmptyString(id obj)
 {
     BOOL emptyString = [obj isKindOfClass:[NSString class]] &&
-    [(NSString *)obj length] == 0;
+                       [(NSString *)obj length] == 0;
     
     return emptyString ? nil : obj;
 }
