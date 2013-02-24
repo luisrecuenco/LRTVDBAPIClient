@@ -173,7 +173,13 @@ static NSTimeInterval const kTimeElapsedToPerformSearch = 0.75f;
 
 - (void)cancelCurrentShowsUpdates
 {
-    [[LRTVDBAPIClient sharedClient] cancelUpdateOfShowsRequests:_shows
+    // Do not cancel update of shows that have been added to the storage
+    NSIndexSet *indexSet = [_shows indexesOfObjectsPassingTest:^BOOL(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
+        
+        return ![[LRTVDBShowStorage sharedStorage] existShow:show];
+    }];
+    
+    [[LRTVDBAPIClient sharedClient] cancelUpdateOfShowsRequests:[_shows objectsAtIndexes:indexSet]
                                                  updateEpisodes:YES
                                                    updateImages:NO
                                                    updateActors:NO];
