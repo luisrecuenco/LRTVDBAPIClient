@@ -21,7 +21,8 @@ It supports:
   Add the following line to your Podfile:
 
   ```
-  pod 'LRTVDBAPIClient', :git => 'https://github.com/luisrecuenco/LRTVDBAPIClient.git'   
+  platform :ios, "5.1"
+  pod 'LRTVDBAPIClient'   
   ```
 
   Run the following command:
