@@ -38,35 +38,35 @@ It supports:
   git clone --recursive git://github.com/luisrecuenco/LRTVDBAPIClient.git
   ```
 
-Drag *LRTVDBAPIClient* and *Vendor* folders to your project.
+  Drag *LRTVDBAPIClient* and *Vendor* folders to your project.
 
 ## Configuration
 
 You may specify your TVDB API key in the property *apiKey* in TVDBAPIClient class. 
 
-You may also set the desired language to use. If no language is provided, the default device one will be used (or English if the latter is not supported by TheTVDB). 
+You may also set the desired language to use (via *language* property in TVDBAPIClient). If no language is provided, the default device one will be used (or English if the latter is not supported by TheTVDB). 
 
 ## Use
 
 The code is divided in four main categories:
 
-* Model: LRTVDBShow, LRTVDBEpisode, LRTVDBImage and LRTVDBActor.
-* Persistence Manager: LRTVDBPersistenceManager
-* Parser: LRTVDBAPIParser.
-* API Client: LRTVDBAPIClient.
+* **Model**: *LRTVDBShow*, *LRTVDBEpisode*, *LRTVDBImage* and *LRTVDBActor*.
+* **Persistence Manager**: *LRTVDBPersistenceManager*.
+* **Parser**: *LRTVDBAPIParser*.
+* **API Client**: *LRTVDBAPIClient*.
 
 The main class that has all the important methods to retrieve the information from TheTVDB is LRTVDBAPIClient. Let's explain further what you can do with it.
 
-1. **Search for shows based on a specified query**
+**Search for shows based on a specified query**
 
 ```objective-c
 - (void)showsWithName:(NSString *)showName
       completionBlock:(void (^)(NSArray *shows, NSError *error))completionBlock;
 ```
 
-The result of the method is a list of LRTVDBShow objects with some basic information provided by TheTVDB (name, ID, overview, IMDB ID, bannerURL…). In order to retrieve more detailed information, such as episodes, artwork or actors, you can use the following method.
+The result of the method is an array of LRTVDBShow objects with some basic information provided by TheTVDB (name, ID, overview, IMDB ID, bannerURL…). In order to retrieve more detailed information, such as episodes, artwork or actors, you can use the following method.
 
-2. **Retrieve a list shows for the given TVDB shows IDs**
+**Retrieve a list shows for the given TVDB shows IDs**
 
 ```objective-c
 - (void)showsWithIDs:(NSArray *)showsIDs
@@ -76,14 +76,16 @@ The result of the method is a list of LRTVDBShow objects with some basic informa
      completionBlock:(void (^)(NSArray *shows, NSDictionary *errorsDictionary))completionBlock;
 ```
 
-3. **Retrieve a list episodes for the given TVDB episodes IDs**
+**Retrieve a list episodes for the given TVDB episodes IDs**
 
 ```objective-c
 - (void)episodesWithIDs:(NSArray *)episodesIDs
         completionBlock:(void (^)(NSArray *episodes, NSDictionary *errorsDictionary))completionBlock;
 ```
 
-4. **Get the correct episode for the specified season and number**
+*episodes* is an array of LRTVDBEpisode objects.
+
+**Get the correct episode for the specified season and number**
 
 ```objective-c
 - (void)episodeWithSeasonNumber:(NSNumber *)seasonNumber
@@ -92,21 +94,25 @@ The result of the method is a list of LRTVDBShow objects with some basic informa
                 completionBlock:(void (^)(LRTVDBEpisode *episode, NSError *error))completionBlock;
 ```
 
-5. **Get all the TV Show artwork information**
+**Get all the TV Show artwork information**
 
 ```objective-c
 - (void)imagesForShowWithID:(NSString *)showID
             completionBlock:(void (^)(NSArray *images, NSError *error))completionBlock;
 ```
 
-6. **Get all the TV Show actors information**
+*images* is an array of LRTVDBImage objects.
+
+**Get all the TV Show actors information**
 
 ```objective-c
 - (void)actorsForShowWithID:(NSString *)showID
             completionBlock:(void (^)(NSArray *actors, NSError *error))completionBlock;
 ```
 
-7. **Update a lists of shows**
+*actors* is an array of LRTVDBActor objects.
+
+**Update a lists of shows**
 
 ```objective-c
 - (void)updateShows:(NSArray *)showsToUpdate
@@ -117,9 +123,9 @@ The result of the method is a list of LRTVDBShow objects with some basic informa
     completionBlock:(void (^)(BOOL finished))completionBlock;
 ```
 
-*showsToUpdate* will be updated with the latest information of the shows. When all the shows have been updated, the block will be called with a boolean indicating the success of the operation. The best way to update a show without having to wait for the block to execute is to watch the desired properties via KVO.
+*showsToUpdate* will be updated with the latest information of the shows. When all the shows have been updated, the block will be called with a boolean indicating the success of the operation. The best way to update a show without having to wait for the block to execute (i.e., waiting for every show update to finish) is to watch the desired properties via KVO.
 
-8. **Persist/retrieve a list of shows to/from disk.**
+**Persist/retrieve a list of shows to/from disk.**
 
 ```objective-c
 - (void)saveShowsInPersistenceStorage:(NSArray *)shows;
