@@ -32,7 +32,7 @@ It supports:
   ```
 
   **Important**: due to an error in zipzap podspec, zipzap library is producing errors when compiled in release mode. You can see the issue [here](https://github.com/pixelglow/zipzap/issues/25).
-  As a temporal workorund, you can edit *Pods.xcconfig* file and replace:
+  As a temporal workaround, you can edit *Pods.xcconfig* file and replace:
   
   ```
   OTHER_CPLUSPLUSFLAGS = -std=gnu++11 -stdlib=libc++
@@ -55,8 +55,7 @@ It supports:
   git clone --recursive git://github.com/luisrecuenco/LRTVDBAPIClient.git
   ```
 
-  Drag *LRTVDBAPIClient* and *Vendor* folders to your project (except for LRImageManager folder that it's only used for the example).
-  Import the necessary frameworks for TBXML, zipzap and AFNetworking detailed in their github pages (see credits section below).
+  Drag *LRTVDBAPIClient* folder to your project and add *AFNetworking*, *TBXML* and *zipzap* projects (available in *Vendor* folder). You can see instructions on how to add them in their github pages (see credits section below).
 
 ## Configuration
 
