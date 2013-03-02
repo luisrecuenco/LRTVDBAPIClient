@@ -26,6 +26,8 @@
 #import "LRSwitchButton.h"
 #import "LRUIBeautifier.h"
 
+static void *kObservingEpisodesContext;
+
 NSString *const LRTVDBAddShowCellReuseIdentifier = @"LRTVDBAddShowCellReuseIdentifier";
 
 static NSString *const kLoadingIndicator = @"...";
@@ -55,7 +57,7 @@ static NSString *const kLoadingIndicator = @"...";
         [_show addObserver:self
                 forKeyPath:LRTVDBShowAttributes.episodes
                    options:0
-                   context:NULL];
+                   context:&kObservingEpisodesContext];
         
         [self generateUI];
     }
@@ -86,9 +88,16 @@ static NSString *const kLoadingIndicator = @"...";
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self generateUI];
-    });
+    if (context == &kObservingEpisodesContext)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self generateUI];
+        });
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (NSString *)generateNetworkLabelText

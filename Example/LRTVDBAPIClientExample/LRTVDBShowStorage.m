@@ -24,6 +24,8 @@
 #import "LRTVDBShow.h"
 #import "LRTVDBPersistenceManager.h"
 
+static void *kObservingEpisodesContext;
+
 @interface LRTVDBShowStorage ()
 
 @property (nonatomic, copy) NSArray *shows;
@@ -99,7 +101,7 @@
         [show addObserver:self
                forKeyPath:LRTVDBShowAttributes.episodes
                   options:0
-                  context:NULL];
+                  context:&kObservingEpisodesContext];
     }
 }
 
@@ -127,23 +129,31 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    [self.mutableShows removeObject:show];
-    
-    NSUInteger index = [self.mutableShows indexOfObject:show
-                                          inSortedRange:NSMakeRange(0, self.mutableShows.count)
-                                                options:NSBinarySearchingInsertionIndex
-                                        usingComparator:LRTVDBShowComparator];
-    
-    [self.mutableShows insertObject:show atIndex:index];
-    
-    self.shows = nil;
-    
-    if ([self.delegate respondsToSelector:@selector(showStorageDidUpdateShow:)])
+    if (context == &kObservingEpisodesContext)
     {
-        [self.delegate showStorageDidUpdateShow:show];
+        [self.mutableShows removeObject:show];
+        
+        NSUInteger index = [self.mutableShows indexOfObject:show
+                                              inSortedRange:NSMakeRange(0, self.mutableShows.count)
+                                                    options:NSBinarySearchingInsertionIndex
+                                            usingComparator:LRTVDBShowComparator];
+        
+        [self.mutableShows insertObject:show atIndex:index];
+        
+        self.shows = nil;
+        
+        if ([self.delegate respondsToSelector:@selector(showStorageDidUpdateShow:)])
+        {
+            [self.delegate showStorageDidUpdateShow:show];
+        }
+        
+        [show removeObserver:self forKeyPath:LRTVDBShowAttributes.episodes];
+        
     }
-    
-    [show removeObserver:self forKeyPath:LRTVDBShowAttributes.episodes];
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:show change:change context:context];
+    }
 }
 
 #pragma mark - Show for ID

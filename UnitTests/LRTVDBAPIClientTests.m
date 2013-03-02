@@ -28,6 +28,13 @@
 #import "LRTVDBActor.h"
 #import "LRTVDBPersistenceManager.h"
 
+static void *kObservingEpisodesContext;
+static void *kObservingImagesContext;
+static void *kObservingActorsContext;
+static void *kObservingFanartURLContext;
+static void *kObservingPosterURLContext;
+static void *kObservingLastEpisodeContext;
+
 @implementation LRTVDBAPIClientTests
 
 - (void)setUp
@@ -640,32 +647,32 @@ static BOOL sLastEpisodeKVONotified = NO;
     [show addObserver:self
            forKeyPath:LRTVDBShowAttributes.episodes
               options:0
-              context:NULL];
+              context:&kObservingEpisodesContext];
     
     [show addObserver:self
            forKeyPath:LRTVDBShowAttributes.images
               options:0
-              context:NULL];
+              context:&kObservingImagesContext];
     
     [show addObserver:self
            forKeyPath:LRTVDBShowAttributes.actors
               options:0
-              context:NULL];
+              context:&kObservingActorsContext];
     
     [show addObserver:self
            forKeyPath:LRTVDBShowAttributes.fanartURL
               options:0
-              context:NULL];
+              context:&kObservingFanartURLContext];
     
     [show addObserver:self
            forKeyPath:LRTVDBShowAttributes.posterURL
               options:0
-              context:NULL];
+              context:&kObservingPosterURLContext];
     
     [show addObserver:self
            forKeyPath:LRTVDBShowAttributes.lastEpisode
               options:0
-              context:NULL];
+              context:&kObservingLastEpisodeContext];
     
     sEpisodesKVONotified =
     sImagesKVONotified =
@@ -1084,12 +1091,34 @@ static BOOL sLastEpisodeKVONotified = NO;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    sEpisodesKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.episodes];
-    sImagesKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.images];
-    sActorsKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.actors];
-    sFanartURLKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.fanartURL];
-    sPosterURLKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.posterURL];
-    sLastEpisodeKVONotified |= [keyPath isEqualToString:LRTVDBShowAttributes.lastEpisode];
+    if (context == &kObservingEpisodesContext)
+    {
+        sEpisodesKVONotified = YES;
+    }
+    else if (context == &kObservingImagesContext)
+    {
+        sImagesKVONotified = YES;
+    }
+    else if (context == &kObservingActorsContext)
+    {
+        sActorsKVONotified = YES;
+    }
+    else if (context == &kObservingFanartURLContext)
+    {
+        sFanartURLKVONotified = YES;
+    }
+    else if (context == &kObservingPosterURLContext)
+    {
+        sPosterURLKVONotified = YES;
+    }
+    else if (context == &kObservingLastEpisodeContext)
+    {
+        sLastEpisodeKVONotified = YES;
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)testShowsPersistence

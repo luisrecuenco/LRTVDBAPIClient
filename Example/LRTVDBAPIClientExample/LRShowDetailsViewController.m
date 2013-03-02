@@ -26,6 +26,8 @@
 #import "LRTVDBShowStorage.h"
 #import "LRUIBeautifier.h"
 
+static void *kObservingFanartURLContext;
+
 @interface LRShowDetailsViewController ()
 
 @property (weak, nonatomic) IBOutlet UIImageView *fanartImageView;
@@ -42,7 +44,7 @@
     [self.show addObserver:self
                 forKeyPath:LRTVDBShowAttributes.fanartURL
                    options:0
-                   context:NULL];
+                   context:&kObservingFanartURLContext];
     
     self.title = self.show.name;
     [self.fanartImageView setImageWithURL:self.show.fanartURL];
@@ -72,9 +74,16 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.fanartImageView setImageWithURL:self.show.fanartURL];
-    });
+    if (context == &kObservingFanartURLContext)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.fanartImageView setImageWithURL:self.show.fanartURL];
+        });
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)dealloc

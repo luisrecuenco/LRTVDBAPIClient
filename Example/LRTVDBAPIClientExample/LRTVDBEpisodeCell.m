@@ -100,6 +100,7 @@ static CGFloat const kLastEpisodeMarkerLineWidth = 3.0f;
 - (void)prepareForReuse
 {
     self.dateLabel.frame = self.originalDateFrame;
+    [super prepareForReuse];
 }
 
 - (IBAction)episodeSeenButtonTapped:(id)sender

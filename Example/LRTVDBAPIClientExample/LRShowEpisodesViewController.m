@@ -29,6 +29,9 @@
 #import "LRShowDetailsViewController.h"
 #import "LRUIBeautifier.h"
 
+static void *kObservingEpisodesContext;
+static void *kObservingLastEpisodeContext;
+
 @interface LRShowEpisodesViewController () <LRTVDBEpisodeCellProtocol>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
@@ -49,12 +52,12 @@
     [self.show addObserver:self
                 forKeyPath:LRTVDBShowAttributes.episodes
                    options:0
-                   context:NULL];
+                   context:&kObservingEpisodesContext];
     
     [self.show addObserver:self
                 forKeyPath:LRTVDBShowAttributes.lastEpisode
                    options:0
-                   context:NULL];
+                   context:&kObservingLastEpisodeContext];
     
     // Put off till other UI operation finishes
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -90,20 +93,27 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        [self.tableView reloadData];
-        
-        if (self.showHasNoEpisodes)
-        {
-            [self scrollToCorrectEpisode];
+    if (context == &kObservingEpisodesContext || context == &kObservingLastEpisodeContext)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
             
-            // Remove feedback
-            self.navigationItem.rightBarButtonItem = nil;
-        }
-        
-        self.showHasNoEpisodes = (self.show.episodes == nil);
-    });
+            [self.tableView reloadData];
+            
+            if (self.showHasNoEpisodes)
+            {
+                [self scrollToCorrectEpisode];
+                
+                // Remove feedback
+                self.navigationItem.rightBarButtonItem = nil;
+            }
+            
+            self.showHasNoEpisodes = (self.show.episodes == nil);
+        });
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)scrollToCorrectEpisode
