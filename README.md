@@ -1,6 +1,6 @@
 ## LRTVDBAPIClient
 
-LRTVDBAPIClient is a simple and efficient Objective-C wrapper for TheTVDB. 
+LRTVDBAPIClient is a simple and efficient Objective-C wrapper for [TheTVDB](http://thetvdb.com/). 
 
 It supports: 
 
@@ -31,6 +31,22 @@ It supports:
   pod install
   ```
 
+  **Important**: due to an error in zipzap podspec, zipzap library is producing errors when compiled in release mode. You can see the issue [here](https://github.com/pixelglow/zipzap/issues/25).
+  As a temporal workorund, you can edit *Pods.xcconfig* file and replace:
+  
+  ```
+  OTHER_CPLUSPLUSFLAGS = -std=gnu++11 -stdlib=libc++
+  ```
+  
+  with
+  
+  ```
+  CLANG_CXX_LANGUAGE_STANDARD = c++0x
+  CLANG_CXX_LIBRARY = libc++
+  ```
+
+  Finally, import SystemConfiguration and MobileCoreServices frameworks to avoid AFNetworking warnings.
+
 2. **Manually**
 
   Clone the project or add it as a submodule (use *--recursive* option so associated submodules are updated). 
@@ -39,7 +55,8 @@ It supports:
   git clone --recursive git://github.com/luisrecuenco/LRTVDBAPIClient.git
   ```
 
-  Drag *LRTVDBAPIClient* and *Vendor* folders to your project.
+  Drag *LRTVDBAPIClient* and *Vendor* folders to your project (except for LRImageManager folder that it's only used for the example).
+  Import the necessary frameworks for TBXML, zipzap and AFNetworking detailed in their github pages (see credits section below).
 
 ## Configuration
 
@@ -47,7 +64,7 @@ You may specify your TVDB API key in the property *apiKey* in TVDBAPIClient clas
 
 You may also set the desired language to use (via *language* property in TVDBAPIClient). If no language is provided, the default device one will be used (or English if the latter is not supported by TheTVDB). 
 
-## Use
+## Usage
 
 The code is divided in four main categories:
 
