@@ -69,11 +69,15 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     static LRTVDBAPIClient *sharedClient = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSURL *theTVDBAPIURL = [NSURL URLWithString:kLRTVDBAPIBaseURLString];
-        sharedClient = [[LRTVDBAPIClient alloc] initWithBaseURL:theTVDBAPIURL];
+        sharedClient = [[self alloc] init];
     });
     
     return sharedClient;
+}
+
+- (id)init
+{
+    return [self initWithBaseURL:[NSURL URLWithString:kLRTVDBAPIBaseURLString]];
 }
 
 - (id)initWithBaseURL:(NSURL *)url
