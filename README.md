@@ -30,21 +30,7 @@ It supports:
   ```
   pod install
   ```
-
-  **Important**: due to an error in zipzap podspec, zipzap library is producing errors when compiled in release mode. You can see the issue [here](https://github.com/pixelglow/zipzap/issues/25).
-  As a temporal workaround, you can edit *Pods.xcconfig* file and replace:
   
-  ```
-  OTHER_CPLUSPLUSFLAGS = -std=gnu++11 -stdlib=libc++
-  ```
-  
-  with
-  
-  ```
-  CLANG_CXX_LANGUAGE_STANDARD = c++0x
-  CLANG_CXX_LIBRARY = libc++
-  ```
-
   Finally, import SystemConfiguration and MobileCoreServices frameworks to avoid AFNetworking warnings.
 
 2. **Manually**
