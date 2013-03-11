@@ -12,13 +12,13 @@ It supports:
 * Get all the TV Show actors information.
 * Update a lists of shows.
 * Persist/retrieve a list of shows to/from disk.
-* Support for every language TVDB is able to handle.
+* Support for every TVDB language.
 
 ## Install
 
 1. **Using CocoaPods**
 
-  Add the following line to your Podfile:
+  Add LRTVDBAPIClient to your Podfile:
 
   ```
   platform :ios, "5.1"
@@ -63,7 +63,7 @@ The main class that has all the important methods to retrieve the information fr
 **Search for shows based on a specified query**
 
 ```objective-c
-- (void)showsWithName:(NSString *)showName
+- (void)showsWithName:(NSString *)showName 
       completionBlock:(void (^)(NSArray *shows, NSError *error))completionBlock;
 ```
 
@@ -72,35 +72,39 @@ The result of the method is an array of LRTVDBShow objects with some basic infor
 **Retrieve a list shows for the given TVDB shows IDs**
 
 ```objective-c
-- (void)showsWithIDs:(NSArray *)showsIDs
-     includeEpisodes:(BOOL)includeEpisodes
-       includeImages:(BOOL)includeImages
-       includeActors:(BOOL)includeActors
+- (void)showsWithIDs:(NSArray *)showsIDs 
+     includeEpisodes:(BOOL)includeEpisodes 
+       includeImages:(BOOL)includeImages 
+       includeActors:(BOOL)includeActors 
      completionBlock:(void (^)(NSArray *shows, NSDictionary *errorsDictionary))completionBlock;
 ```
+
+*shows*: array of LRTVDBShow objects.
+*errorsDictionary*: @{showID : NSError}.
 
 **Retrieve a list episodes for the given TVDB episodes IDs**
 
 ```objective-c
-- (void)episodesWithIDs:(NSArray *)episodesIDs
+- (void)episodesWithIDs:(NSArray *)episodesIDs 
         completionBlock:(void (^)(NSArray *episodes, NSDictionary *errorsDictionary))completionBlock;
 ```
 
-*episodes* is an array of LRTVDBEpisode objects.
+*episodes*: array of LRTVDBEpisode objects.
+*errorsDictionary*: @{episodeID : NSError}.
 
 **Get the correct episode for the specified season and number**
 
 ```objective-c
-- (void)episodeWithSeasonNumber:(NSNumber *)seasonNumber
-                  episodeNumber:(NSNumber *)episodeNumber
-                  forShowWithID:(NSString *)showID
+- (void)episodeWithSeasonNumber:(NSNumber *)seasonNumber 
+                  episodeNumber:(NSNumber *)episodeNumber 
+                  forShowWithID:(NSString *)showID 
                 completionBlock:(void (^)(LRTVDBEpisode *episode, NSError *error))completionBlock;
 ```
 
 **Get all the TV Show artwork information**
 
 ```objective-c
-- (void)imagesForShowWithID:(NSString *)showID
+- (void)imagesForShowWithID:(NSString *)showID 
             completionBlock:(void (^)(NSArray *images, NSError *error))completionBlock;
 ```
 
@@ -109,7 +113,7 @@ The result of the method is an array of LRTVDBShow objects with some basic infor
 **Get all the TV Show actors information**
 
 ```objective-c
-- (void)actorsForShowWithID:(NSString *)showID
+- (void)actorsForShowWithID:(NSString *)showID 
             completionBlock:(void (^)(NSArray *actors, NSError *error))completionBlock;
 ```
 
@@ -118,31 +122,32 @@ The result of the method is an array of LRTVDBShow objects with some basic infor
 **Update a lists of shows**
 
 ```objective-c
-- (void)updateShows:(NSArray *)showsToUpdate
-      checkIfNeeded:(BOOL)checkIfNeeded
-     updateEpisodes:(BOOL)updateEpisodes
-       updateImages:(BOOL)updateImages
-       updateActors:(BOOL)updateActors
+- (void)updateShows:(NSArray *)showsToUpdate 
+      checkIfNeeded:(BOOL)checkIfNeeded 
+     updateEpisodes:(BOOL)updateEpisodes 
+       updateImages:(BOOL)updateImages 
+       updateActors:(BOOL)updateActors 
     completionBlock:(void (^)(BOOL finished))completionBlock;
 ```
 
 *showsToUpdate* will be updated with the latest information of the shows. When all the shows have been updated, the block will be called with a boolean indicating the success of the operation. The best way to update a show without having to wait for the block to execute (i.e., waiting for every show update to finish) is to watch the desired properties via KVO.
 
+*checkIfNeeded* is used to force the update when the show doesn't need to get updated (see method documentation for further explanation).
+
 **Persist/retrieve a list of shows to/from disk.**
 
 ```objective-c
 - (void)saveShowsInPersistenceStorage:(NSArray *)shows;
-
 - (NSArray *)showsFromPersistenceStorage;
 ```
 
 ## Example
 
-The project contains a complete example of a TV Show Tracker App. You can search for shows, add them to your library, see the episodes, share on Twitter and Facebook, mark the episodes as seen… everything you would expect from an app of this kind.
+The project contains a complete example of a TV Show Tracker App. You can search for shows, add them to your library, see the episodes, mark them as seen, share on Twitter and Facebook, … everything you would expect from an app of this kind.
 
 ## Requirements
 
-LRTVDBAPIClient requires both iOS 5.0 and ARC.
+LRTVDBAPIClient requires both iOS 5.1 and ARC.
 
 You can still use LRTVDBAPIClient in your non-arc project. Just set -fobjc-arc compiler flag in every source file.
 
