@@ -47,20 +47,17 @@ static NSString *const kLoadingIndicator = @"...";
 
 - (void)setShow:(LRTVDBShow *)show
 {
-    if (show != _show)
-    {
-        [_show removeObserver:self
-                   forKeyPath:LRTVDBShowAttributes.episodes];
-        
-        _show = show;
-        
-        [_show addObserver:self
-                forKeyPath:LRTVDBShowAttributes.episodes
-                   options:0
-                   context:&kObservingEpisodesContext];
-        
-        [self generateUI];
-    }
+    [_show removeObserver:self
+               forKeyPath:LRTVDBShowAttributes.episodes];
+    
+    _show = show;
+    
+    [_show addObserver:self
+            forKeyPath:LRTVDBShowAttributes.episodes
+               options:0
+               context:&kObservingEpisodesContext];
+    
+    [self generateUI];
 }
 
 - (void)generateUI

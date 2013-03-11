@@ -60,27 +60,23 @@ static CGFloat const kLastEpisodeMarkerLineWidth = 3.0f;
 
 - (void)setEpisode:(LRTVDBEpisode *)episode
 {
-    if (episode != _episode)
-    {
-        _episode = episode;
-        
-        self.nameLabel.text = [NSString stringWithFormat:@"%@ - %@", episode.episodeNumber, episode.title];
-        
-        self.dateLabel.frame = [self computeDateLabelFrame];
-        
-        self.nameLabel.textColor = episode.hasAlreadyAired ?
-                                   [UIColor blackColor] :
-                                   [UIColor grayColor];
-        
-        self.dateLabel.text = [NSDateFormatter localizedStringFromDate:episode.airedDate
-                                                             dateStyle:NSDateFormatterLongStyle
-                                                             timeStyle:NSDateFormatterNoStyle];
-        
-        self.lastEpisodeIndicatorLayer.hidden = episode != episode.show.lastEpisode;
-        
-        self.episodeSeenButton.hidden = ![self.episode hasAlreadyAired];
-        self.episodeSeenButton.filled = [self.episode hasBeenSeen];
-    }
+    _episode = episode;
+    
+    self.nameLabel.text = [NSString stringWithFormat:@"%@ - %@", episode.episodeNumber, episode.title];
+    
+    self.dateLabel.frame = [self computeDateLabelFrame];
+    
+    self.nameLabel.textColor = episode.hasAlreadyAired ?
+                               [UIColor blackColor] :
+                               [UIColor grayColor];
+    
+    self.dateLabel.text = [NSDateFormatter localizedStringFromDate:episode.airedDate
+                                                         dateStyle:NSDateFormatterLongStyle
+                                                         timeStyle:NSDateFormatterNoStyle];
+    
+    self.lastEpisodeIndicatorLayer.hidden = episode != episode.show.lastEpisode;
+    self.episodeSeenButton.hidden = ![episode hasAlreadyAired];
+    self.episodeSeenButton.filled = [episode hasBeenSeen];
 }
 
 - (CGRect)computeDateLabelFrame
@@ -90,17 +86,11 @@ static CGFloat const kLastEpisodeMarkerLineWidth = 3.0f;
     
     CGSize textSize = [substring sizeWithFont:self.nameLabel.font];
     
-    CGRect dateFrame = self.dateLabel.frame;
+    CGRect dateFrame = self.originalDateFrame;
     dateFrame.size.width -= textSize.width;
     dateFrame.origin.x += textSize.width;
     
     return dateFrame;
-}
-
-- (void)prepareForReuse
-{
-    self.dateLabel.frame = self.originalDateFrame;
-    [super prepareForReuse];
 }
 
 - (IBAction)episodeSeenButtonTapped:(id)sender
