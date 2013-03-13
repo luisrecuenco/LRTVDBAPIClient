@@ -143,7 +143,7 @@ The result of the method is an array of LRTVDBShow objects with some basic infor
 
 ## Example
 
-The project contains a complete example of a TV Show Tracker App. You can search for shows, add them to your library, see the episodes, mark them as seen, share on Twitter and Facebook, … everything you would expect from an app of this kind.
+The project contains a complete example of a TV Show Tracker App. You can search for shows, add them to your library, see the episodes, mark them as seen, share on Twitter and Facebook... everything you would expect from an app of this kind. The example uses CocoaPods, so you only have to do *pod install* in the Example folder and open the workspace.
 
 ## Requirements
 

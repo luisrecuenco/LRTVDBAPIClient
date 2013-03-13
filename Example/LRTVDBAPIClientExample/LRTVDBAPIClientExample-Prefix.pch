@@ -15,7 +15,3 @@
     #import <SystemConfiguration/SystemConfiguration.h>
     #import <MobileCoreServices/MobileCoreServices.h>
 #endif
-
-#if __has_feature(objc_arc) && __clang_major__ >= 3
-#define ARC_ENABLED
-#endif
