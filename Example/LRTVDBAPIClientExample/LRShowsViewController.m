@@ -205,24 +205,36 @@
 {
     if (self.lastEpisodesRefresh == nil) return YES;
     
-    NSCalendar *calendar = [NSCalendar currentCalendar];
+    static NSCalendar *calendar = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        calendar = [NSCalendar currentCalendar];
+    });
+    
     NSDateComponents *components = [calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit
                                                fromDate:[self.lastEpisodesRefresh dateByIgnoringTime]
                                                  toDate:[[NSDate date] dateByIgnoringTime]
                                                 options:0];
-    return components.day > 0;
+    
+    return components.day > 0 || components.month > 0 || components.year > 0;
 }
 
 - (BOOL)shouldUpdateShows
 {
     if (self.lastShowsUpdate == nil) return YES;
     
-    NSCalendar *calendar = [NSCalendar currentCalendar];
+    static NSCalendar *calendar = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        calendar = [NSCalendar currentCalendar];
+    });
+    
     NSDateComponents *components = [calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit
                                                fromDate:[self.lastShowsUpdate dateByIgnoringTime]
                                                  toDate:[[NSDate date] dateByIgnoringTime]
                                                 options:0];
-    return components.day > 0;
+    
+    return components.day > 0 || components.month > 0 || components.year > 0;
 }
 
 #pragma mark - LRShowStorageDelegate delegate
