@@ -23,6 +23,7 @@
 #import "LRTVDBActor.h"
 #import "LRTVDBAPIClient+Private.h"
 #import "LRTVDBBaseModel+Private.h"
+#import "NSString+LRTVDBAdditions.h"
 
 NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {
@@ -63,6 +64,16 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 {
     _sortOrderString = sortOrderString;
     self.sortOrder = @(_sortOrderString.integerValue);
+}
+
+- (void)setName:(NSString *)name
+{
+    _name = [name unescapeHTMLEntities];
+}
+
+- (void)setRole:(NSString *)role
+{
+    _role = [role unescapeHTMLEntities];
 }
 
 #pragma mark - LRTVDBBaseModelMappingsProtocol
