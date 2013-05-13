@@ -40,6 +40,7 @@ const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
     .fanartURL = @"fanartURL",
     .posterURL = @"posterURL",
     .lastEpisode = @"lastEpisode",
+    .lastEpisodeSeen = @"lastEpisodeSeen",
     .episodes = @"episodes",
     .images = @"images",
     .actors = @"actors",
