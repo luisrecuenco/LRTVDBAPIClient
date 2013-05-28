@@ -30,18 +30,18 @@ extern NSComparator LRTVDBImageComparator;
 typedef NS_ENUM(NSInteger, LRTVDBImageType)
 {
     LRTVDBImageTypeUnknown,
-    LRTVDBImageTypeFanart, /** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
-    LRTVDBImageTypePoster, /** Example: http:/www.thetvdb.com/banners/posters/82066-53.jpg. */
-    LRTVDBImageTypeSeason, /** Example: http:/www.thetvdb.com/banners/seasons/82066-4-6.jpg. */
-    LRTVDBImageTypeBanner, /** Example: http:/www.thetvdb.com/banners/graphical/82066-g38.jpg. */
+    LRTVDBImageTypeFanart, /** Example: http://www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
+    LRTVDBImageTypePoster, /** Example: http://www.thetvdb.com/banners/posters/82066-53.jpg. */
+    LRTVDBImageTypeSeason, /** Example: http://www.thetvdb.com/banners/seasons/82066-4-6.jpg. */
+    LRTVDBImageTypeBanner, /** Example: http://www.thetvdb.com/banners/graphical/82066-g38.jpg. */
 };
 
 @interface LRTVDBImage : LRTVDBBaseModel
 
-/** Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
+/** Example: http://www.thetvdb.com/banners/fanart/original/82066-78.jpg. */
 @property (nonatomic, strong, readonly) NSURL *url;
 
-/** Example: http:/www.thetvdb.com/banners/_cache/fanart/original/82066-78.jpg. */
+/** Example: http://www.thetvdb.com/banners/_cache/fanart/original/82066-78.jpg. */
 @property (nonatomic, strong, readonly) NSURL *thumbnailURL;
 
 @property (nonatomic, strong, readonly) NSNumber *rating;

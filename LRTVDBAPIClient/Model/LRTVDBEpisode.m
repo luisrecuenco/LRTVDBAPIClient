@@ -67,13 +67,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 @property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSDate *airedDate;
 
-@property (nonatomic, copy) NSString *episodeNumberString;
-@property (nonatomic, copy) NSString *seasonNumberString;
-@property (nonatomic, copy) NSString *ratingString;
-@property (nonatomic, copy) NSString *ratingCountString;
-@property (nonatomic, copy) NSString *airedDateString;
-@property (nonatomic, copy) NSString *imageURLString;
-
 /** Writer 1|Writer 2... */
 @property (nonatomic, copy) NSString *writersList;
 
@@ -136,13 +129,13 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     
     self.episodeID = updatedEpisode.episodeID;
     self.title = updatedEpisode.title;
-    self.episodeNumberString = updatedEpisode.episodeNumberString;
-    self.seasonNumberString = updatedEpisode.seasonNumberString;
-    self.ratingString = updatedEpisode.ratingString;
-    self.ratingCountString = updatedEpisode.ratingCountString;
-    self.airedDateString = updatedEpisode.airedDateString;
+    self.episodeNumber = updatedEpisode.episodeNumber;
+    self.seasonNumber = updatedEpisode.seasonNumber;
+    self.rating = updatedEpisode.rating;
+    self.ratingCount = updatedEpisode.ratingCount;
+    self.airedDate = updatedEpisode.airedDate;
     self.overview = updatedEpisode.overview;
-    self.imageURLString = updatedEpisode.imageURLString;
+    self.imageURL = updatedEpisode.imageURL;
     self.imdbID = updatedEpisode.imdbID;
     self.language = updatedEpisode.language;
     self.showID = updatedEpisode.showID;
@@ -166,56 +159,47 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (void)setSeasonNumberString:(NSString *)seasonNumberString
 {
-    _seasonNumberString = seasonNumberString;
-    self.seasonNumber = @(_seasonNumberString.integerValue);
+    self.seasonNumber = @([seasonNumberString integerValue]);
 }
 
 - (void)setEpisodeNumberString:(NSString *)episodeNumberString
 {
-    _episodeNumberString = episodeNumberString;
-    self.episodeNumber = @(_episodeNumberString.integerValue);
+    self.episodeNumber = @([episodeNumberString integerValue]);
 }
 
 - (void)setRatingString:(NSString *)ratingString
 {
-    _ratingString = ratingString;
-    self.rating = @(_ratingString.floatValue);
+    self.rating = @([ratingString floatValue]);
 }
 
 - (void)setRatingCountString:(NSString *)ratingCountString
 {
-    _ratingCountString = ratingCountString;
-    self.ratingCount = @(_ratingCountString.integerValue);
+    self.ratingCount = @([ratingCountString integerValue]);
 }
 
 - (void)setAiredDateString:(NSString *)airedDateString
 {
-    _airedDateString = airedDateString;
-    self.airedDate = [_airedDateString dateValue];
+    self.airedDate = [airedDateString dateValue];
 }
 
 - (void)setImageURLString:(NSString *)imageURLString
 {
-    _imageURLString = imageURLString;
-    self.imageURL = LRTVDBImageURLForPath(_imageURLString);
+    self.imageURL = LRTVDBImageURLForPath(imageURLString);
 }
 
 - (void)setWritersList:(NSString *)writersList
 {
-    _writersList = writersList;
-    self.writers = [[_writersList pipedStringToArray] arrayByRemovingDuplicates];
+    self.writers = [[writersList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setDirectorsList:(NSString *)directorsList
 {
-    _directorsList = directorsList;
-    self.directors = [[_directorsList pipedStringToArray] arrayByRemovingDuplicates];
+    self.directors = [[directorsList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setGuestStarsList:(NSString *)guestStarsList
 {
-    _guestStarsList = guestStarsList;
-    self.guestStars = [[_guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
+    self.guestStars = [[guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 #pragma mark - LRTVDBBaseModelMappingsProtocol

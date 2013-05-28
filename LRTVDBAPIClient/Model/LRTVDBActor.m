@@ -38,9 +38,6 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 @property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSNumber *sortOrder;
 
-@property (nonatomic, copy) NSString *imageURLString;
-@property (nonatomic, copy) NSString *sortOrderString;
-
 @end
 
 @implementation LRTVDBActor
@@ -56,14 +53,12 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 - (void)setImageURLString:(NSString *)imageURLString
 {
-    _imageURLString = imageURLString;
-    self.imageURL = LRTVDBImageURLForPath(_imageURLString);
+    self.imageURL = LRTVDBImageURLForPath(imageURLString);
 }
 
 - (void)setSortOrderString:(NSString *)sortOrderString
 {
-    _sortOrderString = sortOrderString;
-    self.sortOrder = @(_sortOrderString.integerValue);
+    self.sortOrder = @([sortOrderString integerValue]);
 }
 
 - (void)setName:(NSString *)name

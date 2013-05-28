@@ -135,9 +135,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSString *network;
 @property (nonatomic, copy) NSString *runtime;
 @property (nonatomic, strong) NSDate *premiereDate;
-@property (nonatomic, strong) NSURL *bannerURL;
-@property (nonatomic, strong) NSURL *fanartURL;
-@property (nonatomic, strong) NSURL *posterURL;
 @property (nonatomic, strong) NSNumber *rating;
 @property (nonatomic, strong) NSNumber *ratingCount;
 @property (nonatomic) LRTVDBShowStatus status;
@@ -159,15 +156,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSArray *bannerImages;
 
 @property (nonatomic, copy) NSArray *actors;
-
-@property (nonatomic, copy) NSString *bannerURLString;
-@property (nonatomic, copy) NSString *posterURLString;
-@property (nonatomic, copy) NSString *fanartURLString;
-
-@property (nonatomic, copy) NSString *ratingString;
-@property (nonatomic, copy) NSString *ratingCountString;
-@property (nonatomic, copy) NSString *basicStatusString;
-@property (nonatomic, copy) NSString *premiereDateString;
 
 @property (nonatomic, strong) NSMutableDictionary *seasonToEpisodesDictionary;
 
@@ -216,9 +204,9 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
         
         LRTVDBEpisode *lastEpisodeSeen = self.lastEpisodeSeen;
 
-        _episodes = [self mergeObjects:episodes
-                           withObjects:_episodes
-                       comparisonBlock:LRTVDBEpisodeComparator];
+        _episodes = [[self mergeObjects:episodes
+                            withObjects:_episodes
+                        comparisonBlock:LRTVDBEpisodeComparator] copy];
         
         if (lastEpisodeSeen)
         {
@@ -365,9 +353,9 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.images];
         
-        _images = [self mergeObjects:images
-                         withObjects:_images
-                     comparisonBlock:LRTVDBImageComparator];
+        _images = [[self mergeObjects:images
+                          withObjects:_images
+                      comparisonBlock:LRTVDBImageComparator] copy];
         
         [self computeImagesInformation];
         
@@ -425,9 +413,9 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.actors];
         
-        _actors = [self mergeObjects:actors
-                         withObjects:_actors
-                     comparisonBlock:LRTVDBActorComparator];
+        _actors = [[self mergeObjects:actors
+                          withObjects:_actors
+                      comparisonBlock:LRTVDBActorComparator] copy];
         
         [self didChangeValueForKey:LRTVDBShowAttributes.actors];
     });
@@ -478,13 +466,13 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.actorsNamesList = updatedShow.actorsNamesList;
     self.network = updatedShow.network;
     self.runtime = updatedShow.runtime;
-    self.basicStatusString = updatedShow.basicStatusString;
-    self.bannerURLString = updatedShow.bannerURLString;
-    self.fanartURLString = updatedShow.fanartURLString;
-    self.posterURLString = updatedShow.posterURLString;
-    self.premiereDateString = updatedShow.premiereDateString;
-    self.ratingString = updatedShow.ratingString;
-    self.ratingCountString = updatedShow.ratingCountString;
+    self.basicStatus = updatedShow.basicStatus;
+    self.bannerURL = updatedShow.bannerURL;
+    self.fanartURL = updatedShow.fanartURL;
+    self.posterURL = updatedShow.posterURL;
+    self.premiereDate = updatedShow.premiereDate;
+    self.rating = updatedShow.rating;
+    self.ratingCount = updatedShow.ratingCount;
     self.persistenceDictionary = updatedShow.persistenceDictionary;
 
     // Updates relationship info.
@@ -563,61 +551,51 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 - (void)setPremiereDateString:(NSString *)premiereDateString
 {
-    _premiereDateString = premiereDateString;
-    self.premiereDate = [_premiereDateString dateValue];
+    self.premiereDate = [premiereDateString dateValue];
 }
 
 - (void)setBannerURLString:(NSString *)bannerURLString
 {
-    _bannerURLString = bannerURLString;
-    self.bannerURL = LRTVDBImageURLForPath(_bannerURLString);
+    self.bannerURL = LRTVDBImageURLForPath(bannerURLString);
 }
 
 - (void)setFanartURLString:(NSString *)fanartURLString
 {
-    _fanartURLString = fanartURLString;
-    self.fanartURL = LRTVDBImageURLForPath(_fanartURLString);
+    self.fanartURL = LRTVDBImageURLForPath(fanartURLString);
 }
 
 - (void)setPosterURLString:(NSString *)posterURLString
 {
-    _posterURLString = posterURLString;
-    self.posterURL = LRTVDBImageURLForPath(_posterURLString);
+    self.posterURL = LRTVDBImageURLForPath(posterURLString);
 }
 
 - (void)setRatingString:(NSString *)ratingString
 {
-    _ratingString = ratingString;
-    self.rating = @(_ratingString.floatValue);
+    self.rating = @([ratingString floatValue]);
 }
 
 - (void)setRatingCountString:(NSString *)ratingCountString
 {
-    _ratingCountString = ratingCountString;
-    self.ratingCount = @(_ratingCountString.integerValue);
+    self.ratingCount = @([ratingCountString integerValue]);
 }
 
 - (void)setGenresList:(NSString *)genresList
 {
-    _genresList = genresList;
-    self.genres = [[_genresList pipedStringToArray] arrayByRemovingDuplicates];
+    self.genres = [[genresList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setActorsNamesList:(NSString *)actorsNamesList
 {
-    _actorsNamesList = actorsNamesList;
-    self.actorsNames = [[_actorsNamesList pipedStringToArray] arrayByRemovingDuplicates];
+    self.actorsNames = [[actorsNamesList pipedStringToArray] arrayByRemovingDuplicates];
 }
 
 - (void)setBasicStatusString:(NSString *)basicStatusString
-{
-    _basicStatusString = basicStatusString;
-    
-    if ([_basicStatusString isEqualToString:kLRTVDBShowBasicStatusContinuingKey])
+{    
+    if ([basicStatusString isEqualToString:kLRTVDBShowBasicStatusContinuingKey])
     {
         self.basicStatus = LRTVDBShowBasicStatusContinuing;
     }
-    else if ([_basicStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
+    else if ([basicStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
     {
         self.basicStatus = LRTVDBShowBasicStatusEnded;
     }

@@ -70,12 +70,6 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
 @property (nonatomic, strong) NSNumber *ratingCount;
 @property (nonatomic) LRTVDBImageType type;
 
-@property (nonatomic, copy) NSString *urlString;
-@property (nonatomic, copy) NSString *thumbnailURLString;
-@property (nonatomic, copy) NSString *ratingString;
-@property (nonatomic, copy) NSString *ratingCountString;
-@property (nonatomic, copy) NSString *typeString;
-
 @end
 
 @implementation LRTVDBImage
@@ -91,45 +85,39 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
 
 - (void)setUrlString:(NSString *)urlString
 {
-    _urlString = urlString;
-    self.url = LRTVDBImageURLForPath(_urlString);
+    self.url = LRTVDBImageURLForPath(urlString);
 }
 
 - (void)setThumbnailURLString:(NSString *)thumbnailURLString
 {
-    _thumbnailURLString = thumbnailURLString;
-    self.thumbnailURL = LRTVDBImageURLForPath(_thumbnailURLString);
+    self.thumbnailURL = LRTVDBImageURLForPath(thumbnailURLString);
 }
 
 - (void)setRatingString:(NSString *)ratingString
 {
-    _ratingString = ratingString;
-    self.rating = @(_ratingString.floatValue);
+    self.rating = @([ratingString floatValue]);
 }
 
 - (void)setRatingCountString:(NSString *)ratingCountString
 {
-    _ratingCountString = ratingCountString;
-    self.ratingCount =  @(_ratingCountString.integerValue);
+    self.ratingCount =  @([ratingCountString integerValue]);
 }
 
 - (void)setTypeString:(NSString *)typeString
-{
-    _typeString = typeString;
-    
-    if ([_typeString isEqualToString:kLRTVDBImageTypeFanartKey])
+{    
+    if ([typeString isEqualToString:kLRTVDBImageTypeFanartKey])
     {
         self.type = LRTVDBImageTypeFanart;
     }
-    else if ([_typeString isEqualToString:kLRTVDBImageTypePosterKey])
+    else if ([typeString isEqualToString:kLRTVDBImageTypePosterKey])
     {
         self.type = LRTVDBImageTypePoster;
     }
-    else if ([_typeString isEqualToString:kLRTVDBImageTypeSeasonKey])
+    else if ([typeString isEqualToString:kLRTVDBImageTypeSeasonKey])
     {
         self.type = LRTVDBImageTypeSeason;
     }
-    else if ([_typeString isEqualToString:kLRTVDBImageTypeSeriesKey])
+    else if ([typeString isEqualToString:kLRTVDBImageTypeSeriesKey])
     {
         self.type = LRTVDBImageTypeBanner;
     }

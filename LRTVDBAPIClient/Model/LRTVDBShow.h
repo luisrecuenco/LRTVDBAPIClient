@@ -78,10 +78,10 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, copy, readonly) NSString *language;
 
 /**
- Example: http:/www.thetvdb.com/banners/graphical/82066-g38.jpg
+ Example: http://www.thetvdb.com/banners/graphical/82066-g38.jpg
  @see LRTVDBImage for more info.
  */
-@property (nonatomic, strong, readonly) NSURL *bannerURL;
+@property (nonatomic, strong) NSURL *bannerURL;
 
 
 /**
@@ -107,16 +107,16 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, strong, readonly) NSNumber *ratingCount;
 
 /**
- Example: http:/www.thetvdb.com/banners/posters/82066-53.jpg
+ Example: http://www.thetvdb.com/banners/posters/82066-53.jpg
  @see LRTVDBImage for more info.
  */
-@property (nonatomic, strong, readonly) NSURL *posterURL;
+@property (nonatomic, strong) NSURL *posterURL;
 
 /**
- Example: http:/www.thetvdb.com/banners/fanart/original/82066-78.jpg
+ Example: http://www.thetvdb.com/banners/fanart/original/82066-78.jpg
  @see LRTVDBImage for more info.
  */
-@property (nonatomic, strong, readonly) NSURL *fanartURL;
+@property (nonatomic, strong) NSURL *fanartURL;
 
 @property (nonatomic, readonly) LRTVDBShowStatus status;
 
