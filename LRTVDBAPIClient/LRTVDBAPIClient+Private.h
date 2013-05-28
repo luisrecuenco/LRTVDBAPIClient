@@ -33,7 +33,8 @@ NS_INLINE NSURL *LRTVDBImageURLForPath(NSString *path)
 {
     if (!path) return nil;
     
-    NSString *urlString = [kLRTVDBAPIImageBaseURLString stringByAppendingPathComponent:path];
+    NSString *urlString = [kLRTVDBAPIImageBaseURLString stringByAppendingString:path];
+    
     return [NSURL URLWithString:urlString];
 }
 
