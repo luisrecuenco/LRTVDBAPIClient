@@ -27,6 +27,6 @@
 /**
  Used by subclasses for persistence purposes.
  */
-@property (nonatomic, strong) NSDictionary *persistenceDictionary;
+@property (nonatomic, copy) NSDictionary *persistenceDictionary;
 
 @end

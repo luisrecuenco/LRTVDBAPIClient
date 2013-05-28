@@ -46,7 +46,7 @@
 {
     if (self = [super init])
     {
-        _persistenceDictionary = dictionary;
+        _persistenceDictionary = [dictionary copy];
         
         // Property - key mapping via KVC
         [self setValuesForKeysWithDictionary:dictionary];
