@@ -22,12 +22,6 @@
 
 #import "LRTVDBBaseModel.h"
 
-@interface LRTVDBBaseModel ()
-
-@property (nonatomic, strong) NSDictionary *persistenceDictionary;
-
-@end
-
 @implementation LRTVDBBaseModel
 
 + (instancetype)tvdbBaseModelWithDictionary:(NSDictionary *)dictionary
@@ -45,9 +39,7 @@
 - (id)initWithDictionary:(NSDictionary *)dictionary
 {
     if (self = [super init])
-    {
-        _persistenceDictionary = [dictionary copy];
-        
+    {        
         // Property - key mapping via KVC
         [self setValuesForKeysWithDictionary:dictionary];
     }

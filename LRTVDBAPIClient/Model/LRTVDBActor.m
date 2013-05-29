@@ -22,8 +22,14 @@
 
 #import "LRTVDBActor.h"
 #import "LRTVDBAPIClient+Private.h"
-#import "LRTVDBBaseModel+Private.h"
 #import "NSString+LRTVDBAdditions.h"
+
+// Persistence keys
+static NSString *const kActorIDKey = @"kActorIDKey";
+static NSString *const kActorNameKey = @"kActorNameKey";
+static NSString *const kActorRoleKey = @"kActorRoleKey";
+static NSString *const kActorImageURLKey = @"kActorImageURLKey";
+static NSString *const kActorSortOrderKey = @"kActorSortOrderKey";
 
 NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor, LRTVDBActor *secondActor)
 {
@@ -35,6 +41,9 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 @interface LRTVDBActor ()
 
+@property (nonatomic, copy) NSString *actorID;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *role;
 @property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSNumber *sortOrder;
 
@@ -87,12 +96,25 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 + (LRTVDBActor *)deserialize:(NSDictionary *)dictionary
 {
-    return [self actorWithDictionary:dictionary];
+    LRTVDBActor *actor = [[LRTVDBActor alloc] init];
+    
+    actor.actorID = LREmptyStringToNil(dictionary[kActorIDKey]);
+    actor.name = LREmptyStringToNil(dictionary[kActorNameKey]);
+    actor.role = LREmptyStringToNil(dictionary[kActorRoleKey]);
+    actor.imageURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kActorImageURLKey])];
+    actor.sortOrder = LREmptyStringToNil(dictionary[kActorSortOrderKey]);
+    
+    return actor;
 }
 
 - (NSDictionary *)serialize
 {
-    return self.persistenceDictionary;
+    return @{ kActorIDKey : LRNilToEmptyString(self.actorID),
+              kActorNameKey : LRNilToEmptyString(self.name),
+              kActorRoleKey : LRNilToEmptyString(self.role),
+              kActorImageURLKey : LRNilToEmptyString([self.imageURL absoluteString]),
+              kActorSortOrderKey : LRNilToEmptyString(self.sortOrder)
+              };
 }
 
 #pragma mark - Equality methods

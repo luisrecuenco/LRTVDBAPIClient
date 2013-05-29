@@ -22,7 +22,13 @@
 
 #import "LRTVDBImage.h"
 #import "LRTVDBAPIClient+Private.h"
-#import "LRTVDBBaseModel+Private.h"
+
+// Persistence keys
+static NSString *const kImageURLKey = @"kImageURLKey";
+static NSString *const kImageThumbnailURLKey = @"kImageThumbnailURLKey";
+static NSString *const kImageRatingKey = @"kImageRatingKey";
+static NSString *const kImageRatingCountKey = @"kImageRatingCountKey";
+static NSString *const kImageTypeKey = @"kImageTypeKey";
 
 NSComparator LRTVDBImageComparator = ^NSComparisonResult(LRTVDBImage *firstImage, LRTVDBImage *secondImage)
 {
@@ -143,12 +149,25 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
 
 + (LRTVDBImage *)deserialize:(NSDictionary *)dictionary
 {
-    return [self imageWithDictionary:dictionary];
+    LRTVDBImage *image = [[LRTVDBImage alloc] init];
+    
+    image.url = [NSURL URLWithString:LREmptyStringToNil(dictionary[kImageURLKey])];
+    image.thumbnailURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kImageThumbnailURLKey])];
+    image.rating = LREmptyStringToNil(dictionary[kImageRatingKey]);
+    image.ratingCount = LREmptyStringToNil(dictionary[kImageRatingCountKey]);
+    image.type = [LREmptyStringToNil(dictionary[kImageTypeKey]) unsignedIntegerValue];
+    
+    return image;
 }
 
 - (NSDictionary *)serialize
 {
-    return self.persistenceDictionary;
+    return @{ kImageURLKey : LRNilToEmptyString([self.url absoluteString]),
+              kImageThumbnailURLKey : LRNilToEmptyString([self.thumbnailURL absoluteString]),
+              kImageRatingKey : LRNilToEmptyString(self.rating),
+              kImageRatingCountKey : LRNilToEmptyString(self.ratingCount),
+              kImageTypeKey : LRNilToEmptyString(@(self.type))
+              };
 }
 
 #pragma mark - Equality methods

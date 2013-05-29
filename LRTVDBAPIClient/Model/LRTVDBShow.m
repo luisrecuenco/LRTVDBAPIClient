@@ -28,7 +28,6 @@
 #import "LRTVDBAPIClient+Private.h"
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBEpisode+Private.h"
-#import "LRTVDBBaseModel+Private.h"
 
 #if OS_OBJECT_USE_OBJC
 #define LRDispatchQueuePropertyModifier strong
@@ -285,7 +284,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     else if (self.basicStatus == LRTVDBShowBasicStatusContinuing)
     {
         self.status =  [self.daysToNextEpisode isEqualToNumber:@(NSIntegerMax)] ?
-        LRTVDBShowStatusTBA : LRTVDBShowStatusUpcoming;
+                       LRTVDBShowStatusTBA : LRTVDBShowStatusUpcoming;
     }
     else
     {
@@ -473,7 +472,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.premiereDate = updatedShow.premiereDate;
     self.rating = updatedShow.rating;
     self.ratingCount = updatedShow.ratingCount;
-    self.persistenceDictionary = updatedShow.persistenceDictionary;
 
     // Updates relationship info.
     
@@ -634,47 +632,65 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 #pragma mark - LRTVDBBaseModelSerializableProtocol
 
+// Persistence keys
+static NSString *const kShowIDKey = @"kShowIDKey";
+static NSString *const kShowNameKey = @"kShowNameKey";
+static NSString *const kShowOverviewKey = @"kShowOverviewKey";
+static NSString *const kShowAirDayKey = @"kShowAirDayKey";
+static NSString *const kShowAirTimeKey = @"kShowAirTimeKey";
+static NSString *const kShowFanartURLKey = @"kShowFanartURLKey";
+static NSString *const kShowBannerURLKey = @"kShowBannerURLKey";
+static NSString *const kShowPosterURLKey = @"kShowPosterURLKey";
+static NSString *const kShowPremiereDateKey = @"kShowPremiereDateKey";
+static NSString *const kShowGenresKey = @"kShowGenresKey";
+static NSString *const kShowImdbIDKey = @"kShowImdbIDKey";
+static NSString *const kShowNetworkKey = @"kShowNetworkKey";
+static NSString *const kShowLanguageKey = @"kShowLanguageKey";
+static NSString *const kShowRatingKey = @"kShowRatingKey";
+static NSString *const kShowRatingCountKey = @"kShowRatingCountKey";
+static NSString *const kShowBasicStatusKey = @"kShowBasicStatusKey";
+static NSString *const kShowActorsKey = @"kShowActorsKey";
 static NSString *const kLastEpisodeSeenKey = @"kLastEpisodeSeenKey";
 static NSString *const kShowEpisodesKey = @"kShowEpisodesKey";
 static NSString *const kShowImagesKey = @"kShowImagesKey";
-static NSString *const kShowActorsksKey = @"kShowActorsksKey";
 
 + (LRTVDBShow *)deserialize:(NSDictionary *)dictionary
 {
-    NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
+    LRTVDBShow *show = [[LRTVDBShow alloc] init];
     
-    NSString *lastEpisodeSeenID = mutableDictionary[kLastEpisodeSeenKey];
-    NSArray *episodesDictionaries = mutableDictionary[kShowEpisodesKey];
-    NSArray *imagesDictionaries = mutableDictionary[kShowImagesKey];
-    NSArray *actorsDictionaries = mutableDictionary[kShowActorsksKey];
-    
-    [mutableDictionary removeObjectForKey:kLastEpisodeSeenKey];
-    [mutableDictionary removeObjectForKey:kShowEpisodesKey];
-    [mutableDictionary removeObjectForKey:kShowImagesKey];
-    [mutableDictionary removeObjectForKey:kShowActorsksKey];
-    
-    LRTVDBShow *show = [self showWithDictionary:mutableDictionary];
-    
+    show.showID = LREmptyStringToNil(dictionary[kShowIDKey]);
+    show.name = LREmptyStringToNil(dictionary[kShowNameKey]);
+    show.overview = LREmptyStringToNil(dictionary[kShowOverviewKey]);
+    show.fanartURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kShowFanartURLKey])];
+    show.bannerURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kShowBannerURLKey])];
+    show.posterURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kShowPosterURLKey])];
+    show.airTime = LREmptyStringToNil(dictionary[kShowAirTimeKey]);
+    show.airDay = LREmptyStringToNil(dictionary[kShowAirDayKey]);
+    show.premiereDate = LREmptyStringToNil(dictionary[kShowPremiereDateKey]);
+    show.genres = LREmptyStringToNil(dictionary[kShowGenresKey]);
+    show.imdbID = LREmptyStringToNil(dictionary[kShowImdbIDKey]);
+    show.network = LREmptyStringToNil(dictionary[kShowNetworkKey]);
+    show.language = LREmptyStringToNil(dictionary[kShowLanguageKey]);
+    show.rating = LREmptyStringToNil(dictionary[kShowRatingKey]);
+    show.ratingCount = LREmptyStringToNil(dictionary[kShowRatingCountKey]);
+    show.basicStatus = [LREmptyStringToNil(dictionary[kShowBasicStatusKey]) unsignedIntegerValue];
+        
+    NSString *lastEpisodeSeenID = LREmptyStringToNil(dictionary[kLastEpisodeSeenKey]);
+    NSArray *episodesDictionaries = LREmptyStringToNil(dictionary[kShowEpisodesKey]);
+    NSArray *imagesDictionaries = LREmptyStringToNil(dictionary[kShowImagesKey]);
+    NSArray *actorsDictionaries = LREmptyStringToNil(dictionary[kShowActorsKey]);
+        
     NSArray *episodes = [self deserializeEpisodes:episodesDictionaries];
     
-    if (episodes)
-    {
-        [show addEpisodes:episodes];
-    }
-    
-    NSArray *images = [self deserializeImages:imagesDictionaries];
+    if (episodes) [show addEpisodes:episodes];
 
-    if (images)
-    {
-        [show addImages:images];
-    }
+    NSArray *images = [self deserializeImages:imagesDictionaries];
+    
+    if (images) [show addImages:images];
     
     NSArray *actors = [self deserializeActors:actorsDictionaries];
-
-    if (actors)
-    {
-        [show addActors:actors];
-    }
+    
+    if (actors) [show addActors:actors];
     
     if (lastEpisodeSeenID)
     {
@@ -693,35 +709,41 @@ static NSString *const kShowActorsksKey = @"kShowActorsksKey";
 
 - (NSDictionary *)serialize
 {
-    NSMutableDictionary *mutableDictionary = [self.persistenceDictionary mutableCopy];
+    NSMutableDictionary *dictionary = [@{ kShowIDKey: LRNilToEmptyString(self.showID),
+                                       kShowNameKey: LRNilToEmptyString(self.name),
+                                       kShowOverviewKey: LRNilToEmptyString(self.overview),
+                                       kShowAirDayKey: LRNilToEmptyString(self.airDay),
+                                       kShowAirTimeKey: LRNilToEmptyString(self.airTime),
+                                       kShowFanartURLKey: LRNilToEmptyString([self.fanartURL absoluteString]),
+                                       kShowBannerURLKey: LRNilToEmptyString([self.bannerURL absoluteString]),
+                                       kShowPosterURLKey: LRNilToEmptyString([self.posterURL absoluteString]),
+                                       kShowPremiereDateKey: LRNilToEmptyString(self.premiereDate),
+                                       kShowGenresKey: LRNilToEmptyString(self.genres),
+                                       kShowImdbIDKey: LRNilToEmptyString(self.imdbID),
+                                       kShowNetworkKey: LRNilToEmptyString(self.network),
+                                       kShowLanguageKey: LRNilToEmptyString(self.language),
+                                       kShowRatingKey: LRNilToEmptyString(self.rating),
+                                       kShowRatingCountKey: LRNilToEmptyString(self.ratingCount),
+                                       kShowBasicStatusKey: LRNilToEmptyString(@(self.basicStatus)),
+                                       } mutableCopy];
     
-    if (self.lastEpisodeSeen.episodeID)
-    {
-        mutableDictionary[kLastEpisodeSeenKey] = self.lastEpisodeSeen.episodeID;
-    }
+    NSString *lastEpisodeSeenID = self.lastEpisodeSeen.episodeID;
+    
+    if (lastEpisodeSeenID) dictionary[kLastEpisodeSeenKey] = self.lastEpisodeSeen.episodeID;
     
     NSArray *serializedEpisodes = [self serializeEpisodes:self.episodes];
     
-    if (serializedEpisodes)
-    {
-        mutableDictionary[kShowEpisodesKey] = serializedEpisodes;
-    }
+    if (serializedEpisodes) dictionary[kShowEpisodesKey] = serializedEpisodes;
     
     NSArray *serializedImages = [self serializeImages:self.images];
     
-    if (serializedImages)
-    {
-        mutableDictionary[kShowImagesKey] = serializedImages;
-    }
+    if (serializedImages)  dictionary[kShowImagesKey] = serializedImages;
     
     NSArray *serializedActors = [self serializeActors:self.actors];
     
-    if (serializedActors)
-    {
-        mutableDictionary[kShowActorsksKey] = serializedActors;
-    }
+    if (serializedActors) dictionary[kShowActorsKey] = serializedActors;
     
-    return [mutableDictionary copy];
+    return [dictionary copy];
 }
 
 + (NSArray *)deserializeEpisodes:(NSArray *)episodes
