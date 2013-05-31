@@ -211,12 +211,12 @@
         calendar = [NSCalendar currentCalendar];
     });
     
-    NSDateComponents *components = [calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit
+    NSDateComponents *components = [calendar components:NSDayCalendarUnit
                                                fromDate:[self.lastEpisodesRefresh dateByIgnoringTime]
                                                  toDate:[[NSDate date] dateByIgnoringTime]
                                                 options:0];
     
-    return components.day > 0 || components.month > 0 || components.year > 0;
+    return components.day > 0;
 }
 
 - (BOOL)shouldUpdateShows
@@ -229,12 +229,12 @@
         calendar = [NSCalendar currentCalendar];
     });
     
-    NSDateComponents *components = [calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit
+    NSDateComponents *components = [calendar components:NSDayCalendarUnit
                                                fromDate:[self.lastShowsUpdate dateByIgnoringTime]
                                                  toDate:[[NSDate date] dateByIgnoringTime]
                                                 options:0];
     
-    return components.day > 0 || components.month > 0 || components.year > 0;
+    return components.day > 0;
 }
 
 #pragma mark - LRShowStorageDelegate delegate
