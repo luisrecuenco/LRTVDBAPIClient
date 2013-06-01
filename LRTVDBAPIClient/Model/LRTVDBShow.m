@@ -461,8 +461,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.airDay = updatedShow.airDay;
     self.airTime = updatedShow.airTime;
     self.contentRating = updatedShow.contentRating;
-    self.genresList = updatedShow.genresList;
-    self.actorsNamesList = updatedShow.actorsNamesList;
+    self.genres = updatedShow.genres;
+    self.actorsNames = updatedShow.actorsNames;
     self.network = updatedShow.network;
     self.runtime = updatedShow.runtime;
     self.basicStatus = updatedShow.basicStatus;
