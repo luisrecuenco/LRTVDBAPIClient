@@ -122,7 +122,8 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (BOOL)isCorrect
 {
-    return self.episodeID && self.title && self.seasonNumber && self.episodeNumber.unsignedIntegerValue > 0;
+    return self.episodeID && self.title && self.seasonNumber && self.airedDate &&
+           [self.episodeNumber unsignedIntegerValue] > 0;
 }
 
 #pragma mark - IMDB URL
