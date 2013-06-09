@@ -74,11 +74,11 @@ static NSString *const kXMLActorTagName = @"Actor";
             
             if ([LRTVDBAPIClient sharedClient].includeSpecials == NO)
             {
-                return episode.isCorrect && episode.seasonNumber.unsignedIntegerValue > 0;
+                return [episode isCorrect] && [episode.seasonNumber unsignedIntegerValue] > 0;
             }
             else
             {
-                return episode.isCorrect;
+                return [episode isCorrect];
             }
         }];
         

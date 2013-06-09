@@ -410,7 +410,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             // for this very case.
             NSString *correctLanguage = nil;
             
-            if ([show.language isEqualToString:LRTVDBDefaultLanguage()])
+            if ([show.language isEqualToString:LRTVDBDefaultLanguage()] || self.forceEnglishMetadata)
             {
                 correctLanguage = self.language;
             }
@@ -609,7 +609,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     {
         NSString *correctLanguage = nil;
         
-        if ([show.language isEqualToString:LRTVDBDefaultLanguage()])
+        if ([show.language isEqualToString:LRTVDBDefaultLanguage()] || self.forceEnglishMetadata)
         {
             correctLanguage = self.language;
         }
@@ -842,6 +842,20 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 }
 
 #pragma mark - TVDB Language
+
+- (void)setForceEnglishMetadata:(BOOL)forceEnglishMetadata
+{
+    _forceEnglishMetadata = forceEnglishMetadata;
+    
+    if (forceEnglishMetadata)
+    {
+        self.language = LRTVDBDefaultLanguage();
+    }
+    else
+    {
+        self.language = nil;
+    }    
+}
 
 - (NSString *)language
 {

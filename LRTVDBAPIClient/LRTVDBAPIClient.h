@@ -54,6 +54,11 @@
 @property (nonatomic) BOOL includeSpecials;
 
 /**
+ Use this property to force the show metadata to be in English.
+ */
+@property (nonatomic) BOOL forceEnglishMetadata;
+
+/**
  Shared API client object.
  @return The singleton API client instance.
  */
