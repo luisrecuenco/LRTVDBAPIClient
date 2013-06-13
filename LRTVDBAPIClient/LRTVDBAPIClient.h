@@ -154,6 +154,7 @@
  @param updateEpisodes Flag used to update the show episodes.
  @param updateImages Flag used to update the show images.
  @param updateActors Flag used to update the show actors.
+ @param replaceArtwork Flag used to replace bannerURL, fanartURL and posterURL.
  @param completionBlock A block object to be executed upon the completion of the request
  containing a BOOL indicating the operation success (every show update went ok) or failure
  (there was an error in any of the shows).
@@ -163,6 +164,7 @@
      updateEpisodes:(BOOL)updateEpisodes
        updateImages:(BOOL)updateImages
        updateActors:(BOOL)updateActors
+     replaceArtwork:(BOOL)replaceArtwork
     completionBlock:(void (^)(BOOL finished))completionBlock;
 
 /**

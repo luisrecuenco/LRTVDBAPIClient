@@ -64,6 +64,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 - (void)updateWithShow:(LRTVDBShow *)updatedShow
         updateEpisodes:(BOOL)updateEpisodes
           updateImages:(BOOL)updateImages
-          updateActors:(BOOL)updateActors;
+          updateActors:(BOOL)updateActors
+        replaceArtwork:(BOOL)replaceArtwork;
 
 @end

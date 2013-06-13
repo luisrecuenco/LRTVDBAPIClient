@@ -359,6 +359,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
      updateEpisodes:(BOOL)updateEpisodes
        updateImages:(BOOL)updateImages
        updateActors:(BOOL)updateActors
+     replaceArtwork:(BOOL)replaceArtwork
     completionBlock:(void (^)(BOOL finished))completionBlock
 {
     if (showsToUpdate.count == 0)
@@ -383,7 +384,8 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             [showToUpdate updateWithShow:updatedShow
                           updateEpisodes:updateEpisodes
                             updateImages:updateImages
-                            updateActors:updateActors];
+                            updateActors:updateActors
+                          replaceArtwork:replaceArtwork];
             
             if (updateFinishedOk)
             {

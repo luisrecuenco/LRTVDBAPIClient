@@ -445,6 +445,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         updateEpisodes:(BOOL)updateEpisodes
           updateImages:(BOOL)updateImages
           updateActors:(BOOL)updateActors
+        replaceArtwork:(BOOL)replaceArtwork
 {
     if (updatedShow == nil) return;
     
@@ -463,12 +464,13 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     self.network = updatedShow.network;
     self.runtime = updatedShow.runtime;
     self.basicStatus = updatedShow.basicStatus;
-    self.bannerURL = self.bannerURL ? : updatedShow.bannerURL;
-    self.fanartURL = self.fanartURL ? : updatedShow.fanartURL;
-    self.posterURL = self.posterURL ? : updatedShow.posterURL;
     self.premiereDate = updatedShow.premiereDate;
     self.rating = updatedShow.rating;
     self.ratingCount = updatedShow.ratingCount;
+
+    self.bannerURL = replaceArtwork ? updatedShow.bannerURL : self.bannerURL;
+    self.fanartURL = replaceArtwork ? updatedShow.fanartURL : self.fanartURL;
+    self.posterURL = replaceArtwork ? updatedShow.posterURL : self.posterURL;
 
     // Updates relationship info.
     
