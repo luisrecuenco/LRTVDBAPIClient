@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 #import "LRTVDBActor.h"
-#import "LRTVDBAPIClient+Private.h"
-#import "NSString+LRTVDBAdditions.h"
 
 // Persistence keys
 static NSString *const kActorIDKey = @"kActorIDKey";
@@ -51,48 +49,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 @implementation LRTVDBActor
 
-#pragma mark - Initializer
-
-+ (instancetype)actorWithDictionary:(NSDictionary *)dictionary
-{
-    return [self tvdbBaseModelWithDictionary:dictionary];
-}
-
-#pragma mark - Custom Setters
-
-- (void)setImageURLString:(NSString *)imageURLString
-{
-    self.imageURL = LRTVDBImageURLForPath(imageURLString);
-}
-
-- (void)setSortOrderString:(NSString *)sortOrderString
-{
-    self.sortOrder = @([sortOrderString integerValue]);
-}
-
-- (void)setName:(NSString *)name
-{
-    _name = [name unescapeHTMLEntities];
-}
-
-- (void)setRole:(NSString *)role
-{
-    _role = [role unescapeHTMLEntities];
-}
-
-#pragma mark - LRTVDBBaseModelMappingsProtocol
-
-- (NSDictionary *)mappings
-{
-    return @{ @"Name" : @"name",
-              @"Role": @"role",
-              @"Image": @"imageURLString",
-              @"SortOrder": @"sortOrderString",
-              @"id" : @"actorID"
-            };
-}
-
-#pragma mark - LRTVDBBaseModelSerializableProtocol
+#pragma mark - LRTVDBSerializableModelProtocol
 
 + (LRTVDBActor *)deserialize:(NSDictionary *)dictionary
 {
@@ -145,7 +102,8 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"\nName: %@\nRole: %@\nImage: %@\nActor ID: %@\nSort order: %@\n", self.name, self.role, self.imageURL, self.actorID, self.sortOrder];
+    return [NSString stringWithFormat:@"\nName: %@\nRole: %@\nImage: %@\nActor ID: %@\nSort order: %@\n",
+            self.name, self.role, self.imageURL, self.actorID, self.sortOrder];
 }
 
 @end

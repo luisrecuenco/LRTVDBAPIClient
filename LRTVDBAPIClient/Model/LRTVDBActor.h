@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRTVDBBaseModel.h"
+#import "LRTVDBSerializableModelProtocol.h"
 
 /**
  Actor comparison block.
  */
 extern NSComparator LRTVDBActorComparator;
 
-@interface LRTVDBActor : LRTVDBBaseModel
+@interface LRTVDBActor : NSObject <LRTVDBSerializableModelProtocol>
 
 @property (nonatomic, copy, readonly) NSString *actorID;
 
@@ -42,11 +42,5 @@ extern NSComparator LRTVDBActorComparator;
 
 /** Number to be used when sorting different actors, i.e, 0 -> most important actor. */
 @property (nonatomic, strong, readonly) NSNumber *sortOrder;
-
-/**
- Creates a new actor.
- @see LRTVDBBaseModel initializer for more info.
- */
-+ (instancetype)actorWithDictionary:(NSDictionary *)dictionary;
 
 @end

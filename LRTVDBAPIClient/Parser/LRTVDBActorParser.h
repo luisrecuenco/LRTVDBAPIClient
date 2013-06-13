@@ -1,6 +1,6 @@
-// LRTVDBAPIParser.h
+// LRTVDBActorParser.h
 //
-// Copyright (c) 2012 Luis Recuenco
+// Copyright (c) 2013 Luis Recuenco
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface LRTVDBAPIParser : NSObject
+@interface LRTVDBActorParser : NSObject
 
 + (instancetype)parser;
 
-- (NSArray *)showsFromDictionary:(NSDictionary *)dictionary;
-- (NSArray *)episodesFromDictionary:(NSDictionary *)dictionary;
-- (NSArray *)imagesFromDictionary:(NSDictionary *)dictionary;
-- (NSArray *)actorsFromDictionary:(NSDictionary *)dictionary;
-
-- (NSArray *)showsIDsFromData:(NSData *)data;
-- (NSArray *)episodesIDsFromData:(NSData *)data;
+- (NSArray *)actorsFromData:(NSData *)data;
 
 @end

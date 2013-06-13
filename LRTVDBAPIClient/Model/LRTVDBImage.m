@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #import "LRTVDBImage.h"
-#import "LRTVDBAPIClient+Private.h"
 
 // Persistence keys
 static NSString *const kImageURLKey = @"kImageURLKey";
@@ -60,14 +59,6 @@ NSComparator LRTVDBImageComparator = ^NSComparisonResult(LRTVDBImage *firstImage
     return comparisonResult;
 };
 
-/**
- Image type XML strings.
- */
-static NSString *const kLRTVDBImageTypeFanartKey = @"fanart";
-static NSString *const kLRTVDBImageTypePosterKey = @"poster";
-static NSString *const kLRTVDBImageTypeSeasonKey = @"season";
-static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
-
 @interface LRTVDBImage ()
 
 @property (nonatomic, strong) NSURL *url;
@@ -80,72 +71,7 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
 
 @implementation LRTVDBImage
 
-#pragma mark - Initializer
-
-+ (instancetype)imageWithDictionary:(NSDictionary *)dictionary
-{
-    return [self tvdbBaseModelWithDictionary:dictionary];
-}
-
-#pragma mark - Custom Setters
-
-- (void)setUrlString:(NSString *)urlString
-{
-    self.url = LRTVDBImageURLForPath(urlString);
-}
-
-- (void)setThumbnailURLString:(NSString *)thumbnailURLString
-{
-    self.thumbnailURL = LRTVDBImageURLForPath(thumbnailURLString);
-}
-
-- (void)setRatingString:(NSString *)ratingString
-{
-    self.rating = @([ratingString floatValue]);
-}
-
-- (void)setRatingCountString:(NSString *)ratingCountString
-{
-    self.ratingCount =  @([ratingCountString integerValue]);
-}
-
-- (void)setTypeString:(NSString *)typeString
-{    
-    if ([typeString isEqualToString:kLRTVDBImageTypeFanartKey])
-    {
-        self.type = LRTVDBImageTypeFanart;
-    }
-    else if ([typeString isEqualToString:kLRTVDBImageTypePosterKey])
-    {
-        self.type = LRTVDBImageTypePoster;
-    }
-    else if ([typeString isEqualToString:kLRTVDBImageTypeSeasonKey])
-    {
-        self.type = LRTVDBImageTypeSeason;
-    }
-    else if ([typeString isEqualToString:kLRTVDBImageTypeSeriesKey])
-    {
-        self.type = LRTVDBImageTypeBanner;
-    }
-    else
-    {
-        self.type = LRTVDBImageTypeUnknown;
-    }
-}
-
-#pragma mark - LRTVDBBaseModelMappingsProtocol
-
-- (NSDictionary *)mappings
-{
-    return @{ @"BannerPath" : @"urlString",
-              @"ThumbnailPath": @"thumbnailURLString",
-              @"Rating": @"ratingString",
-              @"RatingCount": @"ratingCountString",
-              @"BannerType" : @"typeString"
-            };
-}
-
-#pragma mark - LRTVDBBaseModelSerializableProtocol
+#pragma mark - LRTVDBSerializableModelProtocol
 
 + (LRTVDBImage *)deserialize:(NSDictionary *)dictionary
 {
@@ -198,7 +124,8 @@ static NSString *const kLRTVDBImageTypeSeriesKey = @"series";
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"\nURL: %@\nThumbnail URL: %@\nRating: %@\nRating Count: %@\nType: %d\n", self.url, self.thumbnailURL, self.rating, self.ratingCount, self.type];
+    return [NSString stringWithFormat:@"\nURL: %@\nThumbnail URL: %@\nRating: %@\nRating Count: %@\nType: %d\n",
+            self.url, self.thumbnailURL, self.rating, self.ratingCount, self.type];
 }
 
 @end

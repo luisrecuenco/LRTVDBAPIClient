@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRTVDBBaseModel.h"
+#import "LRTVDBSerializableModelProtocol.h"
 
 /**
  Show comparison block.
@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 @class LRTVDBEpisode;
 
-@interface LRTVDBShow : LRTVDBBaseModel
+@interface LRTVDBShow : NSObject <LRTVDBSerializableModelProtocol>
 
 /**
  Basic properties, i.e., the ones obtained when retrieving
@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, copy, readonly) NSArray *actorsNames;
 
 @property (nonatomic, copy, readonly) NSString *network; /** ABC, HBO... */
-@property (nonatomic, copy, readonly) NSString *runtime;
+@property (nonatomic, strong, readonly) NSNumber *runtime;
 @property (nonatomic, strong, readonly) NSNumber *rating;
 @property (nonatomic, strong, readonly) NSNumber *ratingCount;
 
@@ -148,12 +148,6 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 /** Array of LRTVDBActor instances. */
 @property (nonatomic, copy, readonly) NSArray *actors;
-
-/**
- Creates a new show.
- @see LRTVDBBaseModel initializer for more info.
- */
-+ (instancetype)showWithDictionary:(NSDictionary *)dictionary;
 
 /**
  Retrieves the episodes for a specific show season.

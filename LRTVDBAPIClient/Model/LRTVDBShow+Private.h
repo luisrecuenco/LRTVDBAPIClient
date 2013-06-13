@@ -22,7 +22,34 @@
 
 #import "LRTVDBShow.h"
 
+/**
+ Basic show status coming from the show XML.
+ */
+typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
+{
+    LRTVDBShowBasicStatusUnknown,
+    LRTVDBShowBasicStatusContinuing,
+    LRTVDBShowBasicStatusEnded,
+};
+
 @interface LRTVDBShow (Private)
+
+@property (nonatomic, copy) NSString *showID;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *overview;
+@property (nonatomic, copy) NSString *imdbID;
+@property (nonatomic, copy) NSString *language;
+@property (nonatomic, copy) NSString *airDay;
+@property (nonatomic, copy) NSString *airTime;
+@property (nonatomic, copy) NSString *contentRating;
+@property (nonatomic, copy) NSString *network;
+@property (nonatomic, strong) NSDate *premiereDate;
+@property (nonatomic, strong) NSNumber *runtime;
+@property (nonatomic, strong) NSNumber *rating;
+@property (nonatomic, strong) NSNumber *ratingCount;
+@property (nonatomic, copy) NSArray *genres;
+@property (nonatomic, copy) NSArray *actorsNames;
+@property (nonatomic) LRTVDBShowBasicStatus basicStatus;
 
 /**
  Methods to manage relationships.

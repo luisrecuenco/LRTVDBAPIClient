@@ -20,14 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRTVDBShow.h"
-#import "LRTVDBImage.h"
 #import "LRTVDBActor.h"
-#import "NSDate+LRTVDBAdditions.h"
-#import "NSString+LRTVDBAdditions.h"
-#import "LRTVDBAPIClient+Private.h"
-#import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBEpisode+Private.h"
+#import "LRTVDBImage.h"
+#import "LRTVDBShow+Private.h"
+#import "LRTVDBShow.h"
+#import "NSDate+LRTVDBAdditions.h"
+
+// Persistence keys
+static NSString *const kShowIDKey = @"kShowIDKey";
+static NSString *const kShowNameKey = @"kShowNameKey";
+static NSString *const kShowOverviewKey = @"kShowOverviewKey";
+static NSString *const kShowAirDayKey = @"kShowAirDayKey";
+static NSString *const kShowAirTimeKey = @"kShowAirTimeKey";
+static NSString *const kShowFanartURLKey = @"kShowFanartURLKey";
+static NSString *const kShowBannerURLKey = @"kShowBannerURLKey";
+static NSString *const kShowPosterURLKey = @"kShowPosterURLKey";
+static NSString *const kShowPremiereDateKey = @"kShowPremiereDateKey";
+static NSString *const kShowGenresKey = @"kShowGenresKey";
+static NSString *const kShowActorsNamesKey = @"kShowActorsNamesKey";
+static NSString *const kShowImdbIDKey = @"kShowImdbIDKey";
+static NSString *const kShowNetworkKey = @"kShowNetworkKey";
+static NSString *const kShowLanguageKey = @"kShowLanguageKey";
+static NSString *const kShowRatingKey = @"kShowRatingKey";
+static NSString *const kShowRatingCountKey = @"kShowRatingCountKey";
+static NSString *const kShowBasicStatusKey = @"kShowBasicStatusKey";
+static NSString *const kShowLastEpisodeSeenKey = @"kShowLastEpisodeSeenKey";
+static NSString *const kShowContentRatingKey = @"kShowContentRatingKey";
+static NSString *const kShowRuntimeKey = @"kShowRuntimeKey";
+static NSString *const kShowActorsKey = @"kShowActorsKey";
+static NSString *const kShowEpisodesKey = @"kShowEpisodesKey";
+static NSString *const kShowImagesKey = @"kShowImagesKey";
 
 #if OS_OBJECT_USE_OBJC
 #define LRDispatchQueuePropertyModifier strong
@@ -105,22 +128,6 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     return comparisonResult;
 };
 
-/**
- Status XML dictionary keys.
- */
-static NSString *const kLRTVDBShowBasicStatusContinuingKey = @"Continuing";
-static NSString *const kLRTVDBShowBasicStatusEndedKey = @"Ended";
-
-/**
- Basic show status coming from the show XML.
- */
-typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
-{
-    LRTVDBShowBasicStatusUnknown,
-    LRTVDBShowBasicStatusContinuing,
-    LRTVDBShowBasicStatusEnded,
-};
-
 @interface LRTVDBShow ()
 
 @property (nonatomic, copy) NSString *showID;
@@ -132,8 +139,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSString *airTime;
 @property (nonatomic, copy) NSString *contentRating;
 @property (nonatomic, copy) NSString *network;
-@property (nonatomic, copy) NSString *runtime;
 @property (nonatomic, strong) NSDate *premiereDate;
+@property (nonatomic, strong) NSNumber *runtime;
 @property (nonatomic, strong) NSNumber *rating;
 @property (nonatomic, strong) NSNumber *ratingCount;
 @property (nonatomic) LRTVDBShowStatus status;
@@ -158,21 +165,11 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 
 @property (nonatomic, strong) NSMutableDictionary *seasonToEpisodesDictionary;
 
-@property (nonatomic, copy) NSString *genresList; /** |Genre 1|Genre 2|... */
-@property (nonatomic, copy) NSString *actorsNamesList; /** |Actor 1|Actor 2|... */
-
 @property (nonatomic, LRDispatchQueuePropertyModifier) dispatch_queue_t syncQueue;
 
 @end
 
 @implementation LRTVDBShow
-
-#pragma mark - Initializer
-
-+ (instancetype)showWithDictionary:(NSDictionary *)dictionary
-{
-    return [self tvdbBaseModelWithDictionary:dictionary];
-}
 
 - (void)dealloc
 {
@@ -466,9 +463,9 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     self.network = updatedShow.network;
     self.runtime = updatedShow.runtime;
     self.basicStatus = updatedShow.basicStatus;
-    self.bannerURL = updatedShow.bannerURL;
-    self.fanartURL = updatedShow.fanartURL;
-    self.posterURL = updatedShow.posterURL;
+    self.bannerURL = self.bannerURL ? : updatedShow.bannerURL;
+    self.fanartURL = self.fanartURL ? : updatedShow.fanartURL;
+    self.posterURL = self.posterURL ? : updatedShow.posterURL;
     self.premiereDate = updatedShow.premiereDate;
     self.rating = updatedShow.rating;
     self.ratingCount = updatedShow.ratingCount;
@@ -535,124 +532,7 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
     return mergedObjects ? : @[];
 }
 
-#pragma mark - Custom Setters
-
-- (void)setName:(NSString *)name
-{
-    _name = [name unescapeHTMLEntities];
-}
-
-- (void)setOverview:(NSString *)overview
-{
-    _overview = [overview unescapeHTMLEntities];
-}
-
-- (void)setPremiereDateString:(NSString *)premiereDateString
-{
-    self.premiereDate = [premiereDateString dateValue];
-}
-
-- (void)setBannerURLString:(NSString *)bannerURLString
-{
-    self.bannerURL = LRTVDBImageURLForPath(bannerURLString);
-}
-
-- (void)setFanartURLString:(NSString *)fanartURLString
-{
-    self.fanartURL = LRTVDBImageURLForPath(fanartURLString);
-}
-
-- (void)setPosterURLString:(NSString *)posterURLString
-{
-    self.posterURL = LRTVDBImageURLForPath(posterURLString);
-}
-
-- (void)setRatingString:(NSString *)ratingString
-{
-    self.rating = @([ratingString floatValue]);
-}
-
-- (void)setRatingCountString:(NSString *)ratingCountString
-{
-    self.ratingCount = @([ratingCountString integerValue]);
-}
-
-- (void)setGenresList:(NSString *)genresList
-{
-    self.genres = [[genresList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-- (void)setActorsNamesList:(NSString *)actorsNamesList
-{
-    self.actorsNames = [[actorsNamesList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-- (void)setBasicStatusString:(NSString *)basicStatusString
-{    
-    if ([basicStatusString isEqualToString:kLRTVDBShowBasicStatusContinuingKey])
-    {
-        self.basicStatus = LRTVDBShowBasicStatusContinuing;
-    }
-    else if ([basicStatusString isEqualToString:kLRTVDBShowBasicStatusEndedKey])
-    {
-        self.basicStatus = LRTVDBShowBasicStatusEnded;
-    }
-    else
-    {
-        self.basicStatus = LRTVDBShowBasicStatusUnknown;
-    }
-}
-
-#pragma mark - LRTVDBBaseModelMappingsProtocol
-
-- (NSDictionary *)mappings
-{
-    return @{ @"SeriesName" : @"name",
-              @"id" : @"showID",
-              @"Language" : @"language",
-              @"language" : @"language",
-              @"banner" : @"bannerURLString",
-              @"poster" : @"posterURLString",
-              @"fanart" : @"fanartURLString",
-              @"Overview" : @"overview",
-              @"FirstAired" : @"premiereDateString",
-              @"IMDB_ID" : @"imdbID",
-              @"Airs_DayOfWeek" : @"airDay",
-              @"Airs_Time" : @"airTime",
-              @"ContentRating" : @"contentRating",
-              @"Genre" : @"genresList",
-              @"Actors" : @"actorsNamesList",
-              @"Network" : @"network",
-              @"Runtime" : @"runtime",
-              @"Status" : @"basicStatusString",
-              @"Rating" : @"ratingString",
-              @"RatingCount" : @"ratingCountString"
-            };
-}
-
-#pragma mark - LRTVDBBaseModelSerializableProtocol
-
-// Persistence keys
-static NSString *const kShowIDKey = @"kShowIDKey";
-static NSString *const kShowNameKey = @"kShowNameKey";
-static NSString *const kShowOverviewKey = @"kShowOverviewKey";
-static NSString *const kShowAirDayKey = @"kShowAirDayKey";
-static NSString *const kShowAirTimeKey = @"kShowAirTimeKey";
-static NSString *const kShowFanartURLKey = @"kShowFanartURLKey";
-static NSString *const kShowBannerURLKey = @"kShowBannerURLKey";
-static NSString *const kShowPosterURLKey = @"kShowPosterURLKey";
-static NSString *const kShowPremiereDateKey = @"kShowPremiereDateKey";
-static NSString *const kShowGenresKey = @"kShowGenresKey";
-static NSString *const kShowImdbIDKey = @"kShowImdbIDKey";
-static NSString *const kShowNetworkKey = @"kShowNetworkKey";
-static NSString *const kShowLanguageKey = @"kShowLanguageKey";
-static NSString *const kShowRatingKey = @"kShowRatingKey";
-static NSString *const kShowRatingCountKey = @"kShowRatingCountKey";
-static NSString *const kShowBasicStatusKey = @"kShowBasicStatusKey";
-static NSString *const kShowActorsKey = @"kShowActorsKey";
-static NSString *const kLastEpisodeSeenKey = @"kLastEpisodeSeenKey";
-static NSString *const kShowEpisodesKey = @"kShowEpisodesKey";
-static NSString *const kShowImagesKey = @"kShowImagesKey";
+#pragma mark - LRTVDBSerializableModelProtocol
 
 + (LRTVDBShow *)deserialize:(NSDictionary *)dictionary
 {
@@ -668,14 +548,17 @@ static NSString *const kShowImagesKey = @"kShowImagesKey";
     show.airDay = LREmptyStringToNil(dictionary[kShowAirDayKey]);
     show.premiereDate = LREmptyStringToNil(dictionary[kShowPremiereDateKey]);
     show.genres = LREmptyStringToNil(dictionary[kShowGenresKey]);
+    show.actorsNames = LREmptyStringToNil(dictionary[kShowActorsNamesKey]);
     show.imdbID = LREmptyStringToNil(dictionary[kShowImdbIDKey]);
     show.network = LREmptyStringToNil(dictionary[kShowNetworkKey]);
     show.language = LREmptyStringToNil(dictionary[kShowLanguageKey]);
     show.rating = LREmptyStringToNil(dictionary[kShowRatingKey]);
     show.ratingCount = LREmptyStringToNil(dictionary[kShowRatingCountKey]);
-    show.basicStatus = [LREmptyStringToNil(dictionary[kShowBasicStatusKey]) unsignedIntegerValue];
-        
-    NSString *lastEpisodeSeenID = LREmptyStringToNil(dictionary[kLastEpisodeSeenKey]);
+    show.basicStatus = [LREmptyStringToNil(dictionary[kShowBasicStatusKey]) integerValue];
+    show.contentRating = LREmptyStringToNil(dictionary[kShowContentRatingKey]);
+    show.runtime = LREmptyStringToNil(dictionary[kShowRuntimeKey]);
+    
+    NSString *lastEpisodeSeenID = LREmptyStringToNil(dictionary[kShowLastEpisodeSeenKey]);
     NSArray *episodesDictionaries = LREmptyStringToNil(dictionary[kShowEpisodesKey]);
     NSArray *imagesDictionaries = LREmptyStringToNil(dictionary[kShowImagesKey]);
     NSArray *actorsDictionaries = LREmptyStringToNil(dictionary[kShowActorsKey]);
@@ -719,17 +602,20 @@ static NSString *const kShowImagesKey = @"kShowImagesKey";
                                        kShowPosterURLKey: LRNilToEmptyString([self.posterURL absoluteString]),
                                        kShowPremiereDateKey: LRNilToEmptyString(self.premiereDate),
                                        kShowGenresKey: LRNilToEmptyString(self.genres),
+                                       kShowActorsNamesKey: LRNilToEmptyString(self.actorsNames),
                                        kShowImdbIDKey: LRNilToEmptyString(self.imdbID),
                                        kShowNetworkKey: LRNilToEmptyString(self.network),
                                        kShowLanguageKey: LRNilToEmptyString(self.language),
                                        kShowRatingKey: LRNilToEmptyString(self.rating),
                                        kShowRatingCountKey: LRNilToEmptyString(self.ratingCount),
                                        kShowBasicStatusKey: LRNilToEmptyString(@(self.basicStatus)),
+                                       kShowContentRatingKey : LRNilToEmptyString(self.contentRating),
+                                       kShowRuntimeKey : LRNilToEmptyString(self.runtime)
                                        } mutableCopy];
     
     NSString *lastEpisodeSeenID = self.lastEpisodeSeen.episodeID;
     
-    if (lastEpisodeSeenID) dictionary[kLastEpisodeSeenKey] = self.lastEpisodeSeen.episodeID;
+    if (lastEpisodeSeenID) dictionary[kShowLastEpisodeSeenKey] = self.lastEpisodeSeen.episodeID;
     
     NSArray *serializedEpisodes = [self serializeEpisodes:self.episodes];
     

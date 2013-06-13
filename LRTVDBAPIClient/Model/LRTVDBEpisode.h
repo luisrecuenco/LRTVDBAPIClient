@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRTVDBBaseModel.h"
+#import "LRTVDBSerializableModelProtocol.h"
 
 /**
  Episode comparison block.
@@ -29,7 +29,7 @@ extern NSComparator LRTVDBEpisodeComparator;
 
 @class LRTVDBShow;
 
-@interface LRTVDBEpisode : LRTVDBBaseModel
+@interface LRTVDBEpisode : NSObject <LRTVDBSerializableModelProtocol>
 
 @property (nonatomic, copy, readonly) NSString *episodeID;
 @property (nonatomic, copy, readonly) NSString *title;
@@ -64,11 +64,5 @@ extern NSComparator LRTVDBEpisodeComparator;
 
 /** Weak reference to the show. */
 @property (nonatomic, weak) LRTVDBShow *show;
-
-/**
- Creates a new episode.
- @see LRTVDBBaseModel initializer for more info.
- */
-+ (instancetype)episodeWithDictionary:(NSDictionary *)dictionary;
 
 @end

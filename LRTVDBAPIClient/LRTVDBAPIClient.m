@@ -28,8 +28,11 @@
 #import "LRTVDBEpisode+Private.h"
 #import "ZZArchive.h"
 #import "ZZArchiveEntry.h"
-#import "LRTVDBAPIParser.h"
+#import "LRTVDBShowParser.h"
 #import "LRTVDBAPIClient+Private.h"
+#import "LRTVDBActorParser.h"
+#import "LRTVDBImageParser.h"
+#import "LRTVDBEpisodeParser.h"
 
 #if !__has_feature(objc_arc)
 #error "LRTVDBAPIClient requires ARC support."
@@ -121,11 +124,9 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
-            NSDictionary *seriesDictionary = [responseObject toDictionary];
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
-            NSArray *shows = [[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary];
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
-            completionBlock(shows, nil);
+            completionBlock([[LRTVDBShowParser parser] showsFromData:responseObject], nil);
         });
     };
     
@@ -272,12 +273,10 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
-            NSDictionary *episodesDictionary = [responseObject toDictionary];
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
-            NSArray *episodes = [[LRTVDBAPIParser parser] episodesFromDictionary:episodesDictionary];
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             // We know there's only on episode in the array.
-            completionBlock([episodes firstObject], nil);
+            completionBlock([[[LRTVDBEpisodeParser parser] episodesFromData:responseObject] firstObject], nil);
         });
     };
     
@@ -305,12 +304,10 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     void (^successBlock)(AFHTTPRequestOperation *, id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
         
         dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
+
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
-            NSDictionary *imagesDictionary = [responseObject toDictionary];
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, imagesDictionary);
-            NSArray *images = [[LRTVDBAPIParser parser] imagesFromDictionary:imagesDictionary];
-            
-            completionBlock(images, nil);
+            completionBlock([[LRTVDBImageParser parser] imagesFromData:responseObject], nil);            
         });
     };
     
@@ -339,11 +336,9 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
-            NSDictionary *actorsDictionary = [responseObject toDictionary];
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, actorsDictionary);
-            NSArray *actors = [[LRTVDBAPIParser parser] actorsFromDictionary:actorsDictionary];
-            
-            completionBlock(actors, nil);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+                        
+            completionBlock([[LRTVDBActorParser parser] actorsFromData:responseObject], nil);
         });
     };
     
@@ -524,7 +519,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
-            NSArray *showsIDs = [[LRTVDBAPIParser parser] showsIDsFromData:responseObject];
+            NSArray *showsIDs = [[LRTVDBShowParser parser] showsIDsFromData:responseObject];
             completionBlock(showsIDs, nil);
         });
     };
@@ -551,8 +546,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
-            NSArray *episodesIDs = [[LRTVDBAPIParser parser] episodesIDsFromData:responseObject];
-            completionBlock(episodesIDs, nil);
+            completionBlock([[LRTVDBEpisodeParser parser] episodesIDsFromData:responseObject], nil);
         });
     };
     
@@ -712,23 +706,22 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
             
-            LRTVDBShow *show = [[[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary] firstObject];
+            // We know there's only one
+            LRTVDBShow *show = [[[LRTVDBShowParser parser] showsFromData:firstArchiveEntry.data] firstObject];
             
             if (includeEpisodes)
             {
-                [show addEpisodes:[[LRTVDBAPIParser parser] episodesFromDictionary:seriesDictionary]];
+                [show addEpisodes:[[LRTVDBEpisodeParser parser] episodesFromData:firstArchiveEntry.data]];
             }
             
             if (includeImages)
             {
-                NSDictionary *imagesDictionary = [secondArchiveEntry.data toDictionary];
-                [show addImages:[[LRTVDBAPIParser parser] imagesFromDictionary:imagesDictionary]];
+                [show addImages:[[LRTVDBImageParser parser] imagesFromData:secondArchiveEntry.data]];
             }
             
             if (includeActors)
-            {
-                NSDictionary *actorsDictionary = [thirdArchiveEntry.data toDictionary];
-                [show addActors:[[LRTVDBAPIParser parser] actorsFromDictionary:actorsDictionary]];
+            {               
+                [show addActors:[[LRTVDBActorParser parser] actorsFromData:thirdArchiveEntry.data]];
             }
             
             completionBlock(show, nil);
@@ -768,13 +761,14 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
-            NSDictionary *seriesDictionary = [responseObject toDictionary];
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
-            LRTVDBShow *show = [[[LRTVDBAPIParser parser] showsFromDictionary:seriesDictionary] firstObject];
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+            
+            // We know there's only one
+            LRTVDBShow *show = [[[LRTVDBShowParser parser] showsFromData:responseObject] firstObject];
             
             if (includeEpisodes)
-            {
-                [show addEpisodes:[[LRTVDBAPIParser parser] episodesFromDictionary:seriesDictionary]];
+            {                                
+                [show addEpisodes:[[LRTVDBEpisodeParser parser] episodesFromData:responseObject]];
             }
             
             completionBlock(show, nil);
@@ -822,12 +816,10 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
-            NSDictionary *episodesDictionary = [responseObject toDictionary];
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, episodesDictionary);
-            NSArray *episodes = [[LRTVDBAPIParser parser] episodesFromDictionary:episodesDictionary];
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             // We know there's only on episode in the array.
-            completionBlock([episodes firstObject], nil);
+            completionBlock([[[LRTVDBEpisodeParser parser] episodesFromData:responseObject] firstObject], nil);
         });
     };
     

@@ -1,6 +1,6 @@
-// LRTVDBAPIClient+Private.h
+// LRTVDBImageParser.h
 //
-// Copyright (c) 2012 Luis Recuenco
+// Copyright (c) 2013 Luis Recuenco
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/** TVDB image base URL */
-static NSString *const kLRTVDBAPIImageBaseURLString = @"http://www.thetvdb.com/banners/";
+#import <Foundation/Foundation.h>
 
-/**
- Provides the correct image URL based on the relative path
- provided in theTVDB XML response.
- @param path The relative path of the image.
- @return A newly-initialized NSURL object with the correct image URL.
- */
-NS_INLINE NSURL *LRTVDBImageURLForPath(NSString *path)
-{
-    if (!path) return nil;
-    
-    NSString *urlString = [kLRTVDBAPIImageBaseURLString stringByAppendingString:path];
-    
-    return [NSURL URLWithString:urlString];
-}
+@interface LRTVDBImageParser : NSObject
 
-/**
- @return The default TVDB API language: English
- */
-NS_INLINE NSString *LRTVDBDefaultLanguage(void)
-{
-    return @"en";
-}
++ (instancetype)parser;
+
+- (NSArray *)imagesFromData:(NSData *)data;
+
+@end

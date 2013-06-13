@@ -21,10 +21,6 @@
 // THE SOFTWARE.
 
 #import "LRTVDBEpisode.h"
-#import "LRTVDBAPIClient+Private.h"
-#import "NSString+LRTVDBAdditions.h"
-#import "NSArray+LRTVDBAdditions.h"
-#import "LRTVDBShow.h"
 
 // Persistence keys
 static NSString *const kEpisodeIDKey = @"kEpisodeIDKey";
@@ -67,15 +63,15 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 @interface LRTVDBEpisode ()
 
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *overview;
 @property (nonatomic, copy) NSString *episodeID;
 @property (nonatomic, copy) NSString *imdbID;
 @property (nonatomic, copy) NSString *language;
 @property (nonatomic, copy) NSString *showID;
-
 @property (nonatomic, copy) NSArray *writers;
 @property (nonatomic, copy) NSArray *directors;
 @property (nonatomic, copy) NSArray *guestStars;
-
 @property (nonatomic, strong) NSNumber *episodeNumber;
 @property (nonatomic, strong) NSNumber *seasonNumber;
 @property (nonatomic, strong) NSNumber *rating;
@@ -83,25 +79,9 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 @property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSDate *airedDate;
 
-/** Writer 1|Writer 2... */
-@property (nonatomic, copy) NSString *writersList;
-
-/** Director 1|Director 2... */
-@property (nonatomic, copy) NSString *directorsList;
-
-/** Guest Star 1|Guest Star 2... */
-@property (nonatomic, copy) NSString *guestStarsList;
-
 @end
 
 @implementation LRTVDBEpisode
-
-#pragma mark - Initializer
-
-+ (instancetype)episodeWithDictionary:(NSDictionary *)dictionary
-{
-    return [self tvdbBaseModelWithDictionary:dictionary];
-}
 
 #pragma mark - Has episode already aired ?
 
@@ -156,91 +136,12 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     self.imdbID = updatedEpisode.imdbID;
     self.language = updatedEpisode.language;
     self.showID = updatedEpisode.showID;
-    self.writersList = updatedEpisode.writersList;
-    self.directorsList = updatedEpisode.directorsList;
-    self.guestStarsList = updatedEpisode.guestStarsList;
+    self.writers = updatedEpisode.writers;
+    self.guestStars = updatedEpisode.guestStars;
+    self.directors = updatedEpisode.directors;
 }
 
-#pragma mark - Custom Setters
-
-- (void)setTitle:(NSString *)title
-{
-    _title = [title unescapeHTMLEntities];
-}
-
-- (void)setOverview:(NSString *)overview
-{
-    _overview = [overview unescapeHTMLEntities];
-}
-
-- (void)setSeasonNumberString:(NSString *)seasonNumberString
-{
-    self.seasonNumber = @([seasonNumberString integerValue]);
-}
-
-- (void)setEpisodeNumberString:(NSString *)episodeNumberString
-{
-    self.episodeNumber = @([episodeNumberString integerValue]);
-}
-
-- (void)setRatingString:(NSString *)ratingString
-{
-    self.rating = @([ratingString floatValue]);
-}
-
-- (void)setRatingCountString:(NSString *)ratingCountString
-{
-    self.ratingCount = @([ratingCountString integerValue]);
-}
-
-- (void)setAiredDateString:(NSString *)airedDateString
-{
-    self.airedDate = [airedDateString dateValue];
-}
-
-- (void)setImageURLString:(NSString *)imageURLString
-{
-    self.imageURL = LRTVDBImageURLForPath(imageURLString);
-}
-
-- (void)setWritersList:(NSString *)writersList
-{
-    self.writers = [[writersList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-- (void)setDirectorsList:(NSString *)directorsList
-{
-    self.directors = [[directorsList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-- (void)setGuestStarsList:(NSString *)guestStarsList
-{
-    self.guestStars = [[guestStarsList pipedStringToArray] arrayByRemovingDuplicates];
-}
-
-#pragma mark - LRTVDBBaseModelMappingsProtocol
-
-- (NSDictionary *)mappings
-{
-    return @{ @"id" : @"episodeID",
-              @"EpisodeName" : @"title",
-              @"EpisodeNumber": @"episodeNumberString",
-              @"SeasonNumber": @"seasonNumberString",
-              @"Rating": @"ratingString",
-              @"RatingCount" : @"ratingCountString",
-              @"FirstAired" : @"airedDateString",
-              @"Overview" : @"overview",
-              @"filename" : @"imageURLString",
-              @"IMDB_ID" : @"imdbID",
-              @"Language" : @"language",
-              @"seriesid" : @"showID",
-              @"Writer" : @"writersList",
-              @"Director" : @"directorsList",
-              @"GuestStars" : @"guestStarsList"
-            };
-}
-
-#pragma mark - LRTVDBBaseModelSerializableProtocol
+#pragma mark - LRTVDBSerializableModelProtocol
 
 + (LRTVDBEpisode *)deserialize:(NSDictionary *)dictionary
 {    
@@ -313,7 +214,8 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"Title: %@\nSeason number: %@\nEpisode number: %@\nRating: %@\nOverview: %@\n", self.title, self.seasonNumber, self.episodeNumber, self.rating, self.overview];
+    return [NSString stringWithFormat:@"Title: %@\nSeason number: %@\nEpisode number: %@\nRating: %@\nOverview: %@\n",
+            self.title, self.seasonNumber, self.episodeNumber, self.rating, self.overview];
 }
 
 @end
