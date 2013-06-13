@@ -22,7 +22,6 @@
 
 #import "LRTVDBAPIClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "NSData+LRTVDBAdditions.h"
 #import "NSArray+LRTVDBAdditions.h"
 #import "LRTVDBShow+Private.h"
 #import "LRTVDBEpisode+Private.h"
@@ -704,9 +703,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             ZZArchiveEntry *thirdArchiveEntry = [oldArchive.entries count] > 2 ?
                                                  oldArchive.entries[2] : nil;
             
-            NSDictionary *seriesDictionary = [firstArchiveEntry.data toDictionary];
-            
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, seriesDictionary);
+            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:firstArchiveEntry.data encoding:NSUTF8StringEncoding]);
             
             // We know there's only one
             LRTVDBShow *show = [[[LRTVDBShowParser parser] showsFromData:firstArchiveEntry.data] firstObject];
