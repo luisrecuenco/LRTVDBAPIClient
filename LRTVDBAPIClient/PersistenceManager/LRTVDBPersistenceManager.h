@@ -36,4 +36,9 @@
  */
 - (NSArray *)showsFromPersistenceStorage;
 
+/**
+ Check for persisted shows existence
+ */
+- (BOOL)existPersistedShows;
+
 @end

@@ -82,6 +82,11 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
     return [mutableShows copy];
 }
 
+- (BOOL)existPersistedShows
+{
+    return [[NSFileManager defaultManager] fileExistsAtPath:[self showsStoragePath]];
+}
+
 #pragma mark - Peristence File URL
 
 - (NSString *)showsStoragePath
