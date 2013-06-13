@@ -38,19 +38,62 @@
 
 - (instancetype)unescapeHTMLEntities
 {
-    NSDictionary *htmlEntities = @{ @"&quot;" : @"\"",
-                                    @"&apos;" : @"\"",
-                                    @"&amp;" : @"&",
-                                    @"&lt;" : @"<",
-                                    @"&gt;" : @">"
-                                  };
+    static NSDictionary *htmlEntities = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        htmlEntities =  @{ @"&quot;" : @"\"",
+                           @"&apos;" : @"\"",
+                           @"&amp;" : @"&",
+                           @"&lt;" : @"<",
+                           @"&gt;" : @">",
+                           @"&#39;" : @"'",
+                           @"&hellip;" : @"…"
+                           };
+    });
     
-    __block NSString *unescapedString = [self copy];
-    [htmlEntities enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        unescapedString = [unescapedString stringByReplacingOccurrencesOfString:key withString:obj];
-    }];
+    NSString *ampersand = @"&";
     
-    return unescapedString;
+    NSMutableString *targetString = [self mutableCopy];
+    NSMutableString *unescapedString = [NSMutableString string];
+	NSCharacterSet *htmlCharacterSet = [NSCharacterSet characterSetWithCharactersInString:ampersand];
+    
+	while ([targetString length] > 0)
+    {
+		NSRange range = [targetString rangeOfCharacterFromSet:htmlCharacterSet];
+        
+		if (range.location == NSNotFound)
+        {
+			[unescapedString appendString:targetString];
+			break;
+		}
+        
+		if (range.location > 0)
+        {
+			[unescapedString appendString:[targetString substringToIndex:range.location]];
+			[targetString deleteCharactersInRange:NSMakeRange(0, range.location)];
+		}
+        
+        __block BOOL htmlCharacterReplaced = NO;
+        
+        [htmlEntities enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            
+            if ([targetString hasPrefix:key])
+            {
+                [unescapedString appendString:obj];
+                [targetString deleteCharactersInRange:NSMakeRange(0, [key length])];
+                
+                htmlCharacterReplaced = YES;
+            }
+        }];
+        
+        if (!htmlCharacterReplaced)
+        {
+            [unescapedString appendString:ampersand];
+			[targetString deleteCharactersInRange:NSMakeRange(0, 1)];
+        }
+    }
+    
+    return [unescapedString copy];
 }
 
 - (NSArray *)pipedStringToArray
