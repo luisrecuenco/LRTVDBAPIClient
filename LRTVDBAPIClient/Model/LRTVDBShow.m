@@ -233,7 +233,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     // Last episode
     if (self.basicStatus == LRTVDBShowBasicStatusEnded)
     {
-        self.lastEpisode = _episodes.lastObject;
+        self.lastEpisode = [_episodes lastObject];
     }
     else
     {
@@ -271,7 +271,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     self.daysToNextEpisode = [self daysToEpisode:self.nextEpisode];
     
     // Number of seasons
-    self.numberOfSeasons = [_episodes.lastObject seasonNumber];
+    self.numberOfSeasons = [[_episodes lastObject] seasonNumber];
     
     // Show status
     if (self.basicStatus == LRTVDBShowBasicStatusEnded)
@@ -330,7 +330,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (NSArray *)episodesForSeason:(NSNumber *)seasonNumber
 {
-    return (self.seasonToEpisodesDictionary)[seasonNumber] ? : @[];
+    return self.seasonToEpisodesDictionary[seasonNumber] ? : @[];
 }
 
 #pragma mark - Images handling
@@ -502,11 +502,11 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 {
     NSArray *mergedObjects = nil;
     
-    if (newObjects.count == 0)
+    if ([newObjects count] == 0)
     {
         mergedObjects = [[oldObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
     }
-    else if (oldObjects.count == 0)
+    else if ([oldObjects count] == 0)
     {
         mergedObjects = [[newObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
     }
@@ -519,7 +519,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         for (id newObject in copiedNewObjects)
         {
             NSUInteger newIndexToInsertNewObject = [mutableOldObjects indexOfObject:newObject
-                                                                      inSortedRange:NSMakeRange(0, mutableOldObjects.count)
+                                                                      inSortedRange:NSMakeRange(0, [mutableOldObjects count])
                                                                             options:NSBinarySearchingInsertionIndex
                                                                     usingComparator:comparator];
             if (newIndexToInsertNewObject != NSNotFound)

@@ -147,7 +147,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
        includeActors:(BOOL)includeActors
      completionBlock:(void (^)(NSArray *shows, NSDictionary *errorsDictionary))completionBlock
 {
-    if (showsIDs.count == 0)
+    if ([showsIDs count] == 0)
     {
         completionBlock(@[], @{});
         return;
@@ -170,7 +170,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             _showsDictionary[showID] = show;
         }
         
-        if (++numberOfFinishedShows == showsIDs.count)
+        if (++numberOfFinishedShows == [showsIDs count])
         {
             // Sort results
             for (NSString *showID in showsIDs)
@@ -206,7 +206,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 - (void)episodesWithIDs:(NSArray *)episodesIDs
         completionBlock:(void (^)(NSArray *episodes, NSDictionary *errorsDictionary))completionBlock
 {
-    if (episodesIDs.count == 0)
+    if ([episodesIDs count] == 0)
     {
         completionBlock(@[], @{});
         return;
@@ -229,7 +229,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             _episodesDictionary[episodeID] = episode;
         }
         
-        if (++numberOfFinishedEpisodes == episodesIDs.count)
+        if (++numberOfFinishedEpisodes == [episodesIDs count])
         {
             // Sort results
             for (NSString *episodeID in episodesIDs)
@@ -361,7 +361,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
      replaceArtwork:(BOOL)replaceArtwork
     completionBlock:(void (^)(BOOL finished))completionBlock
 {
-    if (showsToUpdate.count == 0)
+    if ([showsToUpdate count] == 0)
     {
         if (completionBlock) completionBlock(YES);
         return;
@@ -369,7 +369,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^block)(NSArray *) = ^(NSArray *validShowsToUpdate) {
         
-        if (validShowsToUpdate.count == 0)
+        if ([validShowsToUpdate count] == 0)
         {
             if (completionBlock) completionBlock(YES);
             return;
@@ -391,7 +391,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                 updateFinishedOk = (error == nil);
             }
             
-            if (++numerOfUpdatedShows == validShowsToUpdate.count)
+            if (++numerOfUpdatedShows == [validShowsToUpdate count])
             {
                 if (completionBlock) completionBlock(YES);
             }
@@ -448,7 +448,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
          checkIfNeeded:(BOOL)checkIfNeeded
        completionBlock:(void (^)(BOOL finished))completionBlock
 {
-    if (episodesToUpdate.count == 0)
+    if ([episodesToUpdate count] == 0)
     {
         if (completionBlock) completionBlock(YES);
         return;
@@ -456,7 +456,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
     
     void (^block)(NSArray *) = ^(NSArray *validEpisodesToUpdate) {
         
-        if (validEpisodesToUpdate.count == 0)
+        if ([validEpisodesToUpdate count] == 0)
         {
             completionBlock(YES);
             return;
@@ -474,7 +474,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                 updateFinishedOk = (error == nil);
             }
             
-            if (++numerOfUpdatedEpisodes == validEpisodesToUpdate.count)
+            if (++numerOfUpdatedEpisodes == [validEpisodesToUpdate count])
             {
                 completionBlock(updateFinishedOk);
             }

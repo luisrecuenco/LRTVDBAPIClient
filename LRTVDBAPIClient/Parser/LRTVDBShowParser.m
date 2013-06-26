@@ -166,7 +166,7 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
     
     void (^__block __unsafe_unretained removeLanguageDuplicatesBlock)(NSMutableArray *) = ^(NSMutableArray *showsWithLanguageDuplicates) {
         
-        if (showsWithLanguageDuplicates.count == 0) return;
+        if ([showsWithLanguageDuplicates count] == 0) return;
         
         LRTVDBShow *firstShow = [showsWithLanguageDuplicates firstObject];
         

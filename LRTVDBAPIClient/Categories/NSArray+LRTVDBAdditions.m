@@ -26,7 +26,7 @@
 
 - (id)firstObject
 {
-    return self.count > 0 ? self[0] : nil;
+    return [self count] > 0 ? self[0] : nil;
 }
 
 - (instancetype)arrayByRemovingDuplicates

@@ -74,7 +74,7 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
     if (!error)
     {
         [serializedEntries enumerateObjectsUsingBlock:^(NSDictionary *serializedEntry, NSUInteger idx, BOOL *stop) {
-            LRTVDBShow *show = (LRTVDBShow *)[LRTVDBShow deserialize:serializedEntry];
+            LRTVDBShow *show = [LRTVDBShow deserialize:serializedEntry];
             [mutableShows addObject:show];
         }];
     }
