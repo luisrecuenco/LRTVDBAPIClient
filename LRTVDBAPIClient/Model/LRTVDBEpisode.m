@@ -87,7 +87,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (BOOL)hasAlreadyAired
 {
-    return [self compare:self.show.lastEpisode] <= NSOrderedSame;
+    return self.show.lastEpisode && [self compare:self.show.lastEpisode] <= NSOrderedSame;
 }
 
 #pragma mark - Has episode been seen?
