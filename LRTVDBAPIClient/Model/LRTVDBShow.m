@@ -237,8 +237,6 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     }
     else
     {
-        __block BOOL lastEpisodeSet = NO;
-        
         NSDate *fromDate = [[NSDate date] dateByIgnoringTime];
         
         void (^block)(LRTVDBEpisode *, NSUInteger, BOOL *) = ^(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
@@ -248,24 +246,25 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
             if ([toDate compare:fromDate] == NSOrderedAscending)
             {
                 self.lastEpisode = episode;
-                lastEpisodeSet = YES;
                 *stop = YES;
             }
         };
         
         [_episodes enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:block];
-        
-        if (!lastEpisodeSet)
-        {
-            self.lastEpisode = _episodes.lastObject;
-        }
     }
     
     // Next episode
-    NSUInteger nextEpisodeIndex = [_episodes indexOfObjectIdenticalTo:self.lastEpisode] + 1;
-    BOOL notValidNextEpisode = nextEpisodeIndex >= _episodes.count ||
-                               [_episodes[nextEpisodeIndex] airedDate] == nil;
-    self.nextEpisode = notValidNextEpisode ? nil : (_episodes)[nextEpisodeIndex];
+
+    if (self.lastEpisode == nil)
+    {
+        self.nextEpisode = [_episodes firstObject];
+    }
+    else
+    {
+        NSUInteger nextEpisodeIndex = [_episodes indexOfObjectIdenticalTo:self.lastEpisode] + 1;
+        BOOL notValidNextEpisode = nextEpisodeIndex >= [_episodes count];
+        self.nextEpisode = notValidNextEpisode ? nil : _episodes[nextEpisodeIndex];
+    }
     
     // Days to next episode
     self.daysToNextEpisode = [self daysToEpisode:self.nextEpisode];
