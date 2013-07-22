@@ -691,36 +691,41 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
         
         dispatch_async([[self class] lr_sharedConcurrentQueue], ^{
             
-            ZZArchive *oldArchive = [ZZArchive archiveWithData:responseObject];
+            LRTVDBShow *show = nil;
             
-            // series XML info
-            ZZArchiveEntry *firstArchiveEntry = [oldArchive.entries count] > 0 ?
-                                                 oldArchive.entries[0] : nil;
-            // images XML info
-            ZZArchiveEntry *secondArchiveEntry = [oldArchive.entries count] > 1 ?
-                                                  oldArchive.entries[1] : nil;
-            // actors XML info
-            ZZArchiveEntry *thirdArchiveEntry = [oldArchive.entries count] > 2 ?
-                                                 oldArchive.entries[2] : nil;
-            
-            LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:firstArchiveEntry.data encoding:NSUTF8StringEncoding]);
-            
-            // We know there's only one
-            LRTVDBShow *show = [[[LRTVDBShowParser parser] showsFromData:firstArchiveEntry.data] firstObject];
-            
-            if (includeEpisodes)
+            if (responseObject)
             {
-                [show addEpisodes:[[LRTVDBEpisodeParser parser] episodesFromData:firstArchiveEntry.data]];
-            }
-            
-            if (includeImages)
-            {
-                [show addImages:[[LRTVDBImageParser parser] imagesFromData:secondArchiveEntry.data]];
-            }
-            
-            if (includeActors)
-            {               
-                [show addActors:[[LRTVDBActorParser parser] actorsFromData:thirdArchiveEntry.data]];
+                ZZArchive *oldArchive = [ZZArchive archiveWithData:responseObject];
+                
+                // series XML info
+                ZZArchiveEntry *firstArchiveEntry = [oldArchive.entries count] > 0 ?
+                oldArchive.entries[0] : nil;
+                // images XML info
+                ZZArchiveEntry *secondArchiveEntry = [oldArchive.entries count] > 1 ?
+                oldArchive.entries[1] : nil;
+                // actors XML info
+                ZZArchiveEntry *thirdArchiveEntry = [oldArchive.entries count] > 2 ?
+                oldArchive.entries[2] : nil;
+                
+                LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:firstArchiveEntry.data encoding:NSUTF8StringEncoding]);
+                
+                // We know there's only one
+                LRTVDBShow *show = [[[LRTVDBShowParser parser] showsFromData:firstArchiveEntry.data] firstObject];
+                
+                if (includeEpisodes)
+                {
+                    [show addEpisodes:[[LRTVDBEpisodeParser parser] episodesFromData:firstArchiveEntry.data]];
+                }
+                
+                if (includeImages)
+                {
+                    [show addImages:[[LRTVDBImageParser parser] imagesFromData:secondArchiveEntry.data]];
+                }
+                
+                if (includeActors)
+                {
+                    [show addActors:[[LRTVDBActorParser parser] actorsFromData:thirdArchiveEntry.data]];
+                }
             }
             
             completionBlock(show, nil);
