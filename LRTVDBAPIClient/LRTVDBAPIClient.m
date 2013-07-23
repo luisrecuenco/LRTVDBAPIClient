@@ -710,7 +710,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                 LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:firstArchiveEntry.data encoding:NSUTF8StringEncoding]);
                 
                 // We know there's only one
-                LRTVDBShow *show = [[[LRTVDBShowParser parser] showsFromData:firstArchiveEntry.data] firstObject];
+                show = [[[LRTVDBShowParser parser] showsFromData:firstArchiveEntry.data] firstObject];
                 
                 if (includeEpisodes)
                 {
