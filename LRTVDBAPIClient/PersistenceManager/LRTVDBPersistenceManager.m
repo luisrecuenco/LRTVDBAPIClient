@@ -35,25 +35,33 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
 
 - (void)saveShowsInPersistenceStorage:(NSArray *)shows
 {
-    NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[shows count]];
-    
-    [shows enumerateObjectsUsingBlock:^(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
-        NSDictionary *serializedEntry = [show serialize];
-        [mutableShows addObject:serializedEntry];
-    }];
-    
     NSError* error = nil;
-    NSData *dictionaryData = [NSPropertyListSerialization
-                              dataWithPropertyList:mutableShows
-                              format:NSPropertyListBinaryFormat_v1_0
-                              options:0
-                              error:&error];
-    
-    if (!error)
+
+    if ([shows count] > 0)
     {
-        [dictionaryData writeToFile:[self showsStoragePath]
-                            options:NSDataWritingAtomic
-                              error:&error];
+        NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[shows count]];
+        
+        [shows enumerateObjectsUsingBlock:^(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
+            NSDictionary *serializedEntry = [show serialize];
+            [mutableShows addObject:serializedEntry];
+        }];
+        
+        NSData *dictionaryData = [NSPropertyListSerialization
+                                  dataWithPropertyList:mutableShows
+                                  format:NSPropertyListBinaryFormat_v1_0
+                                  options:0
+                                  error:&error];
+        
+        if (!error)
+        {
+            [dictionaryData writeToFile:[self showsStoragePath]
+                                options:NSDataWritingAtomic
+                                  error:&error];
+        }
+    }
+    else
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:[self showsStoragePath] error:&error];
     }
 }
 
