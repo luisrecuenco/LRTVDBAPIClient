@@ -111,7 +111,7 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
         if (ratingElement) show.rating = @([LREmptyStringToNil([TBXML textForElement:ratingElement]) floatValue]);
         if (ratingCountElement) show.ratingCount = @([LREmptyStringToNil([TBXML textForElement:ratingCountElement]) integerValue]);
         if (contentRatingElement) show.contentRating = LREmptyStringToNil([TBXML textForElement:contentRatingElement]);
-        if (runtimeElement) show.runtime = LREmptyStringToNil([TBXML textForElement:runtimeElement]);
+        if (runtimeElement) show.runtime = @([LREmptyStringToNil([TBXML textForElement:runtimeElement]) integerValue]);
 
         if (statusElement)
         {
