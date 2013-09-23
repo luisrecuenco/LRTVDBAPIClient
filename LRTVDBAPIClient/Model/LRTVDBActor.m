@@ -49,18 +49,49 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
 
 @implementation LRTVDBActor
 
+#pragma mark - Update actor
+
+- (void)updateWithActor:(LRTVDBActor *)updatedActor;
+{
+    if (updatedActor == nil) return;
+    
+    NSAssert([self isEqual:updatedActor], @"Trying to update actor with one with different ID?");
+    
+    self.actorID = updatedActor.actorID;
+    self.name = updatedActor.name;
+    self.role = updatedActor.role;
+    self.imageURL = updatedActor.imageURL;
+    self.sortOrder = updatedActor.sortOrder;
+}
+
 #pragma mark - LRTVDBSerializableModelProtocol
 
-+ (LRTVDBActor *)deserialize:(NSDictionary *)dictionary
++ (LRTVDBActor *)deserialize:(NSDictionary *)dictionary error:(NSError **)error
 {
     LRTVDBActor *actor = [[LRTVDBActor alloc] init];
     
-    actor.actorID = LREmptyStringToNil(dictionary[kActorIDKey]);
-    actor.name = LREmptyStringToNil(dictionary[kActorNameKey]);
-    actor.role = LREmptyStringToNil(dictionary[kActorRoleKey]);
-    actor.imageURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kActorImageURLKey])];
-    actor.sortOrder = LREmptyStringToNil(dictionary[kActorSortOrderKey]);
+    id actorId = LREmptyStringToNil(dictionary[kActorIDKey]);
+    CHECK_NIL(actorId, @"actorId", *error);
+    CHECK_TYPE(actorId, [NSString class], @"actorId", *error);
+    actor.actorID = actorId;
+
+    id actorName = LREmptyStringToNil(dictionary[kActorNameKey]);
+    CHECK_NIL(actorName, @"actorName", *error);
+    CHECK_TYPE(actorName, [NSString class], @"actorName", *error);
+    actor.name = actorName;
+
+    id actorRole = LREmptyStringToNil(dictionary[kActorRoleKey]);
+    CHECK_TYPE(actorRole, [NSString class], @"actorRole", *error);
+    actor.role = actorRole;
     
+    id imageURL = LREmptyStringToNil(dictionary[kActorImageURLKey]);
+    CHECK_TYPE(imageURL, [NSString class], @"imageURL", *error);
+    actor.imageURL = [NSURL URLWithString:imageURL];
+
+    id sortOrder = LREmptyStringToNil(dictionary[kActorSortOrderKey]);
+    CHECK_TYPE(sortOrder, [NSNumber class], @"sortOrder", *error);
+    actor.sortOrder = sortOrder;
+
     return actor;
 }
 
@@ -71,7 +102,7 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
               kActorRoleKey : LRNilToEmptyString(self.role),
               kActorImageURLKey : LRNilToEmptyString([self.imageURL absoluteString]),
               kActorSortOrderKey : LRNilToEmptyString(self.sortOrder)
-              };
+            };
 }
 
 #pragma mark - Equality methods

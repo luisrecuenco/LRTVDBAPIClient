@@ -71,17 +71,47 @@ NSComparator LRTVDBImageComparator = ^NSComparisonResult(LRTVDBImage *firstImage
 
 @implementation LRTVDBImage
 
+#pragma mark - Update image
+
+- (void)updateWithImage:(LRTVDBImage *)updatedImage
+{
+    if (updatedImage == nil) return;
+    
+    NSAssert([self isEqual:updatedImage], @"Trying to update image with one with different url?");
+    
+    self.url = updatedImage.url;
+    self.thumbnailURL = updatedImage.thumbnailURL;
+    self.rating = updatedImage.rating;
+    self.ratingCount = updatedImage.ratingCount;
+    self.type = updatedImage.type;
+}
+
 #pragma mark - LRTVDBSerializableModelProtocol
 
-+ (LRTVDBImage *)deserialize:(NSDictionary *)dictionary
++ (LRTVDBImage *)deserialize:(NSDictionary *)dictionary error:(NSError **)error
 {
     LRTVDBImage *image = [[LRTVDBImage alloc] init];
+        
+    id url = LREmptyStringToNil(dictionary[kImageURLKey]);
+    CHECK_NIL(url, @"url", *error);
+    CHECK_TYPE(url, [NSString class], @"url", *error);
+    image.url = [NSURL URLWithString:url];
     
-    image.url = [NSURL URLWithString:LREmptyStringToNil(dictionary[kImageURLKey])];
-    image.thumbnailURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kImageThumbnailURLKey])];
-    image.rating = LREmptyStringToNil(dictionary[kImageRatingKey]);
-    image.ratingCount = LREmptyStringToNil(dictionary[kImageRatingCountKey]);
-    image.type = [LREmptyStringToNil(dictionary[kImageTypeKey]) unsignedIntegerValue];
+    id thumbnailURL = LREmptyStringToNil(dictionary[kImageThumbnailURLKey]);
+    CHECK_TYPE(thumbnailURL, [NSString class], @"thumbnailURL", *error);
+    image.thumbnailURL = [NSURL URLWithString:thumbnailURL];
+    
+    id rating = LREmptyStringToNil(dictionary[kImageRatingKey]);
+    CHECK_TYPE(rating, [NSNumber class], @"rating", *error);
+    image.rating = rating;
+
+    id ratingCount = LREmptyStringToNil(dictionary[kImageRatingCountKey]);
+    CHECK_TYPE(ratingCount, [NSNumber class], @"ratingCount", *error);
+    image.ratingCount = ratingCount;
+    
+    id imageType = LREmptyStringToNil(dictionary[kImageTypeKey]);
+    CHECK_TYPE(imageType, [NSNumber class], @"imageType", *error);
+    image.type = [imageType unsignedIntegerValue];
     
     return image;
 }
@@ -92,8 +122,8 @@ NSComparator LRTVDBImageComparator = ^NSComparisonResult(LRTVDBImage *firstImage
               kImageThumbnailURLKey : LRNilToEmptyString([self.thumbnailURL absoluteString]),
               kImageRatingKey : LRNilToEmptyString(self.rating),
               kImageRatingCountKey : LRNilToEmptyString(self.ratingCount),
-              kImageTypeKey : LRNilToEmptyString(@(self.type))
-              };
+              kImageTypeKey : @(self.type)
+            };
 }
 
 #pragma mark - Equality methods

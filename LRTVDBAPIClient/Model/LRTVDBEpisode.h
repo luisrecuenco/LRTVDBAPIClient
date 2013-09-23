@@ -23,6 +23,18 @@
 #import "LRTVDBSerializableModelProtocol.h"
 
 /**
+ Struct in order to make KVO a little more strong typed.
+ 
+ @discussion When observing a key value like @"seen", use
+ LRTVDBEpisodeAttributes.seen instead."
+ */
+extern const struct LRTVDBEpisodeAttributes
+{
+    __unsafe_unretained NSString *seen;
+} LRTVDBEpisodeAttributes;
+
+
+/**
  Episode comparison block.
  */
 extern NSComparator LRTVDBEpisodeComparator;
@@ -60,7 +72,7 @@ extern NSComparator LRTVDBEpisodeComparator;
 @property (nonatomic, copy, readonly) NSArray *guestStars;
 
 @property (nonatomic, readonly, getter = hasAlreadyAired) BOOL alreadyAired;
-@property (nonatomic, readonly, getter = hasBeenSeen) BOOL seen;
+@property (nonatomic, getter = hasBeenSeen) BOOL seen;
 
 /** Weak reference to the show. */
 @property (nonatomic, weak) LRTVDBShow *show;

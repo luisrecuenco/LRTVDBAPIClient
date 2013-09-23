@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #import "LRTVDBEpisode.h"
+#import "LRTVDBShow+Private.h"
 
 // Persistence keys
 static NSString *const kEpisodeIDKey = @"kEpisodeIDKey";
@@ -38,6 +39,11 @@ static NSString *const kEpisodeRatingKey = @"kEpisodeRatingKey";
 static NSString *const kEpisodeRatingCountKey = @"kEpisodeRatingCountKey";
 static NSString *const kEpisodeLanguageKey = @"kEpisodeLanguageKey";
 static NSString *const kEpisodeShowIDKey = @"kEpisodeShowIDKey";
+static NSString *const kEpisodeSeenKey = @"kEpisodeSeenKey";
+
+const struct LRTVDBEpisodeAttributes LRTVDBEpisodeAttributes = {
+    .seen = @"seen",
+};
 
 NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstEpisode, LRTVDBEpisode *secondEpisode)
 {
@@ -90,14 +96,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     return self.show.lastEpisode && [self compare:self.show.lastEpisode] <= NSOrderedSame;
 }
 
-#pragma mark - Has episode been seen?
-
-- (BOOL)hasBeenSeen
-{
-   return self.show.lastEpisodeSeen &&
-          [self.show.lastEpisodeSeen compare:self] >= NSOrderedSame;
-}
-
 #pragma mark - Is Episode correct?
 
 - (BOOL)isCorrect
@@ -143,26 +141,80 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 #pragma mark - LRTVDBSerializableModelProtocol
 
-+ (LRTVDBEpisode *)deserialize:(NSDictionary *)dictionary
++ (LRTVDBEpisode *)deserialize:(NSDictionary *)dictionary error:(NSError **)error
 {    
     LRTVDBEpisode *episode = [[LRTVDBEpisode alloc] init];
     
-    episode.episodeID = LREmptyStringToNil(dictionary[kEpisodeIDKey]);
-    episode.title = LREmptyStringToNil(dictionary[kEpisodeTitleKey]);
-    episode.overview = LREmptyStringToNil(dictionary[kEpisodeOverviewKey]);
-    episode.imageURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kEpisodeImageURLKey])];
-    episode.airedDate = LREmptyStringToNil(dictionary[kEpisodeAiredDateKey]);
-    episode.imdbID = LREmptyStringToNil(dictionary[kEpisodeImdbIDKey]);
-    episode.directors = LREmptyStringToNil(dictionary[kEpisodeDirectorsKey]);
-    episode.writers = LREmptyStringToNil(dictionary[kEpisodeWritersKey]);
-    episode.guestStars = LREmptyStringToNil(dictionary[kEpisodeGuestStarsKey]);
-    episode.seasonNumber = LREmptyStringToNil(dictionary[kEpisodeSeasonNumberKey]);
-    episode.episodeNumber = LREmptyStringToNil(dictionary[kEpisodeNumberKey]);
-    episode.rating = LREmptyStringToNil(dictionary[kEpisodeRatingKey]);
-    episode.ratingCount = LREmptyStringToNil(dictionary[kEpisodeRatingCountKey]);
-    episode.language = LREmptyStringToNil(dictionary[kEpisodeLanguageKey]);
-    episode.showID = LREmptyStringToNil(dictionary[kEpisodeShowIDKey]);
-    
+    id episodeId = LREmptyStringToNil(dictionary[kEpisodeIDKey]);
+    CHECK_NIL(episodeId, @"episodeId", *error);
+    CHECK_TYPE(episodeId, [NSString class], @"episodeId", *error);
+    episode.episodeID = episodeId;
+
+    id title = LREmptyStringToNil(dictionary[kEpisodeTitleKey]);
+    CHECK_NIL(title, @"title", *error);
+    CHECK_TYPE(episodeId, [NSString class], @"title", *error);
+    episode.title = title;
+
+    id overview = LREmptyStringToNil(dictionary[kEpisodeOverviewKey]);
+    CHECK_TYPE(overview, [NSString class], @"overview", *error);
+    episode.overview = overview;
+
+    id imageURL = LREmptyStringToNil(dictionary[kEpisodeImageURLKey]);
+    CHECK_TYPE(imageURL, [NSString class], @"imageURL", *error);
+    episode.imageURL = [NSURL URLWithString:imageURL];
+
+    id airedDate = LREmptyStringToNil(dictionary[kEpisodeAiredDateKey]);
+    CHECK_NIL(airedDate, @"airedDate", *error);
+    CHECK_TYPE(airedDate, [NSDate class], @"airedDate", *error);
+    episode.airedDate = airedDate;
+
+    id imdbID = LREmptyStringToNil(dictionary[kEpisodeImdbIDKey]);
+    CHECK_TYPE(imdbID, [NSString class], @"imdbID", *error);
+    episode.imdbID = imdbID;
+
+    id directors = LREmptyStringToNil(dictionary[kEpisodeDirectorsKey]);
+    CHECK_TYPE(directors, [NSArray class], @"directors", *error);
+    episode.directors = directors;
+
+    id writers = LREmptyStringToNil(dictionary[kEpisodeWritersKey]);
+    CHECK_TYPE(writers, [NSArray class], @"writers", *error);
+    episode.writers = writers;
+
+    id guestStars = LREmptyStringToNil(dictionary[kEpisodeGuestStarsKey]);
+    CHECK_TYPE(guestStars, [NSArray class], @"guestStars", *error);
+    episode.guestStars = guestStars;
+
+    id seasonNumber = LREmptyStringToNil(dictionary[kEpisodeSeasonNumberKey]);
+    CHECK_NIL(seasonNumber, @"seasonNumber", *error);
+    CHECK_TYPE(seasonNumber, [NSNumber class], @"seasonNumber", *error);
+    episode.seasonNumber = seasonNumber;
+
+    id episodeNumber = LREmptyStringToNil(dictionary[kEpisodeNumberKey]);
+    CHECK_NIL(episodeNumber, @"episodeNumber", *error);
+    CHECK_TYPE(episodeNumber, [NSNumber class], @"episodeNumber", *error);
+    episode.episodeNumber = episodeNumber;
+
+    id rating = LREmptyStringToNil(dictionary[kEpisodeRatingKey]);
+    CHECK_TYPE(rating, [NSNumber class], @"rating", *error);
+    episode.rating = rating;
+
+    id ratingCount = LREmptyStringToNil(dictionary[kEpisodeRatingCountKey]);
+    CHECK_TYPE(ratingCount, [NSNumber class], @"ratingCount", *error);
+    episode.ratingCount = ratingCount;
+
+    id language = LREmptyStringToNil(dictionary[kEpisodeLanguageKey]);
+    CHECK_TYPE(language, [NSString class], @"language", *error);
+    episode.language = language;
+
+    id showID = LREmptyStringToNil(dictionary[kEpisodeShowIDKey]);
+    CHECK_NIL(showID, @"showID", *error);
+    CHECK_TYPE(showID, [NSString class], @"showID", *error);
+    episode.showID = showID;
+
+    id seen = LREmptyStringToNil(dictionary[kEpisodeSeenKey]);
+    CHECK_TYPE(seen, [NSNumber class], @"seen", *error);
+    episode.seen = [seen boolValue];
+
     return episode;
 }
 
@@ -183,7 +235,8 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
               kEpisodeRatingCountKey : LRNilToEmptyString(self.ratingCount),
               kEpisodeLanguageKey : LRNilToEmptyString(self.language),
               kEpisodeShowIDKey : LRNilToEmptyString(self.showID),
-              };
+              kEpisodeSeenKey : @(self.seen)
+            };    
 }
 
 #pragma mark - Equality methods
@@ -216,6 +269,16 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 {
     return [NSString stringWithFormat:@"Title: %@\nSeason number: %@\nEpisode number: %@\nRating: %@\nOverview: %@\n",
             self.title, self.seasonNumber, self.episodeNumber, self.rating, self.overview];
+}
+
+- (void)setSeen:(BOOL)seen
+{
+    if (_seen != seen)
+    {
+        _seen = seen;
+        
+        [self.show seenStatusDidChangeForEpisode:self];
+    }
 }
 
 @end

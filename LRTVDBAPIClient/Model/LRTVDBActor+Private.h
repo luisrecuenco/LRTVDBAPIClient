@@ -30,4 +30,9 @@
 @property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSNumber *sortOrder;
 
+/**
+ Updates an actor.
+ */
+- (void)updateWithActor:(LRTVDBActor *)updatedActor;
+
 @end

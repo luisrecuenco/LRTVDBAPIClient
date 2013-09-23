@@ -25,7 +25,7 @@
 /**
  Basic show status coming from the show XML.
  */
-typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
+typedef NS_ENUM(NSUInteger, LRTVDBShowBasicStatus)
 {
     LRTVDBShowBasicStatusUnknown,
     LRTVDBShowBasicStatusContinuing,
@@ -51,6 +51,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSArray *actorsNames;
 @property (nonatomic) LRTVDBShowBasicStatus basicStatus;
 
+@property (nonatomic, strong) NSMutableArray *seenEpisodes;
+
 /**
  Methods to manage relationships.
  */
@@ -66,5 +68,12 @@ typedef NS_ENUM(NSInteger, LRTVDBShowBasicStatus)
           updateImages:(BOOL)updateImages
           updateActors:(BOOL)updateActors
         replaceArtwork:(BOOL)replaceArtwork;
+
+/**
+ Recomputes next episode to be watched
+ */
+- (void)reloadActiveEpisode;
+
+- (void)seenStatusDidChangeForEpisode:(LRTVDBEpisode *)episode;
 
 @end

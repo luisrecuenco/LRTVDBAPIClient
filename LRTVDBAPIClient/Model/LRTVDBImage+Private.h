@@ -30,4 +30,9 @@
 @property (nonatomic, strong) NSNumber *ratingCount;
 @property (nonatomic) LRTVDBImageType type;
 
+/**
+ Updates an image.
+ */
+- (void)updateWithImage:(LRTVDBImage *)updatedImage;
+
 @end

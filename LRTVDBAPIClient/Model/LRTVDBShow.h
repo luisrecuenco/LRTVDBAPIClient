@@ -38,7 +38,6 @@ extern const struct LRTVDBShowAttributes
     __unsafe_unretained NSString *fanartURL;
     __unsafe_unretained NSString *posterURL;
     __unsafe_unretained NSString *lastEpisode;
-    __unsafe_unretained NSString *lastEpisodeSeen;
     __unsafe_unretained NSString *episodes;
     __unsafe_unretained NSString *images;
     __unsafe_unretained NSString *actors;
@@ -131,9 +130,26 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 @property (nonatomic, strong, readonly) NSNumber *numberOfSeasons;
 
 /**
- Last episode that has been seen. 
+ Number of pending episodes to finish the show
  */
-@property (nonatomic, weak) LRTVDBEpisode *lastEpisodeSeen;
+@property (nonatomic, assign, readonly) NSUInteger numberOfEpisodesBehind;
+
+/**
+ The next episode to be watched, i.e., the active one
+ */
+@property (nonatomic, strong, readonly) LRTVDBEpisode *activeEpisode;
+
+/**
+ Active means that at least one episode of the show has been watched
+ */
+@property (nonatomic, readonly, getter = isActive) BOOL active;
+
+/**
+ Has the first episode already aired?
+ */
+@property (nonatomic, readonly, getter = hasStarted) BOOL started;
+
+@property (nonatomic, readonly, getter = hasBeenFinished) BOOL finished;
 
 /** Ordered set of LRTVDBImage objects. */
 @property (nonatomic, copy, readonly) NSArray *images;

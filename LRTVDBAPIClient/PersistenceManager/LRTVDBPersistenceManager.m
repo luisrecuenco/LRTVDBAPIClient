@@ -36,55 +36,76 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
 - (void)saveShowsInPersistenceStorage:(NSArray *)shows
 {
     NSError* error = nil;
-
-    if ([shows count] > 0)
-    {
-        NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[shows count]];
-        
-        [shows enumerateObjectsUsingBlock:^(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
-            NSDictionary *serializedEntry = [show serialize];
-            [mutableShows addObject:serializedEntry];
-        }];
-        
-        NSData *dictionaryData = [NSPropertyListSerialization
-                                  dataWithPropertyList:mutableShows
-                                  format:NSPropertyListBinaryFormat_v1_0
-                                  options:0
-                                  error:&error];
-        
-        if (!error)
-        {
-            [dictionaryData writeToFile:[self showsStoragePath]
-                                options:NSDataWritingAtomic
-                                  error:&error];
-        }
-    }
-    else
+    
+    if ([shows count] == 0)
     {
         [[NSFileManager defaultManager] removeItemAtPath:[self showsStoragePath] error:&error];
+        return;
+    }
+    
+    NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[shows count]];
+    
+    for (LRTVDBShow *show in shows)
+    {
+        [mutableShows addObject:[show serialize]];
+    }
+    
+    NSData *plistData = [NSPropertyListSerialization
+                         dataWithPropertyList:mutableShows
+                         format:NSPropertyListBinaryFormat_v1_0
+                         options:0
+                         error:&error];
+    
+    if(!plistData)
+    {
+        NSLog(@"Unable to generate plist data from shows: %@", error);
+    }
+    
+    
+    BOOL success = [plistData writeToFile:[self showsStoragePath]
+                                  options:NSDataWritingAtomic
+                                    error:&error];
+    
+    if(!success)
+    {
+        NSLog(@"Unable to write plist data to disk: %@", error);
     }
 }
 
 - (NSArray *)showsFromPersistenceStorage
 {
-    NSData *dictionaryData = [NSData dataWithContentsOfFile:[self showsStoragePath]];
+    NSError *error;
+    NSData *plistData = [NSData dataWithContentsOfFile:[self showsStoragePath]
+                                               options:0
+                                                 error:&error];
+    if(!plistData)
+    {
+        NSLog(@"Unable to read plist data from disk: %@", error);
+        return nil;
+    }
     
-    if (dictionaryData == nil) return nil;
-    
-    NSString *error = nil;
-    NSArray *serializedEntries = [NSPropertyListSerialization propertyListFromData:dictionaryData
-                                                                  mutabilityOption:NSPropertyListImmutable
-                                                                            format:nil
-                                                                  errorDescription:&error];
+    NSArray *serializedEntries = [NSPropertyListSerialization propertyListWithData:plistData
+                                                                           options:0
+                                                                            format:NULL
+                                                                             error:&error];
+    if(!serializedEntries)
+    {
+        NSLog(@"Unable to decode plist from data: %@", error);
+        return nil;
+    }
     
     NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[serializedEntries count]];
     
-    if (!error)
+    for (NSDictionary *serializedEntry in serializedEntries)
     {
-        [serializedEntries enumerateObjectsUsingBlock:^(NSDictionary *serializedEntry, NSUInteger idx, BOOL *stop) {
-            LRTVDBShow *show = [LRTVDBShow deserialize:serializedEntry];
+        NSError *error;
+        
+        LRTVDBShow *show = [LRTVDBShow deserialize:serializedEntry error:&error];
+        
+        if (show)
+        {
             [mutableShows addObject:show];
-        }];
+        }
     }
     
     return [mutableShows copy];

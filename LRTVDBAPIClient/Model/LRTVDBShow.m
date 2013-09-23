@@ -20,12 +20,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "LRTVDBActor.h"
-#import "LRTVDBEpisode+Private.h"
-#import "LRTVDBImage.h"
 #import "LRTVDBShow+Private.h"
-#import "LRTVDBShow.h"
+#import "LRTVDBEpisode+Private.h"
+#import "LRTVDBImage+Private.h"
+#import "LRTVDBActor+Private.h"
 #import "NSDate+LRTVDBAdditions.h"
+
+#pragma mark - LRUpdate categories
+
+@interface LRTVDBEpisode (LRUpdate)
+
+- (void)updateWithObject:(LRTVDBEpisode *)episode;
+
+@end
+
+@interface LRTVDBImage (LRUpdate)
+
+- (void)updateWithObject:(LRTVDBImage *)image;
+
+@end
+
+@interface LRTVDBActor (LRUpdate)
+
+- (void)updateWithObject:(LRTVDBActor *)actor;
+
+@end
+
+@implementation LRTVDBEpisode (LRUpdate)
+
+- (void)updateWithObject:(LRTVDBEpisode *)episode
+{
+    [self updateWithEpisode:episode];
+}
+
+@end
+
+@implementation LRTVDBImage (LRUpdate)
+
+- (void)updateWithObject:(LRTVDBImage *)image
+{
+    [self updateWithImage:image];
+}
+
+@end
+
+@implementation LRTVDBActor (LRUpdate)
+
+- (void)updateWithObject:(LRTVDBActor *)actor
+{
+    [self updateWithActor:actor];
+}
+
+@end
+
+#pragma mark - LRTVDBShow implementation
 
 // Persistence keys
 static NSString *const kShowIDKey = @"kShowIDKey";
@@ -62,7 +110,6 @@ const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
     .fanartURL = @"fanartURL",
     .posterURL = @"posterURL",
     .lastEpisode = @"lastEpisode",
-    .lastEpisodeSeen = @"lastEpisodeSeen",
     .episodes = @"episodes",
     .images = @"images",
     .actors = @"actors",
@@ -155,6 +202,11 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 @property (nonatomic, strong) NSNumber *daysToNextEpisode;
 @property (nonatomic, strong) NSNumber *numberOfSeasons;
 
+@property (nonatomic, strong) LRTVDBEpisode *activeEpisode;
+@property (nonatomic, assign) NSUInteger numberOfEpisodesBehind;
+
+@property (nonatomic, strong) NSMutableArray *seenEpisodes;
+
 @property (nonatomic, copy) NSArray *images;
 @property (nonatomic, copy) NSArray *fanartImages;
 @property (nonatomic, copy) NSArray *posterImages;
@@ -198,23 +250,9 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     dispatch_sync(self.syncQueue, ^{
         [self willChangeValueForKey:LRTVDBShowAttributes.episodes];
         
-        LRTVDBEpisode *lastEpisodeSeen = self.lastEpisodeSeen;
-
         _episodes = [[self mergeObjects:episodes
                             withObjects:_episodes
                         comparisonBlock:LRTVDBEpisodeComparator] copy];
-        
-        if (lastEpisodeSeen)
-        {
-            NSUInteger lastEpisodeSeenIndex = [_episodes indexOfObjectPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
-                return [episode.episodeID isEqualToString:lastEpisodeSeen.episodeID];
-            }];
-            
-            if (lastEpisodeSeenIndex != NSNotFound)
-            {
-                self.lastEpisodeSeen = _episodes[lastEpisodeSeenIndex];
-            }
-        }
         
         // Assign weak reference to the show.
         for (LRTVDBEpisode *episode in _episodes)
@@ -290,6 +328,8 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     // Re compute season dictionary
     NSMutableDictionary *newSeasonToEpisodesDictionary = [NSMutableDictionary dictionary];
     
+    self.seenEpisodes = nil; // Recompute
+
     for (LRTVDBEpisode *episode in _episodes)
     {
         NSMutableArray *episodesForSeason = [newSeasonToEpisodesDictionary[episode.seasonNumber] mutableCopy];
@@ -301,9 +341,13 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         [episodesForSeason addObject:episode];
         
         newSeasonToEpisodesDictionary[episode.seasonNumber] = [episodesForSeason copy];
+        
+        [self seenStatusDidChangeForEpisode:episode];
     }
     
     self.seasonToEpisodesDictionary = newSeasonToEpisodesDictionary;
+    
+    [self reloadActiveEpisode];
 }
 
 - (NSNumber *)daysToEpisode:(LRTVDBEpisode *)episode
@@ -438,6 +482,103 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
                                  @"http://www.imdb.com/title/%@/", self.imdbID]];
 }
 
+#pragma mark - Active episode
+
+- (LRTVDBEpisode *)activeEpisode
+{
+    if (!_activeEpisode)
+    {
+        if (![self hasBeenFinished])
+        {
+            for (LRTVDBEpisode *episode in _episodes)
+            {
+                if (![episode hasBeenSeen])
+                {
+                    _activeEpisode = episode;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            _activeEpisode = self.nextEpisode ? : self.lastEpisode;
+        }
+    }
+    
+    return _activeEpisode;
+}
+
+#pragma mark - Seen episodes
+
+- (NSMutableArray *)seenEpisodes
+{
+    if (!_seenEpisodes)
+    {
+        _seenEpisodes = [NSMutableArray array];
+    }
+
+    return _seenEpisodes;
+}
+
+#pragma mark - Number of episodes behind
+
+- (NSUInteger)numberOfEpisodesBehind
+{
+    if (_numberOfEpisodesBehind == -1)
+    {
+        NSIndexSet *indexSet = [_episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+            return [episode hasAlreadyAired];
+        }];
+        
+        NSArray *airedEpisodes = [_episodes objectsAtIndexes:indexSet];
+        
+        _numberOfEpisodesBehind = [@([airedEpisodes count] - [self.seenEpisodes count]) unsignedIntegerValue];
+    }
+    
+    return _numberOfEpisodesBehind;
+}
+
+#pragma mark - Is show active?
+
+- (BOOL)isActive
+{
+    return [self.seenEpisodes count] > 0;
+}
+
+#pragma mark - Has show been finished?
+
+- (BOOL)hasBeenFinished
+{
+    return self.numberOfEpisodesBehind == 0 && [self hasStarted];
+}
+
+#pragma mark - Has show started?
+
+- (BOOL)hasStarted
+{
+    return [[_episodes firstObject] hasAlreadyAired];
+}
+
+#pragma mark - Handle episodes seen changes
+
+- (void)seenStatusDidChangeForEpisode:(LRTVDBEpisode *)episode
+{
+    if (episode.seen)
+    {
+        [self.seenEpisodes addObject:episode];
+    }
+    else
+    {
+        [self.seenEpisodes removeObject:episode];
+    }
+}
+
+- (void)reloadActiveEpisode
+{
+    self.numberOfEpisodesBehind = -1;
+    self.activeEpisode = nil;
+}
+
 #pragma mark - Update show
 
 - (void)updateWithShow:(LRTVDBShow *)updatedShow
@@ -523,7 +664,25 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
                                                                     usingComparator:comparator];
             if (newIndexToInsertNewObject != NSNotFound)
             {
-                [mutableOldObjects insertObject:newObject atIndex:newIndexToInsertNewObject];
+                if (newIndexToInsertNewObject < [oldObjects count])
+                {
+                    id oldObject = oldObjects[newIndexToInsertNewObject];
+                    
+                    if ([oldObject isEqual:newObject])
+                    {
+                        [oldObject updateWithObject:newObject];
+                        
+                        [mutableOldObjects insertObject:oldObject atIndex:newIndexToInsertNewObject];
+                    }
+                    else
+                    {
+                        [mutableOldObjects insertObject:newObject atIndex:newIndexToInsertNewObject];
+                    }
+                }
+                else
+                {
+                    [mutableOldObjects insertObject:newObject atIndex:newIndexToInsertNewObject];
+                }
             }
         }
         
@@ -535,31 +694,94 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 #pragma mark - LRTVDBSerializableModelProtocol
 
-+ (LRTVDBShow *)deserialize:(NSDictionary *)dictionary
++ (LRTVDBShow *)deserialize:(NSDictionary *)dictionary error:(NSError **)error
 {
     LRTVDBShow *show = [[LRTVDBShow alloc] init];
     
-    show.showID = LREmptyStringToNil(dictionary[kShowIDKey]);
-    show.name = LREmptyStringToNil(dictionary[kShowNameKey]);
-    show.overview = LREmptyStringToNil(dictionary[kShowOverviewKey]);
-    show.fanartURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kShowFanartURLKey])];
-    show.bannerURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kShowBannerURLKey])];
-    show.posterURL = [NSURL URLWithString:LREmptyStringToNil(dictionary[kShowPosterURLKey])];
-    show.airTime = LREmptyStringToNil(dictionary[kShowAirTimeKey]);
-    show.airDay = LREmptyStringToNil(dictionary[kShowAirDayKey]);
-    show.premiereDate = LREmptyStringToNil(dictionary[kShowPremiereDateKey]);
-    show.genres = LREmptyStringToNil(dictionary[kShowGenresKey]);
-    show.actorsNames = LREmptyStringToNil(dictionary[kShowActorsNamesKey]);
-    show.imdbID = LREmptyStringToNil(dictionary[kShowImdbIDKey]);
-    show.network = LREmptyStringToNil(dictionary[kShowNetworkKey]);
-    show.language = LREmptyStringToNil(dictionary[kShowLanguageKey]);
-    show.rating = LREmptyStringToNil(dictionary[kShowRatingKey]);
-    show.ratingCount = LREmptyStringToNil(dictionary[kShowRatingCountKey]);
-    show.basicStatus = [LREmptyStringToNil(dictionary[kShowBasicStatusKey]) integerValue];
-    show.contentRating = LREmptyStringToNil(dictionary[kShowContentRatingKey]);
-    show.runtime = LREmptyStringToNil(dictionary[kShowRuntimeKey]);
+    id showId = LREmptyStringToNil(dictionary[kShowIDKey]);
+    CHECK_NIL(showId, @"showId", *error);
+    CHECK_TYPE(showId, [NSString class], @"showId", *error);
+    show.showID = showId;
+    
+    id showName = LREmptyStringToNil(dictionary[kShowNameKey]);
+    CHECK_NIL(showName, @"showName", *error);
+    CHECK_TYPE(showName, [NSString class], @"showName", *error);
+    show.name = showName;
+    
+    id overview = LREmptyStringToNil(dictionary[kShowOverviewKey]);
+    CHECK_TYPE(overview, [NSString class], @"overview", *error);
+    show.overview = overview;
+    
+    id fanartURL = LREmptyStringToNil(dictionary[kShowFanartURLKey]);
+    CHECK_TYPE(fanartURL, [NSString class], @"fanartURL", *error);
+    show.fanartURL = [NSURL URLWithString:fanartURL];
+
+    id bannerURL = LREmptyStringToNil(dictionary[kShowBannerURLKey]);
+    CHECK_TYPE(bannerURL, [NSString class], @"bannerURL", *error);
+    show.bannerURL = [NSURL URLWithString:bannerURL];
+
+    id posterURL = LREmptyStringToNil(dictionary[kShowPosterURLKey]);
+    CHECK_TYPE(posterURL, [NSString class], @"posterURL", *error);
+    show.posterURL = [NSURL URLWithString:posterURL];
+
+    id airTime = LREmptyStringToNil(dictionary[kShowAirTimeKey]);
+    CHECK_TYPE(airTime, [NSString class], @"airTime", *error);
+    show.airTime = airTime;
+
+    id airDay = LREmptyStringToNil(dictionary[kShowAirDayKey]);
+    CHECK_TYPE(airDay, [NSString class], @"airDay", *error);
+    show.airDay = airDay;
+
+    id premiereDate = LREmptyStringToNil(dictionary[kShowPremiereDateKey]);
+    CHECK_TYPE(premiereDate, [NSDate class], @"premiereDate", *error);
+    show.premiereDate = premiereDate;
+
+    id genres = LREmptyStringToNil(dictionary[kShowGenresKey]);
+    CHECK_TYPE(genres, [NSArray class], @"genres", *error);
+    show.genres = genres;
+
+    id actorsNames = LREmptyStringToNil(dictionary[kShowActorsNamesKey]);
+    CHECK_TYPE(actorsNames, [NSArray class], @"actorsNames", *error);
+    show.actorsNames = actorsNames;
+
+    id imdbID = LREmptyStringToNil(dictionary[kShowImdbIDKey]);
+    CHECK_TYPE(imdbID, [NSString class], @"imdbID", *error);
+    show.imdbID = imdbID;
+
+    id network = LREmptyStringToNil(dictionary[kShowNetworkKey]);
+    CHECK_TYPE(network, [NSString class], @"network", *error);
+    show.network = network;
+
+    id language = LREmptyStringToNil(dictionary[kShowLanguageKey]);
+    CHECK_TYPE(language, [NSString class], @"language", *error);
+    show.language = language;
+
+    id rating = LREmptyStringToNil(dictionary[kShowRatingKey]);
+    CHECK_TYPE(rating, [NSNumber class], @"rating", *error);
+    show.rating = rating;
+
+    id ratingCount = LREmptyStringToNil(dictionary[kShowRatingCountKey]);
+    CHECK_TYPE(ratingCount, [NSNumber class], @"ratingCount", *error);
+    show.ratingCount = ratingCount;
+
+    id basicStatus = LREmptyStringToNil(dictionary[kShowBasicStatusKey]);
+    CHECK_NIL(basicStatus, @"basicStatus", *error);
+    CHECK_TYPE(basicStatus, [NSNumber class], @"basicStatus", *error);
+    show.basicStatus = [basicStatus unsignedIntegerValue];
+
+    id contentRating = LREmptyStringToNil(dictionary[kShowContentRatingKey]);
+    CHECK_TYPE(contentRating, [NSString class], @"contentRating", *error);
+    show.contentRating = contentRating;
+
+    // Due to an error in the parser, previous versions of the app may have saved this value
+    // as a NSString, let's check both possible values and get a NSNumber out of it.
+    id runtime = LREmptyStringToNil(dictionary[kShowRuntimeKey]);
+    CHECK_TYPES(runtime, [NSString class], [NSNumber class], @"runtime", *error);
+    show.runtime = runtime ? @([[runtime description] integerValue]) : nil;
     
     NSString *lastEpisodeSeenID = LREmptyStringToNil(dictionary[kShowLastEpisodeSeenKey]);
+    CHECK_TYPE(lastEpisodeSeenID, [NSString class], @"lastEpisodeSeenID", *error);
+
     NSArray *episodesDictionaries = LREmptyStringToNil(dictionary[kShowEpisodesKey]);
     NSArray *imagesDictionaries = LREmptyStringToNil(dictionary[kShowImagesKey]);
     NSArray *actorsDictionaries = LREmptyStringToNil(dictionary[kShowActorsKey]);
@@ -582,10 +804,23 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
             return [episode.episodeID isEqualToString:lastEpisodeSeenID];
         }];
         
+        // Migration
         if (lastEpisodeSeenIndex != NSNotFound)
         {
-            show.lastEpisodeSeen = show.episodes[lastEpisodeSeenIndex];
+            LRTVDBEpisode *lastEpisodeSeen = show.episodes[lastEpisodeSeenIndex];
+            
+            for (LRTVDBEpisode *episode in show.episodes)
+            {
+                episode.seen = YES;
+                
+                if (episode == lastEpisodeSeen)
+                {
+                    break;
+                }
+            }
         }
+        
+        [show reloadActiveEpisode];
     }
     
     return show;
@@ -593,44 +828,29 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (NSDictionary *)serialize
 {
-    NSMutableDictionary *dictionary = [@{ kShowIDKey: LRNilToEmptyString(self.showID),
-                                       kShowNameKey: LRNilToEmptyString(self.name),
-                                       kShowOverviewKey: LRNilToEmptyString(self.overview),
-                                       kShowAirDayKey: LRNilToEmptyString(self.airDay),
-                                       kShowAirTimeKey: LRNilToEmptyString(self.airTime),
-                                       kShowFanartURLKey: LRNilToEmptyString([self.fanartURL absoluteString]),
-                                       kShowBannerURLKey: LRNilToEmptyString([self.bannerURL absoluteString]),
-                                       kShowPosterURLKey: LRNilToEmptyString([self.posterURL absoluteString]),
-                                       kShowPremiereDateKey: LRNilToEmptyString(self.premiereDate),
-                                       kShowGenresKey: LRNilToEmptyString(self.genres),
-                                       kShowActorsNamesKey: LRNilToEmptyString(self.actorsNames),
-                                       kShowImdbIDKey: LRNilToEmptyString(self.imdbID),
-                                       kShowNetworkKey: LRNilToEmptyString(self.network),
-                                       kShowLanguageKey: LRNilToEmptyString(self.language),
-                                       kShowRatingKey: LRNilToEmptyString(self.rating),
-                                       kShowRatingCountKey: LRNilToEmptyString(self.ratingCount),
-                                       kShowBasicStatusKey: LRNilToEmptyString(@(self.basicStatus)),
-                                       kShowContentRatingKey : LRNilToEmptyString(self.contentRating),
-                                       kShowRuntimeKey : LRNilToEmptyString(self.runtime)
-                                       } mutableCopy];
-    
-    NSString *lastEpisodeSeenID = self.lastEpisodeSeen.episodeID;
-    
-    if (lastEpisodeSeenID) dictionary[kShowLastEpisodeSeenKey] = self.lastEpisodeSeen.episodeID;
-    
-    NSArray *serializedEpisodes = [self serializeEpisodes:self.episodes];
-    
-    if (serializedEpisodes) dictionary[kShowEpisodesKey] = serializedEpisodes;
-    
-    NSArray *serializedImages = [self serializeImages:self.images];
-    
-    if (serializedImages)  dictionary[kShowImagesKey] = serializedImages;
-    
-    NSArray *serializedActors = [self serializeActors:self.actors];
-    
-    if (serializedActors) dictionary[kShowActorsKey] = serializedActors;
-    
-    return [dictionary copy];
+    return @{ kShowIDKey: LRNilToEmptyString(self.showID),
+              kShowNameKey: LRNilToEmptyString(self.name),
+              kShowOverviewKey: LRNilToEmptyString(self.overview),
+              kShowAirDayKey: LRNilToEmptyString(self.airDay),
+              kShowAirTimeKey: LRNilToEmptyString(self.airTime),
+              kShowFanartURLKey: LRNilToEmptyString([self.fanartURL absoluteString]),
+              kShowBannerURLKey: LRNilToEmptyString([self.bannerURL absoluteString]),
+              kShowPosterURLKey: LRNilToEmptyString([self.posterURL absoluteString]),
+              kShowPremiereDateKey: LRNilToEmptyString(self.premiereDate),
+              kShowGenresKey: LRNilToEmptyString(self.genres),
+              kShowActorsNamesKey: LRNilToEmptyString(self.actorsNames),
+              kShowImdbIDKey: LRNilToEmptyString(self.imdbID),
+              kShowNetworkKey: LRNilToEmptyString(self.network),
+              kShowLanguageKey: LRNilToEmptyString(self.language),
+              kShowRatingKey: LRNilToEmptyString(self.rating),
+              kShowRatingCountKey: LRNilToEmptyString(self.ratingCount),
+              kShowBasicStatusKey: @(self.basicStatus),
+              kShowContentRatingKey : LRNilToEmptyString(self.contentRating),
+              kShowRuntimeKey : LRNilToEmptyString(self.runtime),
+              kShowEpisodesKey : LRNilToEmptyString([self serializeEpisodes:self.episodes]),
+              kShowImagesKey : LRNilToEmptyString([self serializeImages:self.images]),
+              kShowActorsKey : LRNilToEmptyString([self serializeActors:self.actors]),
+            };
 }
 
 + (NSArray *)deserializeEpisodes:(NSArray *)episodes
@@ -641,7 +861,14 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     
     for (NSDictionary *dictionary in episodes)
     {
-        [deserializedEpisodes addObject:[LRTVDBEpisode deserialize:dictionary]];
+        NSError *error;
+        
+        LRTVDBEpisode *episode = [LRTVDBEpisode deserialize:dictionary error:&error];
+        
+        if (episode)
+        {
+            [deserializedEpisodes addObject:episode];
+        }
     }
     
     return [deserializedEpisodes copy];
@@ -669,7 +896,14 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     
     for (NSDictionary *dictionary in images)
     {
-        [deserializedImages addObject:[LRTVDBImage deserialize:dictionary]];
+        NSError *error;
+
+        LRTVDBImage *image = [LRTVDBImage deserialize:dictionary error:&error];
+        
+        if (image)
+        {
+            [deserializedImages addObject:image];
+        }
     }
     
     return [deserializedImages copy];
@@ -697,7 +931,14 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     
     for (NSDictionary *dictionary in actors)
     {
-        [deserializedActors addObject:[LRTVDBActor deserialize:dictionary]];
+        NSError *error;
+        
+        LRTVDBActor *actor = [LRTVDBActor deserialize:dictionary error:&error];
+        
+        if (actor)
+        {
+            [deserializedActors addObject:actor];
+        }
     }
     
     return [deserializedActors copy];
