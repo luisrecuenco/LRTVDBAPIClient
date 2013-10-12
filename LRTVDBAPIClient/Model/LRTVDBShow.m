@@ -107,6 +107,7 @@ static NSString *const kShowImagesKey = @"kShowImagesKey";
 #endif
 
 const struct LRTVDBShowAttributes LRTVDBShowAttributes = {
+    .activeEpisode = @"activeEpisode",
     .fanartURL = @"fanartURL",
     .posterURL = @"posterURL",
     .lastEpisode = @"lastEpisode",
