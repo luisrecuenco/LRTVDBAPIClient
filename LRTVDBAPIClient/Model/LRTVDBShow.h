@@ -133,12 +133,17 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 /**
  Number of pending episodes to finish the show
  */
-@property (nonatomic, assign, readonly) NSUInteger numberOfEpisodesBehind;
+@property (nonatomic, strong, readonly) NSNumber *numberOfEpisodesBehind;
 
 /**
  The next episode to be watched, i.e., the active one
  */
 @property (nonatomic, strong, readonly) LRTVDBEpisode *activeEpisode;
+
+/**
+ Days pending till the active episode.
+ */
+@property (nonatomic, strong, readonly) NSNumber *daysToActiveEpisode;
 
 /**
  Active means that at least one episode of the show has been watched

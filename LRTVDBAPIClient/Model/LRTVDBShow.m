@@ -204,7 +204,8 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 @property (nonatomic, strong) NSNumber *numberOfSeasons;
 
 @property (nonatomic, strong) LRTVDBEpisode *activeEpisode;
-@property (nonatomic, assign) NSUInteger numberOfEpisodesBehind;
+@property (nonatomic, strong) NSNumber *daysToActiveEpisode;
+@property (nonatomic, strong) NSNumber *numberOfEpisodesBehind;
 
 @property (nonatomic, strong) NSMutableArray *seenEpisodes;
 
@@ -503,10 +504,30 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         else
         {
             _activeEpisode = self.nextEpisode ? : self.lastEpisode;
+            
+            if (_activeEpisode == self.nextEpisode && _activeEpisode.seen)
+            {
+                NSUInteger index = [self.episodes indexOfObjectIdenticalTo:_activeEpisode];
+                
+                if (index < [self.episodes count] - 1)
+                {
+                    _activeEpisode = self.episodes[index + 1];
+                }
+            }
         }
     }
     
     return _activeEpisode;
+}
+
+- (NSNumber *)daysToActiveEpisode
+{
+    if (!_daysToActiveEpisode)
+    {
+        _daysToActiveEpisode = [self daysToEpisode:self.activeEpisode];
+    }
+    
+    return _daysToActiveEpisode;
 }
 
 #pragma mark - Seen episodes
@@ -523,9 +544,9 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 #pragma mark - Number of episodes behind
 
-- (NSUInteger)numberOfEpisodesBehind
+- (NSNumber *)numberOfEpisodesBehind
 {
-    if (_numberOfEpisodesBehind == -1)
+    if (!_numberOfEpisodesBehind)
     {
         NSIndexSet *indexSet = [_episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
             return [episode hasAlreadyAired];
@@ -533,7 +554,14 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         
         NSArray *airedEpisodes = [_episodes objectsAtIndexes:indexSet];
         
-        _numberOfEpisodesBehind = [@([airedEpisodes count] - [self.seenEpisodes count]) unsignedIntegerValue];
+        _numberOfEpisodesBehind = @([airedEpisodes count] - [self.seenEpisodes count]);
+        
+        // The episode that airs today can be marked as seen but doesn't count for the episodes
+        // behind count
+        if ([self.daysToNextEpisode isEqualToNumber:@0] && !self.nextEpisode.seen)
+        {
+            _numberOfEpisodesBehind = @([_numberOfEpisodesBehind unsignedIntegerValue] - 1);
+        }
     }
     
     return _numberOfEpisodesBehind;
@@ -550,7 +578,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (BOOL)hasBeenFinished
 {
-    return self.numberOfEpisodesBehind == 0 && [self hasStarted];
+    return [self.numberOfEpisodesBehind isEqualToNumber:@0] && [self hasStarted];
 }
 
 #pragma mark - Has show started?
@@ -576,8 +604,9 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (void)reloadActiveEpisode
 {
-    self.numberOfEpisodesBehind = -1;
+    self.numberOfEpisodesBehind = nil;
     self.activeEpisode = nil;
+    self.daysToActiveEpisode = nil;
 }
 
 #pragma mark - Update show

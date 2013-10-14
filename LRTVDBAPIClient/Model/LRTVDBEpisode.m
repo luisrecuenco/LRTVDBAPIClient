@@ -22,6 +22,7 @@
 
 #import "LRTVDBEpisode.h"
 #import "LRTVDBShow+Private.h"
+#import "NSDate+LRTVDBAdditions.h"
 
 // Persistence keys
 static NSString *const kEpisodeIDKey = @"kEpisodeIDKey";
@@ -84,16 +85,58 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 @property (nonatomic, strong) NSNumber *ratingCount;
 @property (nonatomic, strong) NSURL *imageURL;
 @property (nonatomic, strong) NSDate *airedDate;
+@property (nonatomic, strong) NSNumber *numberOfDaysToAir;
 
 @end
 
 @implementation LRTVDBEpisode
 
+- (void)setSeen:(BOOL)seen
+{
+    if (_seen != seen)
+    {
+        _seen = seen;
+        
+        [self.show seenStatusDidChangeForEpisode:self];
+    }
+}
+
+- (void)setAiredDate:(NSDate *)airedDate
+{
+    if (_airedDate != airedDate)
+    {
+        _airedDate = airedDate;
+        
+        self.numberOfDaysToAir = [self daysToEpisode];
+    }
+}
+
+- (NSNumber *)daysToEpisode
+{
+    if (_airedDate == nil) return @(NSIntegerMax);
+    
+    static NSCalendar *calendar = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        calendar = [NSCalendar currentCalendar];
+    });
+    
+    // Timezones are really difficult to deal with. Ignoring time...
+    NSDate *fromDate = [[NSDate date] dateByIgnoringTime];
+    NSDate *toDate = [_airedDate dateByIgnoringTime];
+    
+    NSDateComponents *components = [calendar components:NSDayCalendarUnit
+                                               fromDate:fromDate
+                                                 toDate:toDate
+                                                options:0];
+    return @(components.day);
+}
+
 #pragma mark - Has episode already aired ?
 
 - (BOOL)hasAlreadyAired
 {
-    return self.show.lastEpisode && [self compare:self.show.lastEpisode] <= NSOrderedSame;
+    return self.numberOfDaysToAir && [self.numberOfDaysToAir integerValue] <= 0;
 }
 
 #pragma mark - Is Episode correct?
@@ -269,16 +312,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 {
     return [NSString stringWithFormat:@"Title: %@\nSeason number: %@\nEpisode number: %@\nRating: %@\nOverview: %@\n",
             self.title, self.seasonNumber, self.episodeNumber, self.rating, self.overview];
-}
-
-- (void)setSeen:(BOOL)seen
-{
-    if (_seen != seen)
-    {
-        _seen = seen;
-        
-        [self.show seenStatusDidChangeForEpisode:self];
-    }
 }
 
 @end
