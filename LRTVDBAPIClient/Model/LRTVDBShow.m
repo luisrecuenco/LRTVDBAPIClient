@@ -507,11 +507,11 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
             
             if (_activeEpisode == self.nextEpisode && _activeEpisode.seen)
             {
-                NSUInteger index = [self.episodes indexOfObjectIdenticalTo:_activeEpisode];
+                NSUInteger index = [_episodes indexOfObjectIdenticalTo:_activeEpisode];
                 
-                if (index < [self.episodes count] - 1)
+                if (index < [_episodes count] - 1)
                 {
-                    _activeEpisode = self.episodes[index + 1];
+                    _activeEpisode = _episodes[index + 1];
                 }
             }
         }
