@@ -93,7 +93,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (void)setSeen:(BOOL)seen
 {
-    if (_seen != seen)
+    if (_seen != seen && _airedDate)
     {
         _seen = seen;
         
@@ -207,7 +207,6 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
     episode.imageURL = [NSURL URLWithString:imageURL];
 
     id airedDate = LREmptyStringToNil(dictionary[kEpisodeAiredDateKey]);
-    CHECK_NIL(airedDate, @"airedDate", *error);
     CHECK_TYPE(airedDate, [NSDate class], @"airedDate", *error);
     episode.airedDate = airedDate;
 
