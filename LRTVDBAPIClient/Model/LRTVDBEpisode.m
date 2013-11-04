@@ -143,7 +143,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (BOOL)isCorrect
 {
-    return self.episodeID && self.title && self.seasonNumber && self.airedDate &&
+    return self.episodeID && self.title && self.seasonNumber &&
            [self.episodeNumber unsignedIntegerValue] > 0;
 }
 
