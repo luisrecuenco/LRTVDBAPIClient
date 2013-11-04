@@ -171,6 +171,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 /** Array of LRTVDBActor instances. */
 @property (nonatomic, copy, readonly) NSArray *actors;
 
+@property (nonatomic, readonly) NSArray *specials;
+
 /**
  Retrieves the episodes for a specific show season.
  @param seasonNumber The season you want to retrieve the episodes for.

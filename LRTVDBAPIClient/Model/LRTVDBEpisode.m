@@ -93,7 +93,7 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
 
 - (void)setSeen:(BOOL)seen
 {
-    if (_seen != seen && _airedDate)
+    if (_seen != seen)
     {
         _seen = seen;
         
@@ -130,6 +130,13 @@ NSComparator LRTVDBEpisodeComparator = ^NSComparisonResult(LRTVDBEpisode *firstE
                                                  toDate:toDate
                                                 options:0];
     return @(components.day);
+}
+
+#pragma mark - Is Episode Special ?
+
+- (BOOL)isSpecial
+{
+    return [self.seasonNumber isEqualToNumber:@(0)];
 }
 
 #pragma mark - Has episode already aired ?

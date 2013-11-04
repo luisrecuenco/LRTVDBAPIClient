@@ -71,6 +71,8 @@ extern NSComparator LRTVDBEpisodeComparator;
 @property (nonatomic, copy, readonly) NSArray *directors;
 @property (nonatomic, copy, readonly) NSArray *guestStars;
 
+@property (nonatomic, readonly, getter = isSpecial) BOOL special;
+
 @property (nonatomic, readonly, getter = hasAlreadyAired) BOOL alreadyAired;
 @property (nonatomic, getter = hasBeenSeen) BOOL seen;
 

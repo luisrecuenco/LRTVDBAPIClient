@@ -104,7 +104,7 @@ static NSString *const kLRTVDBEpisodeSeasonNumberXMLKey = @"SeasonNumber";
         
         if ([LRTVDBAPIClient sharedClient].includeSpecials == NO)
         {
-            shouldIncludeEpisode = [episode.seasonNumber unsignedIntegerValue] > 0;
+            shouldIncludeEpisode = ![episode isSpecial];
         }
         
         if (shouldIncludeEpisode && [episode isCorrect])

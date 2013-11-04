@@ -373,6 +373,11 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     return @(components.day);
 }
 
+- (NSArray *)specials
+{
+    return [self episodesForSeason:@(0)];
+}
+
 - (NSArray *)episodesForSeason:(NSNumber *)seasonNumber
 {
     return self.seasonToEpisodesDictionary[seasonNumber] ? : @[];
@@ -494,7 +499,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         {
             for (LRTVDBEpisode *episode in _episodes)
             {
-                if (![episode hasBeenSeen])
+                if (![episode hasBeenSeen] && ![episode isSpecial])
                 {
                     _activeEpisode = episode;
                     break;
@@ -549,7 +554,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     if (!_numberOfEpisodesBehind)
     {
         NSIndexSet *indexSet = [_episodes indexesOfObjectsPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
-            return [episode hasAlreadyAired];
+            return [episode hasAlreadyAired] && ![episode isSpecial];
         }];
         
         NSArray *airedEpisodes = [_episodes objectsAtIndexes:indexSet];
@@ -592,6 +597,12 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (void)seenStatusDidChangeForEpisode:(LRTVDBEpisode *)episode
 {
+    // Special episodes or those without aire date doesn't change the active episode
+    if ([episode isSpecial] || !episode.airedDate)
+    {
+        return;
+    }
+    
     if (episode.seen)
     {
         [self.seenEpisodes addObject:episode];
