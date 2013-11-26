@@ -198,6 +198,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 @property (nonatomic, copy) NSArray *actorsNames;
 
 @property (nonatomic, copy) NSArray *episodes;
+@property (nonatomic, strong) LRTVDBEpisode *firstEpisode;
 @property (nonatomic, strong) LRTVDBEpisode *lastEpisode;
 @property (nonatomic, strong) LRTVDBEpisode *nextEpisode;
 @property (nonatomic, strong) NSNumber *daysToNextEpisode;
@@ -270,6 +271,13 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (void)refreshEpisodesInfomation
 {
+    // First episode
+    NSUInteger firstEpisodeIndex = [_episodes indexOfObjectPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
+        return [episode.seasonNumber isEqualToNumber:@1] && [episode.episodeNumber isEqualToNumber:@1];
+    }];
+    
+    self.firstEpisode = _episodes[firstEpisodeIndex];
+    
     // Last episode
     if (self.basicStatus == LRTVDBShowBasicStatusEnded)
     {
@@ -297,7 +305,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
     if (self.lastEpisode == nil)
     {
-        self.nextEpisode = [_episodes firstObject];
+        self.nextEpisode = self.firstEpisode;
     }
     else
     {
@@ -590,7 +598,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (BOOL)hasStarted
 {
-    return [[_episodes firstObject] hasAlreadyAired];
+    return [self.firstEpisode hasAlreadyAired];
 }
 
 #pragma mark - Handle episodes seen changes
