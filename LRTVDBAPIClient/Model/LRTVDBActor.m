@@ -76,7 +76,6 @@ NSComparator LRTVDBActorComparator = ^NSComparisonResult(LRTVDBActor *firstActor
     actor.actorID = actorId;
 
     id actorName = LREmptyStringToNil(dictionary[kActorNameKey]);
-    CHECK_NIL(actorName, @"actorName", *error);
     CHECK_TYPE(actorName, [NSString class], @"actorName", *error);
     actor.name = actorName;
 
