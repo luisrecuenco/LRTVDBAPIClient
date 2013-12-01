@@ -271,9 +271,11 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 
 - (void)refreshEpisodesInfomation
 {
+    if ([_episodes count] == 0) return;
+    
     // First episode
     NSUInteger firstEpisodeIndex = [_episodes indexOfObjectPassingTest:^BOOL(LRTVDBEpisode *episode, NSUInteger idx, BOOL *stop) {
-        return [episode.seasonNumber isEqualToNumber:@1] && [episode.episodeNumber isEqualToNumber:@1];
+        return ![episode isSpecial];
     }];
     
     self.firstEpisode = _episodes[firstEpisodeIndex];
