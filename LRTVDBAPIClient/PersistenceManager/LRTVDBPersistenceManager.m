@@ -35,13 +35,7 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
 
 - (void)saveShowsInPersistenceStorage:(NSArray *)shows
 {
-    NSError* error = nil;
-    
-    if ([shows count] == 0)
-    {
-        [[NSFileManager defaultManager] removeItemAtPath:[self showsStoragePath] error:&error];
-        return;
-    }
+    NSError *error = nil;
     
     NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[shows count]];
     
@@ -61,7 +55,6 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
         NSLog(@"Unable to generate plist data from shows: %@", error);
     }
     
-    
     BOOL success = [plistData writeToFile:[self showsStoragePath]
                                   options:NSDataWritingAtomic
                                     error:&error];
@@ -74,7 +67,8 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
 
 - (NSArray *)showsFromPersistenceStorage
 {
-    NSError *error;
+    NSError *error = nil;
+    
     NSData *plistData = [NSData dataWithContentsOfFile:[self showsStoragePath]
                                                options:0
                                                  error:&error];
@@ -98,7 +92,7 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
     
     for (NSDictionary *serializedEntry in serializedEntries)
     {
-        NSError *error;
+        NSError *error = nil;
         
         LRTVDBShow *show = [LRTVDBShow deserialize:serializedEntry error:&error];
         
@@ -109,11 +103,6 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
     }
     
     return [mutableShows copy];
-}
-
-- (BOOL)existPersistedShows
-{
-    return [[NSFileManager defaultManager] fileExistsAtPath:[self showsStoragePath]];
 }
 
 #pragma mark - Peristence File URL
