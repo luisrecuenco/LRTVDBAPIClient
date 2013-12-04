@@ -707,6 +707,8 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         NSArray *copiedNewObjects = [newObjects copy];
         [mutableOldObjects removeObjectsInArray:copiedNewObjects];
         
+        NSSet *oldObjectsSet = [NSSet setWithArray:oldObjects];
+        
         for (id newObject in copiedNewObjects)
         {
             NSUInteger newIndexToInsertNewObject = [mutableOldObjects indexOfObject:newObject
@@ -715,20 +717,13 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
                                                                     usingComparator:comparator];
             if (newIndexToInsertNewObject != NSNotFound)
             {
-                if (newIndexToInsertNewObject < [oldObjects count])
+                id oldObject = [oldObjectsSet member:newObject];
+                
+                if ([oldObject isEqual:newObject])
                 {
-                    id oldObject = oldObjects[newIndexToInsertNewObject];
+                    [oldObject updateWithObject:newObject];
                     
-                    if ([oldObject isEqual:newObject])
-                    {
-                        [oldObject updateWithObject:newObject];
-                        
-                        [mutableOldObjects insertObject:oldObject atIndex:newIndexToInsertNewObject];
-                    }
-                    else
-                    {
-                        [mutableOldObjects insertObject:newObject atIndex:newIndexToInsertNewObject];
-                    }
+                    [mutableOldObjects insertObject:oldObject atIndex:newIndexToInsertNewObject];
                 }
                 else
                 {
