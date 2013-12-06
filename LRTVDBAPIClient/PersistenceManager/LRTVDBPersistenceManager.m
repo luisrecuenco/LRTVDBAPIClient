@@ -33,10 +33,27 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
     return [[self alloc] init];
 }
 
-- (void)saveShowsInPersistenceStorage:(NSArray *)shows
+- (void)saveShowsInPersistenceStorage:(NSArray *)shows error:(__autoreleasing NSError **)error
 {
-    NSError *error = nil;
+    NSData *plistData = [self peristenceFileForShows:shows error:error];
     
+    if (!plistData || *error)
+    {
+        return;
+    }
+    
+    BOOL success = [plistData writeToFile:[self showsStoragePath]
+                                  options:NSDataWritingAtomic
+                                    error:error];
+    
+    if(!success || *error)
+    {
+        NSLog(@"Unable to write plist data to disk: %@", *error);
+    }
+}
+
+- (NSData *)peristenceFileForShows:(NSArray *)shows error:(__autoreleasing NSError **)error
+{
     NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[shows count]];
     
     for (LRTVDBShow *show in shows)
@@ -48,43 +65,45 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
                          dataWithPropertyList:mutableShows
                          format:NSPropertyListBinaryFormat_v1_0
                          options:0
-                         error:&error];
+                         error:error];
     
-    if(!plistData)
+    if(!plistData || *error)
     {
-        NSLog(@"Unable to generate plist data from shows: %@", error);
+        NSLog(@"Unable to generate plist data from shows: %@", *error);
+        return nil;
     }
-    
-    BOOL success = [plistData writeToFile:[self showsStoragePath]
-                                  options:NSDataWritingAtomic
-                                    error:&error];
-    
-    if(!success)
+    else
     {
-        NSLog(@"Unable to write plist data to disk: %@", error);
+        return plistData;
     }
 }
 
-- (NSArray *)showsFromPersistenceStorage
+- (NSArray *)showsFromPersistenceStorageWithError:(__autoreleasing NSError **)error
 {
-    NSError *error = nil;
-    
     NSData *plistData = [NSData dataWithContentsOfFile:[self showsStoragePath]
                                                options:0
-                                                 error:&error];
-    if(!plistData)
+                                                 error:error];
+    
+    if(!plistData || *error)
     {
-        NSLog(@"Unable to read plist data from disk: %@", error);
+        NSLog(@"Unable to read plist data from disk: %@", *error);
         return nil;
     }
-    
-    NSArray *serializedEntries = [NSPropertyListSerialization propertyListWithData:plistData
+    else
+    {
+        return [self showsFromData:plistData error:error];
+    }
+}
+
+- (NSArray *)showsFromData:(NSData *)data error:(__autoreleasing NSError **)error
+{
+    NSArray *serializedEntries = [NSPropertyListSerialization propertyListWithData:data
                                                                            options:0
                                                                             format:NULL
-                                                                             error:&error];
-    if(!serializedEntries)
+                                                                             error:error];
+    if(!serializedEntries || *error)
     {
-        NSLog(@"Unable to decode plist from data: %@", error);
+        NSLog(@"Unable to decode plist from data: %@", *error);
         return nil;
     }
     
