@@ -278,6 +278,12 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
         return ![episode isSpecial];
     }];
     
+    if (firstEpisodeIndex == NSNotFound)
+    {
+        _episodes = nil;
+        return;
+    }
+    
     self.firstEpisode = _episodes[firstEpisodeIndex];
     
     // Last episode
