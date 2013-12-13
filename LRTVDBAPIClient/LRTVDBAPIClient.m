@@ -125,7 +125,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
-            completionBlock([[LRTVDBShowParser parser] showsFromData:responseObject], nil);
+            completionBlock([[LRTVDBShowParser parser] parseBasicShowInfoFromData:responseObject], nil);
         });
     };
     
@@ -275,7 +275,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             // We know there's only on episode in the array.
-            completionBlock([[[LRTVDBEpisodeParser parser] episodesFromData:responseObject] firstObject], nil);
+            completionBlock([[[LRTVDBEpisodeParser parser] episodesFromData:responseObject] lr_firstObject], nil);
         });
     };
     
@@ -406,7 +406,9 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             // for this very case.
             NSString *correctLanguage = nil;
             
-            if ([show.language isEqualToString:LRTVDBDefaultLanguage()] || self.forceEnglishMetadata)
+            BOOL shouldForceEnglishMetadata = self.forceEnglishMetadata && [show.availableLanguages containsObject:LRTVDBDefaultLanguage()];
+            
+            if ([show.language isEqualToString:LRTVDBDefaultLanguage()] || shouldForceEnglishMetadata)
             {
                 correctLanguage = self.language;
             }
@@ -710,7 +712,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
                 LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:firstArchiveEntry.data encoding:NSUTF8StringEncoding]);
                 
                 // We know there's only one
-                show = [[[LRTVDBShowParser parser] showsFromData:firstArchiveEntry.data] firstObject];
+                show = [[[LRTVDBShowParser parser] parseShowInfoFromData:firstArchiveEntry.data] lr_firstObject];
                 
                 if (includeEpisodes)
                 {
@@ -768,7 +770,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             // We know there's only one
-            LRTVDBShow *show = [[[LRTVDBShowParser parser] showsFromData:responseObject] firstObject];
+            LRTVDBShow *show = [[[LRTVDBShowParser parser] parseShowInfoFromData:responseObject] lr_firstObject];
             
             if (includeEpisodes)
             {                                
@@ -823,7 +825,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             LRTVDBAPIClientLog(@"Data received from URL: %@\n%@", operation.request.URL, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
             
             // We know there's only on episode in the array.
-            completionBlock([[[LRTVDBEpisodeParser parser] episodesFromData:responseObject] firstObject], nil);
+            completionBlock([[[LRTVDBEpisodeParser parser] episodesFromData:responseObject] lr_firstObject], nil);
         });
     };
     
@@ -876,7 +878,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
 
 - (NSString *)preferredLanguage
 {
-    NSString *preferredLanguage = [[NSLocale preferredLanguages] firstObject];
+    NSString *preferredLanguage = [[NSLocale preferredLanguages] lr_firstObject];
     
     if ([LRTVDBLanguages() containsObject:preferredLanguage])
     {

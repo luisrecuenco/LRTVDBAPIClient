@@ -128,7 +128,7 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
 
 - (NSString *)showsStoragePath
 {
-    NSString *docsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *docsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lr_firstObject];
     
     return [docsDirectory stringByAppendingPathComponent:kLRTVDBShowsPeristenceFileName];
 }

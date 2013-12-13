@@ -90,6 +90,7 @@ static NSString *const kShowActorsNamesKey = @"kShowActorsNamesKey";
 static NSString *const kShowImdbIDKey = @"kShowImdbIDKey";
 static NSString *const kShowNetworkKey = @"kShowNetworkKey";
 static NSString *const kShowLanguageKey = @"kShowLanguageKey";
+static NSString *const kShowAvailableLanguagesKey = @"kShowAvailableLanguagesKey";
 static NSString *const kShowRatingKey = @"kShowRatingKey";
 static NSString *const kShowRatingCountKey = @"kShowRatingCountKey";
 static NSString *const kShowBasicStatusKey = @"kShowBasicStatusKey";
@@ -183,6 +184,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
 @property (nonatomic, copy) NSString *overview;
 @property (nonatomic, copy) NSString *imdbID;
 @property (nonatomic, copy) NSString *language;
+@property (nonatomic, copy) NSArray *availableLanguages;
 @property (nonatomic, copy) NSString *airDay;
 @property (nonatomic, copy) NSString *airTime;
 @property (nonatomic, copy) NSString *contentRating;
@@ -701,11 +703,11 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     
     if ([newObjects count] == 0)
     {
-        mergedObjects = [[oldObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
+        mergedObjects = [[oldObjects lr_arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
     }
     else if ([oldObjects count] == 0)
     {
-        mergedObjects = [[newObjects arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
+        mergedObjects = [[newObjects lr_arrayByRemovingDuplicates] sortedArrayUsingComparator:comparator];
     }
     else
     {
@@ -738,7 +740,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
             }
         }
         
-        mergedObjects = [mutableOldObjects arrayByRemovingDuplicates];
+        mergedObjects = [mutableOldObjects lr_arrayByRemovingDuplicates];
     }
     
     return mergedObjects ? : @[];
@@ -807,6 +809,10 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
     id language = LREmptyStringToNil(dictionary[kShowLanguageKey]);
     CHECK_TYPE(language, [NSString class], @"language", *error);
     show.language = language;
+
+    id availableLanguages = LREmptyStringToNil(dictionary[kShowAvailableLanguagesKey]);
+    CHECK_TYPE(availableLanguages, [NSArray class], @"availableLanguages", *error);
+    show.availableLanguages = availableLanguages;
 
     id rating = LREmptyStringToNil(dictionary[kShowRatingKey]);
     CHECK_TYPE(rating, [NSNumber class], @"rating", *error);
@@ -894,6 +900,7 @@ NSComparator LRTVDBShowComparator = ^NSComparisonResult(LRTVDBShow *firstShow, L
               kShowImdbIDKey: LRNilToEmptyString(self.imdbID),
               kShowNetworkKey: LRNilToEmptyString(self.network),
               kShowLanguageKey: LRNilToEmptyString(self.language),
+              kShowAvailableLanguagesKey: LRNilToEmptyString(self.availableLanguages),
               kShowRatingKey: LRNilToEmptyString(self.rating),
               kShowRatingCountKey: LRNilToEmptyString(self.ratingCount),
               kShowBasicStatusKey: @(self.basicStatus),

@@ -24,12 +24,12 @@
 
 @implementation NSArray (LRTVDBAdditions)
 
-- (id)firstObject
+- (id)lr_firstObject
 {
     return [self count] > 0 ? self[0] : nil;
 }
 
-- (instancetype)arrayByRemovingDuplicates
+- (instancetype)lr_arrayByRemovingDuplicates
 {
     // By sending copy, we get the real _NSArrayI, not the __NSOrderedSetArrayProxy.
     return [[[NSOrderedSet orderedSetWithArray:self] array] copy];

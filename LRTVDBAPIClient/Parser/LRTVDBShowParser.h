@@ -26,7 +26,9 @@
 
 + (instancetype)parser;
 
-- (NSArray *)showsFromData:(NSData *)data;
+- (NSArray *)parseBasicShowInfoFromData:(NSData *)data;
+
+- (NSArray *)parseShowInfoFromData:(NSData *)data;
 
 - (NSArray *)showsIDsFromData:(NSData *)data;
 

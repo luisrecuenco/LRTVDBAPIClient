@@ -39,6 +39,7 @@ typedef NS_ENUM(NSUInteger, LRTVDBShowBasicStatus)
 @property (nonatomic, copy) NSString *overview;
 @property (nonatomic, copy) NSString *imdbID;
 @property (nonatomic, copy) NSString *language;
+@property (nonatomic, copy) NSArray *availableLanguages;
 @property (nonatomic, copy) NSString *airDay;
 @property (nonatomic, copy) NSString *airTime;
 @property (nonatomic, copy) NSString *contentRating;

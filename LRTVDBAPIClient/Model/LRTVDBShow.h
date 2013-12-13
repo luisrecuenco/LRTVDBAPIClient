@@ -77,6 +77,8 @@ typedef NS_ENUM(NSInteger, LRTVDBShowStatus)
 
 @property (nonatomic, copy, readonly) NSString *language;
 
+@property (nonatomic, copy, readonly) NSArray *availableLanguages;
+
 /**
  Example: http://www.thetvdb.com/banners/graphical/82066-g38.jpg
  @see LRTVDBImage for more info.

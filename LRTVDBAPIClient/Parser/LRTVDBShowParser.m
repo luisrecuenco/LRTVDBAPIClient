@@ -30,9 +30,11 @@
 // XML keys
 static NSString *const kLRTVDBShowSiblingXMLKey = @"Series";
 static NSString *const kLRTVDBShowIdXMLKey = @"id";
+static NSString *const kLRTVDBShowIdXMLAltKey = @"seriesid";
 static NSString *const kLRTVDBShowNameXMLKey = @"SeriesName";
 static NSString *const kLRTVDBShowOverviewXMLKey = @"Overview";
 static NSString *const kLRTVDBShowLanguageXMLKey = @"Language";
+static NSString *const kLRTVDBShowLanguageXMLAltKey = @"language";
 static NSString *const kLRTVDBShowBannerXMLKey = @"banner";
 static NSString *const kLRTVDBShowPosterXMLKey = @"poster";
 static NSString *const kLRTVDBShowFanartXMLKey = @"fanart";
@@ -58,7 +60,50 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
     return [[self alloc] init];
 }
 
-- (NSArray *)showsFromData:(NSData *)data
+- (NSArray *)parseBasicShowInfoFromData:(NSData *)data
+{
+    NSError *error = nil;
+    TBXML *tbxml = [TBXML newTBXMLWithXMLData:data error:&error];
+    TBXMLElement *root = tbxml.rootXMLElement;
+    
+    if (error || !root) return nil;
+    
+    TBXMLElement *showElement = [TBXML childElementNamed:kLRTVDBShowSiblingXMLKey parentElement:root];
+    
+    NSMutableArray *shows = [NSMutableArray array];
+    
+    while (showElement != nil)
+    {
+        LRTVDBShow *show = [[LRTVDBShow alloc] init];
+        
+        TBXMLElement *showIdElement = [TBXML childElementNamed:kLRTVDBShowIdXMLAltKey parentElement:showElement];
+        TBXMLElement *showLanguageElement = [TBXML childElementNamed:kLRTVDBShowLanguageXMLAltKey parentElement:showElement];
+        TBXMLElement *showNameElement = [TBXML childElementNamed:kLRTVDBShowNameXMLKey parentElement:showElement];
+        TBXMLElement *showOverviewElement = [TBXML childElementNamed:kLRTVDBShowOverviewXMLKey parentElement:showElement];
+        TBXMLElement *showBannerElement = [TBXML childElementNamed:kLRTVDBShowBannerXMLKey parentElement:showElement];
+        TBXMLElement *premiereDateElement = [TBXML childElementNamed:kLRTVDBShowPremiereDateXMLKey parentElement:showElement];
+        TBXMLElement *imdbIdElement = [TBXML childElementNamed:kLRTVDBShowImdbXMLKey parentElement:showElement];
+        TBXMLElement *networkElement = [TBXML childElementNamed:kLRTVDBShowNetworkXMLKey parentElement:showElement];
+        
+        if (showIdElement) show.showID = LREmptyStringToNil([TBXML textForElement:showIdElement]);
+        if (showNameElement) show.name = [LREmptyStringToNil([TBXML textForElement:showNameElement]) unescapeHTMLEntities];
+        if (showOverviewElement) show.overview = [LREmptyStringToNil([TBXML textForElement:showOverviewElement]) unescapeHTMLEntities];
+        if (showLanguageElement) show.language = LREmptyStringToNil([TBXML textForElement:showLanguageElement]);
+        if (premiereDateElement) show.premiereDate = [LREmptyStringToNil([TBXML textForElement:premiereDateElement]) dateValue];
+        if (showBannerElement) show.bannerURL = LRTVDBImageURLForPath(LREmptyStringToNil([TBXML textForElement:showBannerElement]));
+        if (networkElement) show.network = LREmptyStringToNil([TBXML textForElement:networkElement]);
+        if (imdbIdElement) show.imdbID = LREmptyStringToNil([TBXML textForElement:imdbIdElement]);
+        
+        [shows addObject:show];
+        
+        showElement = [TBXML nextSiblingNamed:kLRTVDBShowSiblingXMLKey searchFromElement:showElement];
+    }
+    
+    return [[self class] removeLanguageDuplicatesFromShows:shows];
+}
+
+
+- (NSArray *)parseShowInfoFromData:(NSData *)data
 {
     NSError *error = nil;
     TBXML *tbxml = [TBXML newTBXMLWithXMLData:data error:&error];
@@ -106,8 +151,8 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
         if (showFanartElement) show.fanartURL = LRTVDBImageURLForPath(LREmptyStringToNil([TBXML textForElement:showFanartElement]));
         if (airTimeElement) show.airTime = LREmptyStringToNil([TBXML textForElement:airTimeElement]);
         if (airDayElement) show.airDay = LREmptyStringToNil([TBXML textForElement:airDayElement]);
-        if (genresElement) show.genres = [[LREmptyStringToNil([TBXML textForElement:genresElement]) pipedStringToArray] arrayByRemovingDuplicates];
-        if (actorsNamesElement) show.actorsNames = [[LREmptyStringToNil([TBXML textForElement:actorsNamesElement]) pipedStringToArray] arrayByRemovingDuplicates];
+        if (genresElement) show.genres = [[LREmptyStringToNil([TBXML textForElement:genresElement]) pipedStringToArray] lr_arrayByRemovingDuplicates];
+        if (actorsNamesElement) show.actorsNames = [[LREmptyStringToNil([TBXML textForElement:actorsNamesElement]) pipedStringToArray] lr_arrayByRemovingDuplicates];
         if (ratingElement) show.rating = @([LREmptyStringToNil([TBXML textForElement:ratingElement]) floatValue]);
         if (ratingCountElement) show.ratingCount = @([LREmptyStringToNil([TBXML textForElement:ratingCountElement]) integerValue]);
         if (contentRatingElement) show.contentRating = LREmptyStringToNil([TBXML textForElement:contentRatingElement]);
@@ -132,7 +177,7 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
         showElement = [TBXML nextSiblingNamed:kLRTVDBShowSiblingXMLKey searchFromElement:showElement];
     }
     
-    return [[self class] removeLanguageDuplicatesFromShows:shows];
+    return [shows copy];
 }
 
 - (NSArray *)showsIDsFromData:(NSData *)data
@@ -168,7 +213,7 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
         
         if ([showsWithLanguageDuplicates count] == 0) return;
         
-        LRTVDBShow *firstShow = [showsWithLanguageDuplicates firstObject];
+        LRTVDBShow *firstShow = [showsWithLanguageDuplicates lr_firstObject];
         
         // Get shows subset with that ID = firstShow.ID
         NSIndexSet *indexSet = [showsWithLanguageDuplicates indexesOfObjectsPassingTest:^BOOL(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
@@ -177,7 +222,7 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
         
         NSArray *sameIdShows = [showsWithLanguageDuplicates objectsAtIndexes:indexSet];
         
-        __block LRTVDBShow *correctShow = [sameIdShows firstObject];
+        __block LRTVDBShow *correctShow = [sameIdShows lr_firstObject];
         
         [sameIdShows enumerateObjectsUsingBlock:^(LRTVDBShow *show, NSUInteger idx, BOOL *stop) {
             
@@ -191,6 +236,15 @@ static NSString *const kLRTVDBShowBasicStatusEndedXMLKey = @"Ended";
                 correctShow = show;
             }
         }];
+        
+        NSMutableArray *availableLanguages = [NSMutableArray array];
+        
+        for (LRTVDBShow *show in sameIdShows)
+        {
+            [availableLanguages addObject:show.language];
+        }
+        
+        correctShow.availableLanguages = availableLanguages;
         
         [showsWithoutLanguageDuplicates addObject:correctShow];
         [showsWithLanguageDuplicates removeObjectsInArray:sameIdShows];

@@ -27,12 +27,12 @@
 /**
  @return First object in the receiver array (nil if empty).
  */
-- (id)firstObject;
+- (id)lr_firstObject;
 
 /**
  Removes duplicates from receiver array without losing the order.
  @return A new NSArray without duplicates and mantaining the order.
  */
-- (instancetype)arrayByRemovingDuplicates;
+- (instancetype)lr_arrayByRemovingDuplicates;
 
 @end
