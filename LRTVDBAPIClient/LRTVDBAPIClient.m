@@ -406,7 +406,7 @@ static NSString *const kLastUpdatedDefaultsKey = @"kLastUpdatedDefaultsKey";
             // for this very case.
             NSString *correctLanguage = nil;
             
-            BOOL shouldForceEnglishMetadata = self.forceEnglishMetadata && [show.availableLanguages containsObject:LRTVDBDefaultLanguage()];
+            BOOL shouldForceEnglishMetadata = self.forceEnglishMetadata && (!show.availableLanguages || [show.availableLanguages containsObject:LRTVDBDefaultLanguage()]);
             
             if ([show.language isEqualToString:LRTVDBDefaultLanguage()] || shouldForceEnglishMetadata)
             {
