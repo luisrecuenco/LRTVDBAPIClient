@@ -34,7 +34,7 @@
 /**
  Converts an array of LRTVDBShow objects to NSData via NSPropertyListSerialization.
  */
-- (NSData *)peristenceFileForShows:(NSArray *)shows error:(__autoreleasing NSError **)error;
+- (NSData *)persistenceFileForShows:(NSArray *)shows error:(__autoreleasing NSError **)error;
 
 /**
  Retrieves an array of LRTVDBShow objects from disk via NSPropertyListSerialization.

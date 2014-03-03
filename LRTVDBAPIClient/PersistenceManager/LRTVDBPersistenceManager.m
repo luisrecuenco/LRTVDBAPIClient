@@ -24,7 +24,7 @@
 #import "LRTVDBShow.h"
 #import "NSArray+LRTVDBAdditions.h"
 
-static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistenceFile";
+static NSString *const kLRTVDBShowsPersistenceFileName = @"LRTVDBShowsPersistenceFile";
 
 @implementation LRTVDBPersistenceManager
 
@@ -35,7 +35,7 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
 
 - (void)saveShowsInPersistenceStorage:(NSArray *)shows error:(__autoreleasing NSError **)error
 {
-    NSData *plistData = [self peristenceFileForShows:shows error:error];
+    NSData *plistData = [self persistenceFileForShows:shows error:error];
     
     if (!plistData || *error)
     {
@@ -52,7 +52,7 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
     }
 }
 
-- (NSData *)peristenceFileForShows:(NSArray *)shows error:(__autoreleasing NSError **)error
+- (NSData *)persistenceFileForShows:(NSArray *)shows error:(__autoreleasing NSError **)error
 {
     NSMutableArray *mutableShows = [NSMutableArray arrayWithCapacity:[shows count]];
     
@@ -124,13 +124,13 @@ static NSString *const kLRTVDBShowsPeristenceFileName = @"LRTVDBShowsPersistence
     return [mutableShows copy];
 }
 
-#pragma mark - Peristence File URL
+#pragma mark - Persistence File URL
 
 - (NSString *)showsStoragePath
 {
     NSString *docsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lr_firstObject];
     
-    return [docsDirectory stringByAppendingPathComponent:kLRTVDBShowsPeristenceFileName];
+    return [docsDirectory stringByAppendingPathComponent:kLRTVDBShowsPersistenceFileName];
 }
 
 @end
